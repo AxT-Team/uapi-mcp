@@ -1,0 +1,113 @@
+overlay: 1.0.0
+info:
+  title: Uapi Mcp generation overlay
+  version: 0.1.0
+actions:
+  - target: $
+    description: 为生成物补充公开文档入口。
+    update:
+      externalDocs:
+        description: UAPI 官方文档
+        url: https://uapis.cn/docs
+
+  - target: $.tags[?(@.name=='Clipzy 在线剪贴板')]
+    description: 精简 Clipzy 标签说明，避免内嵌脚本示例触发生成器校验错误。
+    update:
+      description: |-
+        提供 Clipzy 在线剪贴板相关能力，包括加密内容存储、按 ID 获取密文，以及在受控场景下按密钥读取原文。
+
+        这个标签保留接口用途说明，但移除了不适合代码生成器处理的长篇 HTML 和脚本示例。
+
+  - target: $.paths['/translate/stream'].post.requestBody.content['application/json'].schema.properties.to_lang
+    description: 为目标语言枚举补充稳定的代码生成命名，避免中文枚举值归一化冲突。
+    update:
+      x-speakeasy-enums:
+        中文: Chinese
+        英文: English
+
+  - target: $.paths['/translate/stream'].post.requestBody.content['application/json'].schema.properties.from_lang
+    description: 为源语言枚举补充稳定的代码生成命名，避免中文枚举值归一化冲突。
+    update:
+      x-speakeasy-enums:
+        中文: Chinese
+        英文: English
+        auto: Auto
+
+  - target: $.paths['/social/bilibili/replies'].get.parameters[?(@.name=='sort')].schema
+    description: 为 B 站评论排序枚举补充稳定命名，避免中文枚举成员生成非法 TypeScript 代码。
+    update:
+      x-speakeasy-enums:
+        "0": TimeCode
+        time: Time
+        "1": LikeCode
+        like: Like
+        "2": ReplyCode
+        reply: Reply
+        "3": HotCode
+        hot: Hot
+        hottest: Hottest
+        最热: HotZh
+
+  - target: $.components
+    description: 为管理接口补充标准 Bearer 鉴权定义。
+    update:
+      securitySchemes:
+        UapiAdminBearerAuth:
+          type: http
+          scheme: bearer
+          bearerFormat: API Key
+
+  - target: $.paths['/status/ratelimit'].get.parameters[?(@.name=='Authorization' && @.in=='header')]
+    description: 移除保留头参数定义，改用标准 securitySchemes 建模。
+    remove: true
+
+  - target: $.paths['/status/ratelimit'].get
+    description: 为管理接口声明鉴权与 MCP 元信息。
+    update:
+      security:
+        - UapiAdminBearerAuth: []
+      x-speakeasy-mcp:
+        scopes:
+          - admin
+        readOnlyHint: true
+        openWorldHint: false
+
+  - target: $.paths.*['get','head']
+    description: 将所有 GET/HEAD 接口默认标记为只读 MCP 工具，便于按 scope 裁剪。
+    update:
+      x-speakeasy-mcp:
+        scopes:
+          - read
+        readOnlyHint: true
+        openWorldHint: true
+
+  - target: $.paths.*['post']
+    description: 将默认 POST 接口按“只读计算型工具”处理，后续再覆盖真正会写状态的接口。
+    update:
+      x-speakeasy-mcp:
+        scopes:
+          - read
+        readOnlyHint: true
+        openWorldHint: true
+
+  - target: $.paths['/api/store'].post
+    description: 存储型接口会写入远端状态，需要覆盖成写操作。
+    update:
+      x-speakeasy-mcp:
+        scopes:
+          - write
+        readOnlyHint: false
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+
+  - target: $.paths['/web/tomarkdown/async'].post
+    description: 异步建任务接口会创建服务端任务，需要覆盖成写操作。
+    update:
+      x-speakeasy-mcp:
+        scopes:
+          - write
+        readOnlyHint: false
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: true

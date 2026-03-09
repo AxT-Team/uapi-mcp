@@ -1,0 +1,76 @@
+configVersion: 2.0.0
+generation:
+  sdkClassName: UapiMcp
+  maintainOpenAPIOrder: true
+  usageSnippets:
+    optionalPropertyRendering: withExample
+    sdkInitStyle: constructor
+  useClassNamesForArrayFields: true
+  fixes:
+    nameResolutionDec2023: true
+    nameResolutionFeb2025: true
+    parameterOrderingFeb2024: true
+    requestResponseComponentNamesFeb2024: true
+    securityFeb2025: true
+    sharedErrorComponentsApr2025: true
+    sharedNestedComponentsJan2026: true
+    nameOverrideFeb2026: true
+  auth:
+    oAuth2ClientCredentialsEnabled: true
+    oAuth2PasswordEnabled: true
+    hoistGlobalSecurity: true
+  inferSSEOverload: true
+  sdkHooksConfigAccess: true
+  schemas:
+    allOfMergeStrategy: shallowMerge
+  requestBodyFieldName: body
+  versioningStrategy: automatic
+  persistentEdits: {}
+  tests:
+    generateTests: false
+    generateNewTests: true
+    skipResponseBodyAssertions: false
+mcp-typescript:
+  version: 0.1.0
+  additionalDependencies:
+    dependencies: {}
+    devDependencies: {}
+    peerDependencies: {}
+  advancedFlags: []
+  author: UAPI
+  baseErrorName: UapiMcpError
+  cloudflareEnabled: false
+  defaultErrorName: UapiMcpDefaultError
+  envVarPrefix: UAPI_MCP
+  formStringArrayEncodeMode: array
+  gramEnabled: false
+  inferUnionDiscriminators: true
+  inputModelSuffix: input
+  maxMethodParams: 0
+  mcpbManifestOverlay:
+    description: Uapi Mcp 是 uapis.cn 的官方MCP。它把 UAPI 的搜索、翻译、图像、文本处理和网页解析能力整理成统一的 MCP Server，让你的ai拥有无限的能力~
+    display_name: Uapi Mcp
+    long_description: Uapi Mcp 是 uapis.cn 的官方MCP。它把 UAPI 的搜索、翻译、图像、文本处理和网页解析能力整理成统一的 MCP Server，让你的ai拥有无限的能力~
+    server:
+      mcp_config:
+        command: node
+        args:
+          - ${__dirname}/bin/mcp-server.js
+          - start
+          - --mode
+          - dynamic
+        env:
+          UAPI_MCP_UAPIKEY: ${user_config.uapikey}
+    user_config:
+      uapikey:
+        type: string
+        title: UAPI Key
+        description: 填写后会自动用于所有上游请求。
+        default: ""
+        sensitive: true
+    version: 0.1.0
+  multipartArrayFormat: standard
+  outputModelSuffix: output
+  packageName: uapi-mcp
+  responseFormat: flat
+  validateResponse: false

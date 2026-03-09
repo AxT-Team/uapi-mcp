@@ -1,0 +1,23 @@
+speakeasyVersion: 1.749.0
+sources: {}
+targets:
+    uapi-mcp:
+        source: UAPI
+workflow:
+    workflowVersion: 1.0.0
+    speakeasyVersion: latest
+    sources:
+        UAPI:
+            inputs:
+    - location: openapi.yaml
+            overlays:
+                - location: overlay.yaml
+            transformations:
+                - removeUnused: true
+            output: .speakeasy/out.openapi.yaml
+            registry:
+                location: registry.speakeasyapi.dev/shuakami/shuakami/uapi
+    targets:
+        uapi-mcp:
+            target: mcp-typescript
+            source: UAPI
