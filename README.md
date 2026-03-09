@@ -224,20 +224,6 @@ npm run test:regression
 npm run mcpb:build
 ```
 
-## 生成方式
-
-这个项目基于 Speakeasy 的 `mcp-typescript` 生成器构建，输入来自当前仓库的 `openapi.yaml`，并通过 `overlay.yaml` 补充 MCP 相关的作用域、鉴权和描述信息。
-
-- 源规范：`./openapi.yaml`
-- MCP 覆盖层：`./overlay.yaml`
-- 工作流：`./.speakeasy/workflow.yaml`
-
-如果您需要重新生成，可以执行：
-
-```bash
-..\.tools\speakeasy\speakeasy.exe run -t uapi-mcp --output console --skip-upload-spec --skip-versioning
-```
-
 ## 文档
 
 接口文档请查看 [uapis.cn](https://uapis.cn/docs)。
