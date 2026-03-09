@@ -64,15 +64,15 @@ try {
   $width = [float]$background.Width
   $height = [float]$background.Height
 
-  $brandFont = New-Object System.Drawing.Font('Segoe UI', ($height * 0.085), [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
-  $labelFont = New-Object System.Drawing.Font('Segoe UI', ($height * 0.13), [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
+  $brandFont = New-Object System.Drawing.Font('Segoe UI', ($height * 0.11), [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
+  $labelFont = New-Object System.Drawing.Font('Segoe UI', ($height * 0.11), [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
   $badgeFont = New-Object System.Drawing.Font('Segoe UI', ($height * 0.052), [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
 
   $brandBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(228, 234, 214, 160))
   $shadowBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(76, 0, 0, 0))
   $badgeBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(232, 230, 210, 164))
   $badgeTextBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(255, 35, 35, 35))
-  $labelRect = New-Object System.Drawing.RectangleF(0, ($height * 0.50), $width, ($height * 0.22))
+  $labelRect = New-Object System.Drawing.RectangleF(0, ($height * 0.39), $width, ($height * 0.18))
   $labelBrush = New-Object System.Drawing.Drawing2D.LinearGradientBrush(
     $labelRect,
     [System.Drawing.Color]::FromArgb(255, 230, 214, 176),
@@ -86,23 +86,26 @@ try {
   $stringFormat.LineAlignment = [System.Drawing.StringAlignment]::Near
 
   $brandText = 'Uapi'
-  $labelText = 'Mcp Server'
+  $labelText = 'Server'
   $badgeText = 'MCP'
 
   $brandSize = $graphics.MeasureString($brandText, $brandFont, 2000, $stringFormat)
   $badgeTextSize = $graphics.MeasureString($badgeText, $badgeFont, 2000, $stringFormat)
+  $labelSize = $graphics.MeasureString($labelText, $labelFont, 2000, $stringFormat)
 
   $lineGap = $width * 0.018
   $badgePaddingX = $width * 0.02
   $badgePaddingY = $height * 0.016
   $badgeWidth = [Math]::Ceiling($badgeTextSize.Width + ($badgePaddingX * 2))
   $badgeHeight = [Math]::Ceiling($badgeTextSize.Height + ($badgePaddingY * 2))
-  $lineWidth = $brandSize.Width + $lineGap + $badgeWidth
+  $lineWidth = $brandSize.Width + $lineGap + $badgeWidth + $lineGap + $labelSize.Width
 
   $line1X = ($width - $lineWidth) / 2
-  $line1Y = $height * 0.36
+  $line1Y = $height * 0.41
   $badgeX = $line1X + $brandSize.Width + $lineGap
-  $badgeY = $line1Y + (($brandSize.Height - $badgeHeight) / 2) + ($height * 0.008)
+  $badgeY = $line1Y + (($brandSize.Height - $badgeHeight) / 2) + ($height * 0.006)
+  $labelX = $badgeX + $badgeWidth + $lineGap
+  $labelY = $line1Y
 
   $graphics.DrawString($brandText, $brandFont, $shadowBrush, ($line1X + 2), ($line1Y + 4), $stringFormat)
   $graphics.DrawString($brandText, $brandFont, $brandBrush, $line1X, $line1Y, $stringFormat)
@@ -116,9 +119,6 @@ try {
   $badgeTextY = $badgeY + (($badgeHeight - $badgeTextSize.Height) / 2) - ($height * 0.002)
   $graphics.DrawString($badgeText, $badgeFont, $badgeTextBrush, $badgeTextX, $badgeTextY, $stringFormat)
 
-  $labelSize = $graphics.MeasureString($labelText, $labelFont, 2400, $stringFormat)
-  $labelX = ($width - $labelSize.Width) / 2
-  $labelY = $height * 0.54
   $graphics.DrawString($labelText, $labelFont, $shadowBrush, ($labelX + 3), ($labelY + 6), $stringFormat)
   $graphics.DrawString($labelText, $labelFont, $labelBrush, $labelX, $labelY, $stringFormat)
 
