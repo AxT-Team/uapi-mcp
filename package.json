@@ -30,8 +30,9 @@
     "mcp": "bin/mcp-server.js"
   },
   "scripts": {
-    "build": "bun i && bun src/mcp-server/build.mts && tsc",
-    "mcpb:build": "bun i && bun src/mcp-server/build.mts --pack && tsc",
+    "clean:build": "node ./scripts/clean-build.mjs",
+    "build": "npm run clean:build && bun src/mcp-server/build.mts && tsc",
+    "mcpb:build": "npm run clean:build && bun src/mcp-server/build.mts --pack && tsc",
     "check": "npm run lint",
     "lint": "eslint --cache --max-warnings=0 src",
     "test:regression": "node ./scripts/regression.mjs",
@@ -40,7 +41,6 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.26.0",
     "@stricli/core": "^1.1.2",
-    "bun": "^1.2.12",
     "express": "^5.1.0",
     "zod": "^4.0.0"
   },
@@ -53,6 +53,7 @@
     "@types/bun": "^1.2.13",
     "@types/express": "^5.0.1",
     "@types/node": "^18.19.3",
+    "bun": "^1.2.12",
     "eslint": "^9.26.0",
     "globals": "^16.0.0",
     "typescript": "~5.8.3",

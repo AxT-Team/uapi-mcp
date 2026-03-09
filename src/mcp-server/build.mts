@@ -1,9 +1,18 @@
 /// <reference types="bun-types" />
 
 import { build } from "bun";
-import { chmod, readFile, writeFile } from "node:fs/promises";
+import {
+  chmod,
+  copyFile,
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import { packExtension } from "@anthropic-ai/mcpb";
 import { join } from "node:path";
+import { tmpdir } from "node:os";
 import { createMCPServer } from "./server.ts";
 import { createConsoleLogger } from "./console-logger.ts";
 
@@ -42,10 +51,13 @@ export const toolNames: Array<{ name: string; description: string }>= ${JSON.str
 `;
   await writeFile("./src/tool-names.ts", toolNamesContent);
 
+  await rm(destinationDir, { recursive: true, force: true });
+  await mkdir(destinationDir, { recursive: true });
+
   await build({
     entrypoints: [entrypoint],
     outdir: destinationDir,
-    sourcemap: "linked",
+    sourcemap: "none",
     target: "node",
     format: "esm",
     minify: false,
@@ -59,11 +71,22 @@ export const toolNames: Array<{ name: string; description: string }>= ${JSON.str
 
   // Build the MCP bundle file
   if (shouldPack) {
-    await packExtension({
-      extensionPath: ".",
-      outputPath: "./mcp-server.mcpb",
-      silent: false,
-    });
+    const stagingDir = await mkdtemp(join(tmpdir(), "uapi-mcpb-"));
+
+    try {
+      const stagingBinDir = join(stagingDir, "bin");
+      await mkdir(stagingBinDir, { recursive: true });
+      await copyFile("manifest.json", join(stagingDir, "manifest.json"));
+      await copyFile(outputFile, join(stagingBinDir, "mcp-server.js"));
+
+      await packExtension({
+        extensionPath: stagingDir,
+        outputPath: "./mcp-server.mcpb",
+        silent: false,
+      });
+    } finally {
+      await rm(stagingDir, { recursive: true, force: true });
+    }
   }
 }
 
