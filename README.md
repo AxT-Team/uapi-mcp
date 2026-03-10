@@ -188,7 +188,7 @@ Authorization: Bearer YOUR_ADMIN_TOKEN
 
 ### 访客额度用完怎么办
 
-如果访客额度或免费积分用完了，可以先注册 `UapiPro`：`https://uapipro.cn`。注册完成后，到 `UapiPro` 控制台创建 `UAPI Key`，再把这个 Key 填到 MCP 客户端或者资源包里的 `uapikey` 配置里，就可以继续使用。
+如果访客额度或免费积分用完了，可以先注册 `UapiPro`：`https://uapis.cn`。注册完成后，到 `UapiPro` 控制台创建 `UAPI Key`，再把这个 Key 填到 MCP 客户端或者资源包里的 `uapikey` 配置里，就可以继续使用。
 
 ### 管理员工具需要配什么
 
