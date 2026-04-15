@@ -1,6 +1,6 @@
 {
   "name": "uapi-mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "UAPI",
   "description": "Uapi Mcp 是 uapis.cn 的官方 MCP Server。",
   "type": "module",

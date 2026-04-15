@@ -48,7 +48,7 @@
       "type": "string"
     }
   },
-  "version": "0.1.1",
+  "version": "0.1.2",
   "tools": [
     {
       "name": "convert-post-convert-json",

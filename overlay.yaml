@@ -1,7 +1,7 @@
 overlay: 1.0.0
 info:
   title: Uapi Mcp generation overlay
-  version: 0.1.1
+  version: 0.1.2
 actions:
   - target: $
     description: 为生成物补充公开文档入口。

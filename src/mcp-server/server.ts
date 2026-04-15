@@ -123,7 +123,7 @@ export function createMCPServer(deps: {
 }) {
   const server = new McpServer({
     name: "Uapi Mcp",
-    version: "0.1.1",
+    version: "0.1.2",
     websiteUrl: "https://uapis.cn/docs",
   }, {
     instructions: [
