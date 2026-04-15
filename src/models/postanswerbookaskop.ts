@@ -4,16 +4,13 @@
 
 import * as z from "zod";
 
-/**
- * 包含问题的JSON对象
- */
 export type PostAnswerbookAskRequest = { question: string };
 
 export const PostAnswerbookAskRequest$zodSchema: z.ZodType<
   PostAnswerbookAskRequest
 > = z.object({
-  question: z.string(),
-}).describe("包含问题的JSON对象");
+  question: z.string().describe("你想要提问的问题"),
+});
 
 /**
  * 服务器内部错误。

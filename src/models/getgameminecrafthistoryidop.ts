@@ -114,10 +114,12 @@ export type GetGameMinecraftHistoryidResult = {
 export const GetGameMinecraftHistoryidResult$zodSchema: z.ZodType<
   GetGameMinecraftHistoryidResult
 > = z.object({
-  history: z.array(z.lazy(() => ResultHistory$zodSchema)).optional(),
-  id: z.string().optional(),
-  name_num: z.int().optional(),
-  uuid: z.string().optional(),
+  history: z.array(z.lazy(() => ResultHistory$zodSchema)).optional().describe(
+    "历史用户名数组。",
+  ),
+  id: z.string().optional().describe("玩家当前的用户名。"),
+  name_num: z.int().optional().describe("历史名称的总数。"),
+  uuid: z.string().optional().describe("玩家的UUID（带连字符格式）。"),
 });
 
 export type History = {
@@ -126,8 +128,10 @@ export type History = {
 };
 
 export const History$zodSchema: z.ZodType<History> = z.object({
-  changedToAt: z.string().optional(),
-  name: z.string().optional(),
+  changedToAt: z.string().optional().describe(
+    "更名为此名称的时间，格式为 `YYYY/MM/DD HH:mm:ss`。如果是初始名称，则为 `Initial`。",
+  ),
+  name: z.string().optional().describe("当时使用的用户名。"),
 });
 
 /**
@@ -146,14 +150,24 @@ export type GetGameMinecraftHistoryidResponseBody = {
 export const GetGameMinecraftHistoryidResponseBody$zodSchema: z.ZodType<
   GetGameMinecraftHistoryidResponseBody
 > = z.object({
-  count: z.int().optional(),
-  history: z.array(z.lazy(() => History$zodSchema)).optional(),
-  id: z.string().optional(),
-  name_num: z.int().optional(),
-  query: z.string().optional(),
+  count: z.int().optional().describe(
+    "【name 查询时返回】匹配到的用户数量，为 0 时表示未找到。",
+  ),
+  history: z.array(z.lazy(() => History$zodSchema)).optional().describe(
+    "【uuid 查询时返回】包含所有历史用户名的数组，按时间倒序排列。",
+  ),
+  id: z.string().optional().describe("【uuid 查询时返回】玩家当前的用户名。"),
+  name_num: z.int().optional().describe(
+    "【uuid 查询时返回】历史名称的总数（包含当前名称）。",
+  ),
+  query: z.string().optional().describe("【name 查询时返回】查询的用户名。"),
   results: z.array(z.lazy(() => GetGameMinecraftHistoryidResult$zodSchema))
-    .optional(),
-  uuid: z.string().optional(),
+    .optional().describe(
+      "【name 查询时返回】匹配用户列表，包含当前用户名或曾用名匹配的所有玩家。",
+    ),
+  uuid: z.string().optional().describe(
+    "【uuid 查询时返回】被查询玩家的UUID（带连字符格式）。",
+  ),
 }).describe("响应结构根据查询参数不同而变化");
 
 export type GetGameMinecraftHistoryidResponse =

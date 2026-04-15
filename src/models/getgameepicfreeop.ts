@@ -36,32 +36,43 @@ export type GetGameEpicFreeData = {
 
 export const GetGameEpicFreeData$zodSchema: z.ZodType<GetGameEpicFreeData> = z
   .object({
-    cover: z.string().optional(),
-    description: z.string().optional(),
-    free_end: z.string().optional(),
-    free_end_at: z.int().optional(),
-    free_start: z.string().optional(),
-    free_start_at: z.int().optional(),
-    id: z.string().optional(),
-    is_free_now: z.boolean().optional(),
-    link: z.string().optional(),
-    original_price: z.number().optional(),
-    original_price_desc: z.string().optional(),
-    seller: z.string().optional(),
-    title: z.string().optional(),
+    cover: z.string().optional().describe("游戏封面图片的URL地址。"),
+    description: z.string().optional().describe("游戏的简介描述。"),
+    free_end: z.string().optional().describe("免费结束时间的可读字符串格式。"),
+    free_end_at: z.int().optional().describe("免费结束时间的13位毫秒时间戳。"),
+    free_start: z.string().optional().describe(
+      "免费开始时间的可读字符串格式。",
+    ),
+    free_start_at: z.int().optional().describe(
+      "免费开始时间的13位毫秒时间戳。",
+    ),
+    id: z.string().optional().describe("游戏的唯一标识ID。"),
+    is_free_now: z.boolean().optional().describe("当前是否处于免费状态。"),
+    link: z.string().optional().describe("游戏在Epic Games商店的详情页链接。"),
+    original_price: z.number().optional().describe(
+      "游戏的原价，单位为人民币元。",
+    ),
+    original_price_desc: z.string().optional().describe(
+      "格式化后的原价描述字符串。",
+    ),
+    seller: z.string().optional().describe("游戏的发行商或销售商。"),
+    title: z.string().optional().describe("游戏的完整标题名称。"),
   });
 
 /**
  * 获取成功！白嫖成功，返回当前Epic Games商店的免费游戏大礼包。
  */
 export type GetGameEpicFreeResponseBody = {
+  message?: string | undefined;
   data?: Array<GetGameEpicFreeData> | undefined;
 };
 
 export const GetGameEpicFreeResponseBody$zodSchema: z.ZodType<
   GetGameEpicFreeResponseBody
 > = z.object({
-  data: z.array(z.lazy(() => GetGameEpicFreeData$zodSchema)).optional(),
+  data: z.array(z.lazy(() => GetGameEpicFreeData$zodSchema)).optional()
+    .describe("免费游戏列表数组。"),
+  message: z.string().optional().describe("操作结果描述。"),
 }).describe("获取成功！白嫖成功，返回当前Epic Games商店的免费游戏大礼包。");
 
 export type GetGameEpicFreeResponse =

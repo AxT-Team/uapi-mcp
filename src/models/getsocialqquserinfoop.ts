@@ -71,7 +71,7 @@ export type GetSocialQqUserinfoResponseBody = {
   age?: number | undefined;
   sex?: string | undefined;
   qid?: string | undefined;
-  qq_level?: number | undefined;
+  qq_level?: number | null | undefined;
   location?: string | undefined;
   email?: string | undefined;
   is_vip?: boolean | undefined;
@@ -83,20 +83,22 @@ export type GetSocialQqUserinfoResponseBody = {
 export const GetSocialQqUserinfoResponseBody$zodSchema: z.ZodType<
   GetSocialQqUserinfoResponseBody
 > = z.object({
-  age: z.int().optional(),
-  avatar_url: z.string().optional(),
-  email: z.string().optional(),
-  is_vip: z.boolean().optional(),
-  last_updated: z.string().optional(),
-  location: z.string().optional(),
-  long_nick: z.string().optional(),
-  nickname: z.string().optional(),
-  qid: z.string().optional(),
-  qq: z.string().optional(),
-  qq_level: z.int().optional(),
-  reg_time: z.string().optional(),
-  sex: z.string().optional(),
-  vip_level: z.int().optional(),
+  age: z.int().optional().describe("年龄"),
+  avatar_url: z.string().optional().describe("头像URL"),
+  email: z.string().optional().describe("QQ邮箱"),
+  is_vip: z.boolean().optional().describe("是否为VIP用户"),
+  last_updated: z.string().optional().describe("最后更新时间（ISO 8601格式）"),
+  location: z.string().optional().describe("地理位置（省市）"),
+  long_nick: z.string().optional().describe("个性签名"),
+  nickname: z.string().optional().describe("用户昵称"),
+  qid: z.string().optional().describe("QQ个性域名"),
+  qq: z.string().optional().describe("QQ号"),
+  qq_level: z.int().nullable().optional().describe(
+    "QQ等级。用户隐藏时返回 null",
+  ),
+  reg_time: z.string().optional().describe("注册时间（ISO 8601格式）"),
+  sex: z.string().optional().describe("性别"),
+  vip_level: z.int().optional().describe("VIP等级"),
 }).describe("成功响应，返回QQ用户的详细信息");
 
 export type GetSocialQqUserinfoResponse =

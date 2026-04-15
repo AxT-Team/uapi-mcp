@@ -8,7 +8,7 @@ export type PostTextMd5Request = { text: string };
 
 export const PostTextMd5Request$zodSchema: z.ZodType<PostTextMd5Request> = z
   .object({
-    text: z.string(),
+    text: z.string().describe("需要计算哈希值的文本"),
   });
 
 export type PostTextMd5Details = {};

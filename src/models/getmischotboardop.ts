@@ -6,7 +6,7 @@ import * as z from "zod";
 import { ClosedEnum } from "../types/enums.js";
 
 /**
- * 你想要查询的热榜平台。支持多种主流平台类型，详见下方[可选值](#可选值)表格。
+ * 你想要查询的热榜平台。请从[支持的平台列表](#enum-list)中选择。
  */
 export const GetMiscHotboardType = {
   Bilibili: "bilibili",
@@ -57,7 +57,7 @@ export const GetMiscHotboardType = {
   History: "history",
 } as const;
 /**
- * 你想要查询的热榜平台。支持多种主流平台类型，详见下方[可选值](#可选值)表格。
+ * 你想要查询的热榜平台。请从[支持的平台列表](#enum-list)中选择。
  */
 export type GetMiscHotboardType = ClosedEnum<typeof GetMiscHotboardType>;
 
@@ -108,9 +108,7 @@ export const GetMiscHotboardType$zodSchema = z.enum([
   "weatheralarm",
   "earthquake",
   "history",
-]).describe(
-  "你想要查询的热榜平台。支持多种主流平台类型，详见下方[可选值](#可选值)表格。",
-);
+]).describe("你想要查询的热榜平台。请从[支持的平台列表](#enum-list)中选择。");
 
 export type GetMiscHotboardRequest = {
   type: GetMiscHotboardType;
@@ -119,7 +117,6 @@ export type GetMiscHotboardRequest = {
   time_start?: number | undefined;
   time_end?: number | undefined;
   limit?: number | undefined;
-  sources?: boolean | undefined;
 };
 
 export const GetMiscHotboardRequest$zodSchema: z.ZodType<
@@ -128,12 +125,8 @@ export const GetMiscHotboardRequest$zodSchema: z.ZodType<
   keyword: z.string().describe(
     "搜索模式：搜索关键词，在历史热榜中搜索包含该关键词的条目。需配合 time_start 和 time_end 使用。",
   ).optional(),
-  limit: z.int().default(50).describe(
-    "搜索模式下最大返回条数，默认 50，最大 200。",
-  ),
-  sources: z.boolean().describe(
-    "设为 true 时列出所有可用的历史数据源，忽略其他参数。",
-  ).optional(),
+  limit: z.int().describe("搜索模式下最大返回条数，默认 50，最大 200。")
+    .optional(),
   time: z.int().describe(
     "时光机模式：毫秒时间戳，返回最接近该时间的热榜快照。不传则返回当前实时热榜。",
   ).optional(),
@@ -141,7 +134,9 @@ export const GetMiscHotboardRequest$zodSchema: z.ZodType<
     .optional(),
   time_start: z.int().describe("搜索模式必填：搜索起始时间戳（毫秒）。")
     .optional(),
-  type: GetMiscHotboardType$zodSchema,
+  type: GetMiscHotboardType$zodSchema.describe(
+    "你想要查询的热榜平台。请从[支持的平台列表](#enum-list)中选择。",
+  ),
 });
 
 export type GetMiscHotboardBadGatewayDetails = {};
@@ -151,7 +146,7 @@ export const GetMiscHotboardBadGatewayDetails$zodSchema: z.ZodType<
 > = z.object({});
 
 /**
- * 上游服务错误。我们从目标平台（如微博）获取数据时失败，可能是对方接口暂时不可用或有反爬策略。
+ * 暂时无法获取相关数据，请稍后重试。
  */
 export type GetMiscHotboardBadGatewayResponseBody = {
   code?: string | undefined;
@@ -165,9 +160,7 @@ export const GetMiscHotboardBadGatewayResponseBody$zodSchema: z.ZodType<
   code: z.string().optional(),
   details: z.lazy(() => GetMiscHotboardBadGatewayDetails$zodSchema).optional(),
   message: z.string().optional(),
-}).describe(
-  "上游服务错误。我们从目标平台（如微博）获取数据时失败，可能是对方接口暂时不可用或有反爬策略。",
-);
+}).describe("暂时无法获取相关数据，请稍后重试。");
 
 export type GetMiscHotboardInternalServerErrorDetails = {};
 
@@ -217,24 +210,6 @@ export const GetMiscHotboardBadRequestResponseBody$zodSchema: z.ZodType<
   "请求参数错误。你提供的 `type` 参数不是我们支持的平台类型，请检查拼写。",
 );
 
-export type List = {
-  extra?: { [k: string]: any } | undefined;
-  hot_value?: string | undefined;
-  index?: number | undefined;
-  title?: string | undefined;
-  url?: string | undefined;
-  cover?: string | undefined;
-};
-
-export const List$zodSchema: z.ZodType<List> = z.object({
-  cover: z.string().optional(),
-  extra: z.record(z.string(), z.any()).optional(),
-  hot_value: z.string().optional(),
-  index: z.int().optional(),
-  title: z.string().optional(),
-  url: z.string().optional(),
-});
-
 export type GetMiscHotboardResult = {
   title?: string | undefined;
   hot_value?: string | undefined;
@@ -248,37 +223,80 @@ export const GetMiscHotboardResult$zodSchema: z.ZodType<GetMiscHotboardResult> =
     url: z.string().optional(),
   });
 
-/**
- * 查询成功！返回指定平台的热榜列表数据。不同模式返回格式不同：默认模式和时光机模式返回 list 数组；搜索模式返回 results 数组；数据源列表模式返回 sources 数组。
- */
-export type GetMiscHotboardResponseBody = {
-  list?: Array<List> | undefined;
+export type GetMiscHotboard = {
   type?: string | undefined;
-  update_time?: string | undefined;
-  snapshot_time?: number | undefined;
   keyword?: string | undefined;
   count?: number | undefined;
   results?: Array<GetMiscHotboardResult> | undefined;
-  sources?: Array<string> | undefined;
 };
+
+export const GetMiscHotboard$zodSchema: z.ZodType<GetMiscHotboard> = z.object({
+  count: z.int().optional().describe("匹配到的结果数量。"),
+  keyword: z.string().optional().describe("搜索关键词。"),
+  results: z.array(z.lazy(() => GetMiscHotboardResult$zodSchema)).optional()
+    .describe("搜索结果数组。"),
+  type: z.string().optional(),
+});
+
+export type GetMiscHotboardList = {
+  extra?: { [k: string]: any } | undefined;
+  hot_value?: string | undefined;
+  index?: number | undefined;
+  title?: string | undefined;
+  url?: string | undefined;
+  cover?: string | undefined;
+};
+
+export const GetMiscHotboardList$zodSchema: z.ZodType<GetMiscHotboardList> = z
+  .object({
+    cover: z.string().optional().describe(
+      "封面图 URL，音乐类热榜返回专辑封面，其他平台一般不返回。",
+    ),
+    extra: z.record(z.string(), z.any()).optional().describe(
+      "额外信息，不同平台该字段内容不同，例如微博热搜的标签（如“新”“爆”）。",
+    ),
+    hot_value: z.string().optional(),
+    index: z.int().optional(),
+    title: z.string().optional(),
+    url: z.string().optional(),
+  });
+
+export type Root = {
+  type?: string | undefined;
+  update_time?: string | undefined;
+  snapshot_time?: number | undefined;
+  list?: Array<GetMiscHotboardList> | undefined;
+};
+
+export const Root$zodSchema: z.ZodType<Root> = z.object({
+  list: z.array(z.lazy(() => GetMiscHotboardList$zodSchema)).optional()
+    .describe("热榜条目列表。"),
+  snapshot_time: z.int().optional().describe(
+    "时光机模式返回的快照实际时间戳（毫秒）。当前热榜模式下通常不返回。",
+  ),
+  type: z.string().optional(),
+  update_time: z.string().optional().describe(
+    "热榜更新时间。时光机无匹配快照时可能为空字符串。",
+  ),
+});
+
+/**
+ * 查询成功！返回指定平台的热榜列表数据。不同模式返回格式不同：默认模式和时光机模式返回 list 数组；搜索模式返回 results 数组。
+ */
+export type GetMiscHotboardResponseBody = Root | GetMiscHotboard;
 
 export const GetMiscHotboardResponseBody$zodSchema: z.ZodType<
   GetMiscHotboardResponseBody
-> = z.object({
-  count: z.int().optional(),
-  keyword: z.string().optional(),
-  list: z.array(z.lazy(() => List$zodSchema)).optional(),
-  results: z.array(z.lazy(() => GetMiscHotboardResult$zodSchema)).optional(),
-  snapshot_time: z.int().optional(),
-  sources: z.array(z.string()).optional(),
-  type: z.string().optional(),
-  update_time: z.string().optional(),
-}).describe(
-  "查询成功！返回指定平台的热榜列表数据。不同模式返回格式不同：默认模式和时光机模式返回 list 数组；搜索模式返回 results 数组；数据源列表模式返回 sources 数组。",
+> = z.union([
+  z.lazy(() => Root$zodSchema),
+  z.lazy(() => GetMiscHotboard$zodSchema),
+]).describe(
+  "查询成功！返回指定平台的热榜列表数据。不同模式返回格式不同：默认模式和时光机模式返回 list 数组；搜索模式返回 results 数组。",
 );
 
 export type GetMiscHotboardResponse =
-  | GetMiscHotboardResponseBody
+  | Root
+  | GetMiscHotboard
   | GetMiscHotboardBadRequestResponseBody
   | GetMiscHotboardInternalServerErrorResponseBody
   | GetMiscHotboardBadGatewayResponseBody;
@@ -286,7 +304,10 @@ export type GetMiscHotboardResponse =
 export const GetMiscHotboardResponse$zodSchema: z.ZodType<
   GetMiscHotboardResponse
 > = z.union([
-  z.lazy(() => GetMiscHotboardResponseBody$zodSchema),
+  z.union([
+    z.lazy(() => Root$zodSchema),
+    z.lazy(() => GetMiscHotboard$zodSchema),
+  ]),
   z.lazy(() => GetMiscHotboardBadRequestResponseBody$zodSchema),
   z.lazy(() => GetMiscHotboardInternalServerErrorResponseBody$zodSchema),
   z.lazy(() => GetMiscHotboardBadGatewayResponseBody$zodSchema),

@@ -87,12 +87,12 @@ export type GetNetworkPingResponseBody = {
 export const GetNetworkPingResponseBody$zodSchema: z.ZodType<
   GetNetworkPingResponseBody
 > = z.object({
-  avg: z.number().optional(),
+  avg: z.number().optional().describe("平均延迟(ms)"),
   host: z.string().optional(),
   ip: z.string().optional(),
   location: z.string().optional(),
-  max: z.number().optional(),
-  min: z.number().optional(),
+  max: z.number().optional().describe("最大延迟(ms)"),
+  min: z.number().optional().describe("最小延迟(ms)"),
 }).describe("Ping 操作成功！返回延迟统计数据。");
 
 export type GetNetworkPingResponse =

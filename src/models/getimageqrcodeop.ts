@@ -42,7 +42,9 @@ export const GetImageQrcodeRequest$zodSchema: z.ZodType<GetImageQrcodeRequest> =
     fgcolor: z.string().default("#000000").describe(
       "二维码前景色（即二维码本身的颜色），使用十六进制格式。URL 中需要将 `#` 编码为 `%23`。",
     ),
-    format: GetImageQrcodeFormat$zodSchema.default("image"),
+    format: GetImageQrcodeFormat$zodSchema.default("image").describe(
+      "指定响应内容的格式。可选值为 `image`, `json`, `json_url`。",
+    ),
     size: z.int().default(256).describe(
       "二维码图片的边长（正方形），单位是像素。有效范围是 256 到 2048 之间。",
     ),
@@ -104,16 +106,18 @@ export const GetImageQrcodeBadRequestResponseBody$zodSchema: z.ZodType<
 );
 
 /**
- * 请求成功。响应的格式和内容取决于你传入的 `format` 参数。请参考下面不同 `Content-Type` 的定义。
+ * 请求成功。响应的格式和内容取决于你传入的 `format` 参数。请参考下面不同格式的定义。
  */
 export type GetImageQrcodeResponseBody = { url?: string | undefined };
 
 export const GetImageQrcodeResponseBody$zodSchema: z.ZodType<
   GetImageQrcodeResponseBody
 > = z.object({
-  url: z.string().optional(),
+  url: z.string().optional().describe(
+    "图片的URL。当`format=json_url`时是临时公网URL；当`format=json`时是Base64 Data URI。",
+  ),
 }).describe(
-  "请求成功。响应的格式和内容取决于你传入的 `format` 参数。请参考下面不同 `Content-Type` 的定义。",
+  "请求成功。响应的格式和内容取决于你传入的 `format` 参数。请参考下面不同格式的定义。",
 );
 
 export type GetImageQrcodeResponse =

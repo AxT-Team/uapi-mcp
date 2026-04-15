@@ -87,6 +87,18 @@ export const GetGameMinecraftServerstatusBadRequestResponseBody$zodSchema:
     message: z.string().optional(),
   }).describe("请求失败。请检查你是否提供了 `server` 参数。");
 
+export type OnlinePlayer = {
+  name?: string | undefined;
+  uuid?: string | undefined;
+};
+
+export const OnlinePlayer$zodSchema: z.ZodType<OnlinePlayer> = z.object({
+  name: z.string().optional().describe("玩家名称。"),
+  uuid: z.string().optional().describe(
+    "玩家的 UUID。部分服务器可能不返回这个字段。",
+  ),
+});
+
 /**
  * 查询成功！返回服务器的详细状态信息。
  */
@@ -97,6 +109,7 @@ export type GetGameMinecraftServerstatusResponseBody = {
   motd_clean?: string | undefined;
   motd_html?: string | undefined;
   online?: boolean | undefined;
+  online_players?: Array<OnlinePlayer> | undefined;
   players?: number | undefined;
   port?: number | undefined;
   version?: string | undefined;
@@ -105,15 +118,25 @@ export type GetGameMinecraftServerstatusResponseBody = {
 export const GetGameMinecraftServerstatusResponseBody$zodSchema: z.ZodType<
   GetGameMinecraftServerstatusResponseBody
 > = z.object({
-  favicon_url: z.string().optional(),
-  ip: z.string().optional(),
-  max_players: z.int().optional(),
-  motd_clean: z.string().optional(),
-  motd_html: z.string().optional(),
-  online: z.boolean().optional(),
-  players: z.int().optional(),
-  port: z.int().optional(),
-  version: z.string().optional(),
+  favicon_url: z.string().optional().describe(
+    "服务器图标的 Base64 Data URI。你可以直接在 `<img>` 标签的 `src` 属性中使用它。",
+  ),
+  ip: z.string().optional().describe("服务器解析后的IP地址。"),
+  max_players: z.int().optional().describe("服务器配置的最大玩家容量。"),
+  motd_clean: z.string().optional().describe(
+    "纯文本格式的服务器MOTD（每日消息），去除了所有颜色和格式代码。",
+  ),
+  motd_html: z.string().optional().describe(
+    "HTML格式的服务器MOTD，保留了颜色和样式，方便你在网页上直接渲染。",
+  ),
+  online: z.boolean().optional().describe("服务器当前是否在线。"),
+  online_players: z.array(z.lazy(() => OnlinePlayer$zodSchema)).optional()
+    .describe(
+      "当前在线玩家列表。如果服务器没有返回这个字段，它会省略。部分服务器返回的列表可能不完整。",
+    ),
+  players: z.int().optional().describe("当前在线的玩家数量。"),
+  port: z.int().optional().describe("服务器使用的端口。"),
+  version: z.string().optional().describe("服务器报告的版本信息。"),
 }).describe("查询成功！返回服务器的详细状态信息。");
 
 export type GetGameMinecraftServerstatusResponse =

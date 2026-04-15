@@ -7,35 +7,25 @@ import * as z from "zod";
 export type Carrier = { code?: string | undefined; name?: string | undefined };
 
 export const Carrier$zodSchema: z.ZodType<Carrier> = z.object({
-  code: z.string().optional(),
-  name: z.string().optional(),
-});
-
-export type GetMiscTrackingCarriersData = {
-  total?: number | undefined;
-  carriers?: Array<Carrier> | undefined;
-};
-
-export const GetMiscTrackingCarriersData$zodSchema: z.ZodType<
-  GetMiscTrackingCarriersData
-> = z.object({
-  carriers: z.array(z.lazy(() => Carrier$zodSchema)).optional(),
-  total: z.int().optional(),
+  code: z.string().optional().describe(
+    "快递公司编码，用于 API 调用时的 carrier_code 参数",
+  ),
+  name: z.string().optional().describe("快递公司中文名称，用于界面显示"),
 });
 
 /**
  * 获取成功！返回所有支持的快递公司列表。
  */
 export type GetMiscTrackingCarriersResponse = {
-  code?: string | undefined;
-  message?: string | undefined;
-  data?: GetMiscTrackingCarriersData | undefined;
+  carriers?: Array<Carrier> | undefined;
+  total?: number | undefined;
 };
 
 export const GetMiscTrackingCarriersResponse$zodSchema: z.ZodType<
   GetMiscTrackingCarriersResponse
 > = z.object({
-  code: z.string().optional(),
-  data: z.lazy(() => GetMiscTrackingCarriersData$zodSchema).optional(),
-  message: z.string().optional(),
+  carriers: z.array(z.lazy(() => Carrier$zodSchema)).optional().describe(
+    "快递公司列表",
+  ),
+  total: z.int().optional().describe("支持的快递公司总数"),
 }).describe("获取成功！返回所有支持的快递公司列表。");

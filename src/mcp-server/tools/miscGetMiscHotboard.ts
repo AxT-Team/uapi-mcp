@@ -28,23 +28,7 @@ export const tool$miscGetMiscHotboard: ToolDefinition<typeof args> = {
 传 \`type\` + \`time\` 参数，返回最接近指定时间的热榜快照。如果不可用或无数据，会返回空。
 
 ### 搜索模式
-传 \`type\` + \`keyword\` + \`time_start\` + \`time_end\` 参数，在指定时间范围内搜索包含关键词的热榜条目。可选传 \`limit\` 限制返回数量。
-
-### 数据源列表
-传 \`sources=true\`，返回所有支持历史数据的平台列表。
-
-## 可选值
-\`type\` 参数接受多种不同的值，每种值对应一个不同的热榜来源。以下是目前支持的所有值：
-
-| 分类       | 支持的 type 值 |
-|------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| 视频/社区  | bilibili（哔哩哔哩弹幕网）, acfun（A站弹幕视频网站）, weibo（新浪微博热搜）, zhihu（知乎热榜）, zhihu-daily（知乎日报热榜）, douyin（抖音热榜）, kuaishou（快手热榜）, douban-movie（豆瓣电影榜单）, douban-group（豆瓣小组话题）, tieba（百度贴吧热帖）, hupu（虎扑热帖）, ngabbs（NGA游戏论坛热帖）, v2ex（V2EX技术社区热帖）, 52pojie（吾爱破解热帖）, hostloc（全球主机交流论坛）, coolapk（酷安热榜） |
-| 新闻/资讯  | baidu（百度热搜）, thepaper（澎湃新闻热榜）, toutiao（今日头条热榜）, qq-news（腾讯新闻热榜）, sina（新浪热搜）, sina-news（新浪新闻热榜）, netease-news（网易新闻热榜）, huxiu（虎嗅网热榜）, ifanr（爱范儿热榜） |
-| 技术/IT    | sspai（少数派热榜）, ithome（IT之家热榜）, ithome-xijiayi（IT之家·喜加一栏目）, juejin（掘金社区热榜）, jianshu（简书热榜）, guokr（果壳热榜）, 36kr（36氪热榜）, 51cto（51CTO热榜）, csdn（CSDN博客热榜）, nodeseek（NodeSeek 技术社区）, hellogithub（HelloGitHub 项目推荐） |
-| 游戏       | lol（英雄联盟热帖）, genshin（原神热榜）, honkai（崩坏3热榜）, starrail（星穹铁道热榜） |
-| 音乐       | netease-music（网易云音乐热歌榜）, qq-music（QQ音乐热歌榜） |
-| 其他       | weread（微信读书热门书籍）, weatheralarm（天气预警信息）, earthquake（地震速报）, history（历史上的今天） |
-`,
+传 \`type\` + \`keyword\` + \`time_start\` + \`time_end\` 参数，在指定时间范围内搜索包含关键词的热榜条目。可选传 \`limit\` 限制返回数量。`,
   scopes: ["read"],
   annotations: {
     "title": "",

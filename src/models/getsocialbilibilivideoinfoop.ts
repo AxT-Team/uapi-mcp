@@ -20,6 +20,63 @@ export const GetSocialBilibiliVideoinfoRequest$zodSchema: z.ZodType<
   ).optional(),
 });
 
+export type DescV2 = {
+  raw_text?: string | undefined;
+  type?: number | undefined;
+  biz_id?: number | undefined;
+};
+
+export const DescV2$zodSchema: z.ZodType<DescV2> = z.object({
+  biz_id: z.number().optional().describe("业务 ID，被关联对象的 ID。"),
+  raw_text: z.string().optional().describe("简介文本。"),
+  type: z.number().optional().describe("片段类型。"),
+});
+
+/**
+ * 视频权限开关（0 或 1）。
+ */
+export type Rights = {
+  bp?: number | undefined;
+  elec?: number | undefined;
+  download?: number | undefined;
+  movie?: number | undefined;
+  pay?: number | undefined;
+  hd5?: number | undefined;
+  no_reprint?: number | undefined;
+  autoplay?: number | undefined;
+  ugc_pay?: number | undefined;
+  is_cooperation?: number | undefined;
+  ugc_pay_preview?: number | undefined;
+  no_background?: number | undefined;
+  clean_mode?: number | undefined;
+  is_stein_gate?: number | undefined;
+  is_360?: number | undefined;
+  no_share?: number | undefined;
+  arc_pay?: number | undefined;
+  free_watch?: number | undefined;
+};
+
+export const Rights$zodSchema: z.ZodType<Rights> = z.object({
+  arc_pay: z.number().optional().describe("是否为付费视频。"),
+  autoplay: z.number().optional().describe("是否允许自动播放。"),
+  bp: z.number().optional().describe("是否可以承包/付费（老字段）。"),
+  clean_mode: z.number().optional().describe("是否为纯净模式。"),
+  download: z.number().optional().describe("是否允许缓存/下载。"),
+  elec: z.number().optional().describe("是否允许付费充电。"),
+  free_watch: z.number().optional().describe("付费视频是否允许免费试看。"),
+  hd5: z.number().optional().describe("高码率相关老字段。"),
+  is_360: z.number().optional().describe("是否为 360° 全景视频。"),
+  is_cooperation: z.number().optional().describe("是否为合作视频。"),
+  is_stein_gate: z.number().optional().describe("互动剧情相关字段。"),
+  movie: z.number().optional().describe("是否为电影。"),
+  no_background: z.number().optional().describe("背景相关控制字段。"),
+  no_reprint: z.number().optional().describe("是否禁止转载（1 表示禁止）。"),
+  no_share: z.number().optional().describe("是否禁止分享（1 表示禁止）。"),
+  pay: z.number().optional().describe("是否需要付费观看。"),
+  ugc_pay: z.number().optional().describe("是否为 UGC 付费内容。"),
+  ugc_pay_preview: z.number().optional().describe("是否允许付费内容试看。"),
+}).describe("视频权限开关（0 或 1）。");
+
 /**
  * 视频UP主信息。
  */
@@ -30,15 +87,16 @@ export type Owner = {
 };
 
 export const Owner$zodSchema: z.ZodType<Owner> = z.object({
-  face: z.string().optional(),
-  mid: z.number().optional(),
-  name: z.string().optional(),
+  face: z.string().optional().describe("UP主头像的URL。"),
+  mid: z.number().optional().describe("UP主的UID。"),
+  name: z.string().optional().describe("UP主昵称。"),
 }).describe("视频UP主信息。");
 
 /**
  * 视频的核心数据统计。
  */
 export type Stat = {
+  aid?: number | undefined;
   view?: number | undefined;
   danmaku?: number | undefined;
   reply?: number | undefined;
@@ -46,33 +104,199 @@ export type Stat = {
   coin?: number | undefined;
   share?: number | undefined;
   like?: number | undefined;
+  now_rank?: number | undefined;
+  his_rank?: number | undefined;
+  dislike?: number | undefined;
+  evaluation?: string | undefined;
+  vt?: number | undefined;
 };
 
 export const Stat$zodSchema: z.ZodType<Stat> = z.object({
-  coin: z.number().optional(),
-  danmaku: z.number().optional(),
-  favorite: z.number().optional(),
-  like: z.number().optional(),
-  reply: z.number().optional(),
-  share: z.number().optional(),
-  view: z.number().optional(),
+  aid: z.number().optional().describe("AV 号。"),
+  coin: z.number().optional().describe("投币数。"),
+  danmaku: z.number().optional().describe("弹幕数。"),
+  dislike: z.number().optional().describe("点踩量（通常为 0）。"),
+  evaluation: z.string().optional().describe("评分/评估文案，通常为空。"),
+  favorite: z.number().optional().describe("收藏数。"),
+  his_rank: z.number().optional().describe("历史排名。"),
+  like: z.number().optional().describe("获赞数。"),
+  now_rank: z.number().optional().describe("当前全站/分区排名。"),
+  reply: z.number().optional().describe("评论数。"),
+  share: z.number().optional().describe("分享数。"),
+  view: z.number().optional().describe("播放数。"),
+  vt: z.number().optional().describe("视频类型相关历史字段。"),
 }).describe("视频的核心数据统计。");
+
+/**
+ * 视频分辨率信息。
+ */
+export type Dimension = {
+  width?: number | undefined;
+  height?: number | undefined;
+  rotate?: number | undefined;
+};
+
+export const Dimension$zodSchema: z.ZodType<Dimension> = z.object({
+  height: z.number().optional().describe("视频高度。"),
+  rotate: z.number().optional().describe("旋转角度。"),
+  width: z.number().optional().describe("视频宽度。"),
+}).describe("视频分辨率信息。");
+
+/**
+ * 该分P的视频分辨率。
+ */
+export type PageDimension = {
+  width?: number | undefined;
+  height?: number | undefined;
+  rotate?: number | undefined;
+};
+
+export const PageDimension$zodSchema: z.ZodType<PageDimension> = z.object({
+  height: z.number().optional().describe("高度。"),
+  rotate: z.number().optional().describe("旋转角度。"),
+  width: z.number().optional().describe("宽度。"),
+}).describe("该分P的视频分辨率。");
 
 export type GetSocialBilibiliVideoinfoPage = {
   cid?: number | undefined;
   page?: number | undefined;
   part?: string | undefined;
+  from?: string | undefined;
   duration?: number | undefined;
+  vid?: string | undefined;
+  weblink?: string | undefined;
+  dimension?: PageDimension | undefined;
 };
 
 export const GetSocialBilibiliVideoinfoPage$zodSchema: z.ZodType<
   GetSocialBilibiliVideoinfoPage
 > = z.object({
-  cid: z.number().optional(),
-  duration: z.number().optional(),
-  page: z.number().optional(),
-  part: z.string().optional(),
+  cid: z.number().optional().describe("分P的唯一标识CID，用于获取弹幕等。"),
+  dimension: z.lazy(() => PageDimension$zodSchema).optional().describe(
+    "该分P的视频分辨率。",
+  ),
+  duration: z.number().optional().describe("该分P的持续时间，单位为秒。"),
+  from: z.string().optional().describe("视频来源。"),
+  page: z.number().optional().describe("分P的序号，从1开始。"),
+  part: z.string().optional().describe(
+    "分P的标题。对于单P视频，通常是视频主标题。",
+  ),
+  vid: z.string().optional().describe("外部视频源 ID，通常为空。"),
+  weblink: z.string().optional().describe("外链地址，通常为空。"),
 });
+
+/**
+ * 字幕作者信息。
+ */
+export type Author = {
+  mid?: number | undefined;
+  name?: string | undefined;
+  face?: string | undefined;
+};
+
+export const Author$zodSchema: z.ZodType<Author> = z.object({
+  face: z.string().optional().describe("作者头像链接。"),
+  mid: z.number().optional().describe("作者 UID。"),
+  name: z.string().optional().describe("作者昵称。"),
+}).describe("字幕作者信息。");
+
+export type GetSocialBilibiliVideoinfoList = {
+  id?: number | undefined;
+  lan?: string | undefined;
+  lan_doc?: string | undefined;
+  is_lock?: boolean | undefined;
+  author_mid?: number | undefined;
+  subtitle_url?: string | undefined;
+  author?: Author | undefined;
+};
+
+export const GetSocialBilibiliVideoinfoList$zodSchema: z.ZodType<
+  GetSocialBilibiliVideoinfoList
+> = z.object({
+  author: z.lazy(() => Author$zodSchema).optional().describe("字幕作者信息。"),
+  author_mid: z.number().optional().describe("字幕作者 UID。"),
+  id: z.number().optional().describe("字幕 ID。"),
+  is_lock: z.boolean().optional().describe("是否锁定。"),
+  lan: z.string().optional().describe("语言代码。"),
+  lan_doc: z.string().optional().describe("语言名称。"),
+  subtitle_url: z.string().optional().describe("字幕文件链接。"),
+});
+
+/**
+ * 字幕信息。
+ */
+export type Subtitle = {
+  allow_submit?: boolean | undefined;
+  list?: Array<GetSocialBilibiliVideoinfoList> | undefined;
+};
+
+export const Subtitle$zodSchema: z.ZodType<Subtitle> = z.object({
+  allow_submit: z.boolean().optional().describe("是否允许观众投稿字幕。"),
+  list: z.array(z.lazy(() => GetSocialBilibiliVideoinfoList$zodSchema))
+    .optional().describe("字幕列表。"),
+}).describe("字幕信息。");
+
+export type Staff = {
+  mid?: number | undefined;
+  title?: string | undefined;
+  name?: string | undefined;
+  face?: string | undefined;
+  follower?: number | undefined;
+};
+
+export const Staff$zodSchema: z.ZodType<Staff> = z.object({
+  face: z.string().optional().describe("成员头像链接。"),
+  follower: z.number().optional().describe("成员粉丝数。"),
+  mid: z.number().optional().describe("成员 UID。"),
+  name: z.string().optional().describe("成员昵称。"),
+  title: z.string().optional().describe("成员角色标题。"),
+});
+
+/**
+ * 合集信息。若视频不属于合集则为 null。
+ */
+export type UgcSeason = {
+  id?: number | undefined;
+  title?: string | undefined;
+  cover?: string | undefined;
+  mid?: number | undefined;
+  intro?: string | undefined;
+  ep_count?: number | undefined;
+};
+
+export const UgcSeason$zodSchema: z.ZodType<UgcSeason> = z.object({
+  cover: z.string().optional().describe("合集封面。"),
+  ep_count: z.number().optional().describe("合集内视频数量。"),
+  id: z.number().optional().describe("合集 ID。"),
+  intro: z.string().optional().describe("合集简介。"),
+  mid: z.number().optional().describe("合集作者 UID。"),
+  title: z.string().optional().describe("合集标题。"),
+}).describe("合集信息。若视频不属于合集则为 null。");
+
+export type Honor = {
+  aid?: number | undefined;
+  type?: number | undefined;
+  desc?: string | undefined;
+  weekly_recommend_num?: number | undefined;
+};
+
+export const Honor$zodSchema: z.ZodType<Honor> = z.object({
+  aid: z.number().optional().describe("关联 AV 号。"),
+  desc: z.string().optional().describe("荣誉名称。"),
+  type: z.number().optional().describe("荣誉类型。"),
+  weekly_recommend_num: z.number().optional().describe("周推荐序号。"),
+});
+
+/**
+ * 视频荣誉信息。
+ */
+export type HonorReply = { honor?: Array<Honor> | undefined };
+
+export const HonorReply$zodSchema: z.ZodType<HonorReply> = z.object({
+  honor: z.array(z.lazy(() => Honor$zodSchema)).optional().describe(
+    "荣誉列表。",
+  ),
+}).describe("视频荣誉信息。");
 
 /**
  * 成功！返回Bilibili视频的详细信息。
@@ -81,6 +305,7 @@ export type GetSocialBilibiliVideoinfoResponse = {
   bvid?: string | undefined;
   aid?: number | undefined;
   videos?: number | undefined;
+  tid?: number | undefined;
   tname?: string | undefined;
   copyright?: number | undefined;
   pic?: string | undefined;
@@ -88,28 +313,73 @@ export type GetSocialBilibiliVideoinfoResponse = {
   pubdate?: number | undefined;
   ctime?: number | undefined;
   desc?: string | undefined;
+  desc_v2?: Array<DescV2> | undefined;
+  state?: number | undefined;
   duration?: number | undefined;
+  rights?: Rights | undefined;
   owner?: Owner | undefined;
   stat?: Stat | undefined;
+  dynamic?: string | undefined;
+  cid?: number | undefined;
+  dimension?: Dimension | undefined;
+  no_cache?: boolean | undefined;
   pages?: Array<GetSocialBilibiliVideoinfoPage> | undefined;
+  subtitle?: Subtitle | undefined;
+  staff?: Array<Staff> | undefined;
+  ugc_season?: UgcSeason | null | undefined;
+  is_chargeable_season?: boolean | undefined;
+  is_story?: boolean | undefined;
+  honor_reply?: HonorReply | undefined;
 };
 
 export const GetSocialBilibiliVideoinfoResponse$zodSchema: z.ZodType<
   GetSocialBilibiliVideoinfoResponse
 > = z.object({
-  aid: z.number().optional(),
-  bvid: z.string().optional(),
-  copyright: z.number().optional(),
-  ctime: z.number().optional(),
-  desc: z.string().optional(),
-  duration: z.number().optional(),
-  owner: z.lazy(() => Owner$zodSchema).optional(),
+  aid: z.number().optional().describe("稿件的AV号。"),
+  bvid: z.string().optional().describe("稿件的BV号。"),
+  cid: z.number().optional().describe("主分P的 CID（弹幕 ID）。"),
+  copyright: z.number().optional().describe("视频类型。1代表原创，2代表转载。"),
+  ctime: z.number().optional().describe("用户投稿时间的Unix时间戳（秒）。"),
+  desc: z.string().optional().describe("视频简介。可能会包含HTML换行符。"),
+  desc_v2: z.array(z.lazy(() => DescV2$zodSchema)).optional().describe(
+    "结构化简介片段。",
+  ),
+  dimension: z.lazy(() => Dimension$zodSchema).optional().describe(
+    "视频分辨率信息。",
+  ),
+  duration: z.number().optional().describe(
+    "稿件总时长（所有分P累加），单位为秒。",
+  ),
+  dynamic: z.string().optional().describe("投稿时附带的动态文字。"),
+  honor_reply: z.lazy(() => HonorReply$zodSchema).optional().describe(
+    "视频荣誉信息。",
+  ),
+  is_chargeable_season: z.boolean().optional().describe("是否为付费合集。"),
+  is_story: z.boolean().optional().describe("是否为剧情类视频。"),
+  no_cache: z.boolean().optional().describe("不缓存标记。"),
+  owner: z.lazy(() => Owner$zodSchema).optional().describe("视频UP主信息。"),
   pages: z.array(z.lazy(() => GetSocialBilibiliVideoinfoPage$zodSchema))
-    .optional(),
-  pic: z.string().optional(),
-  pubdate: z.number().optional(),
-  stat: z.lazy(() => Stat$zodSchema).optional(),
-  title: z.string().optional(),
-  tname: z.string().optional(),
-  videos: z.number().optional(),
+    .optional().describe("视频分P列表。即使是单P视频，该数组也包含一个元素。"),
+  pic: z.string().optional().describe(
+    "稿件封面图片的URL。这是一个可以直接在网页上展示的链接。",
+  ),
+  pubdate: z.number().optional().describe("稿件发布时间的Unix时间戳（秒）。"),
+  rights: z.lazy(() => Rights$zodSchema).optional().describe(
+    "视频权限开关（0 或 1）。",
+  ),
+  staff: z.array(z.lazy(() => Staff$zodSchema)).optional().describe(
+    "联合投稿成员列表。",
+  ),
+  stat: z.lazy(() => Stat$zodSchema).optional().describe(
+    "视频的核心数据统计。",
+  ),
+  state: z.number().optional().describe("视频状态码。"),
+  subtitle: z.lazy(() => Subtitle$zodSchema).optional().describe("字幕信息。"),
+  tid: z.number().optional().describe("视频所属的子分区 ID。"),
+  title: z.string().optional().describe("稿件的标题。"),
+  tname: z.string().optional().describe("视频所属的子分区名称。"),
+  ugc_season: z.lazy(() => UgcSeason$zodSchema).nullable().optional().describe(
+    "合集信息。若视频不属于合集则为 null。",
+  ),
+  videos: z.number().optional().describe("稿件分P总数。如果是单P视频，则为1。"),
 }).describe("成功！返回Bilibili视频的详细信息。");

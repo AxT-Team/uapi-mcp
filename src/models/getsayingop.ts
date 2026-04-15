@@ -34,7 +34,7 @@ export type GetSayingResponseBody = { text?: string | undefined };
 
 export const GetSayingResponseBody$zodSchema: z.ZodType<GetSayingResponseBody> =
   z.object({
-    text: z.string().optional(),
+    text: z.string().optional().describe("随机获取到的名言或诗词内容。"),
   }).describe("请求成功！返回一条随机的语录。");
 
 export type GetSayingResponse =

@@ -70,7 +70,7 @@ export type GetNetworkUrlstatus2 = {
 
 export const GetNetworkUrlstatus2$zodSchema: z.ZodType<GetNetworkUrlstatus2> = z
   .object({
-    status: z.int().optional(),
+    status: z.int().optional().describe("目标不可达或请求失败时固定为 0。"),
     url: z.string().optional(),
   }).describe(
     "当目标 URL 不可达或请求失败（如 DNS 失败、超时、连接失败）时，`status` 为 `0`。",
@@ -86,7 +86,7 @@ export type GetNetworkUrlstatus1 = {
 
 export const GetNetworkUrlstatus1$zodSchema: z.ZodType<GetNetworkUrlstatus1> = z
   .object({
-    status: z.int().optional(),
+    status: z.int().optional().describe("目标URL实际返回的HTTP状态码。"),
     url: z.string().optional(),
   }).describe(
     "当目标 URL 可访问时，`status` 为目标返回的 HTTP 状态码（如 `200`）。",

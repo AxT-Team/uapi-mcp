@@ -38,7 +38,9 @@ export type GetNetworkDnsRequest = {
 export const GetNetworkDnsRequest$zodSchema: z.ZodType<GetNetworkDnsRequest> = z
   .object({
     domain: z.string().describe("你需要查询的域名，例如 'cn.bing.com'。"),
-    type: GetNetworkDnsType$zodSchema.default("A"),
+    type: GetNetworkDnsType$zodSchema.default("A").describe(
+      "你想要查询的DNS记录类型。",
+    ),
   });
 
 export type GetNetworkDnsNotFoundDetails = {};

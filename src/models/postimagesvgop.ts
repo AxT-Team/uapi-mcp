@@ -57,7 +57,9 @@ export type PostImageSvgRequestBody = {
 export const PostImageSvgRequestBody$zodSchema: z.ZodType<
   PostImageSvgRequestBody
 > = z.object({
-  file: z.lazy(() => PostImageSvgFile$zodSchema).optional(),
+  file: z.lazy(() => PostImageSvgFile$zodSchema).optional().describe(
+    "支持SVG文件",
+  ),
 }).describe("要转换的 SVG 文件。");
 
 export type PostImageSvgRequest = {
@@ -70,8 +72,12 @@ export type PostImageSvgRequest = {
 
 export const PostImageSvgRequest$zodSchema: z.ZodType<PostImageSvgRequest> = z
   .object({
-    body: z.lazy(() => PostImageSvgRequestBody$zodSchema).optional(),
-    format: PostImageSvgFormat$zodSchema.default("png"),
+    body: z.lazy(() => PostImageSvgRequestBody$zodSchema).optional().describe(
+      "要转换的 SVG 文件。",
+    ),
+    format: PostImageSvgFormat$zodSchema.default("png").describe(
+      "输出图像的目标格式。支持的值：`png`, `jpeg`, `jpg`, `gif`, `tiff`, `bmp`。",
+    ),
     height: z.int().describe(
       "输出图像的高度（像素）。如果省略，将根据 `width` 保持宽高比，或者使用 SVG 的原始高度。",
     ).optional(),

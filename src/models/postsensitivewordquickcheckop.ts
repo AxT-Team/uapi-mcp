@@ -12,7 +12,7 @@ export type PostSensitiveWordQuickCheckRequest = { text: string };
 export const PostSensitiveWordQuickCheckRequest$zodSchema: z.ZodType<
   PostSensitiveWordQuickCheckRequest
 > = z.object({
-  text: z.string(),
+  text: z.string().describe("需要检测的文本内容。支持简体和繁体中文。"),
 }).describe("包含待检测文本 'text' 的JSON对象");
 
 export type PostSensitiveWordQuickCheckDetails = {};

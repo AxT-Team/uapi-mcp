@@ -4,34 +4,220 @@
 
 import * as z from "zod";
 import * as b64$ from "../lib/base64.js";
+import { ClosedEnum } from "../types/enums.js";
 
 /**
- * 上游服务错误。我们无法从必应官方API获取到图片，并且备用图片方案也失败了。请稍后重试。
+ * 返回图片的目标分辨率。可以传 `4k` 或 `1080`，不传时默认是 `4k`。
  */
-export type GetImageBingDailyResponseBody = {
-  code?: string | undefined;
-  message?: string | undefined;
-};
+export const GetImageBingDailyResolution = {
+  Fourk: "4k",
+  OneThousandAndEighty: "1080",
+} as const;
+/**
+ * 返回图片的目标分辨率。可以传 `4k` 或 `1080`，不传时默认是 `4k`。
+ */
+export type GetImageBingDailyResolution = ClosedEnum<
+  typeof GetImageBingDailyResolution
+>;
 
-export const GetImageBingDailyResponseBody$zodSchema: z.ZodType<
-  GetImageBingDailyResponseBody
-> = z.object({
-  code: z.string().optional(),
-  message: z.string().optional(),
-}).describe(
-  "上游服务错误。我们无法从必应官方API获取到图片，并且备用图片方案也失败了。请稍后重试。",
+export const GetImageBingDailyResolution$zodSchema = z.enum([
+  "4k",
+  "1080",
+]).describe("返回图片的目标分辨率。可以传 `4k` 或 `1080`，不传时默认是 `4k`。");
+
+/**
+ * 响应格式。可以传 `image`、`json` 或 `redirect`。不传时默认是 `image`。
+ */
+export const GetImageBingDailyFormat = {
+  Image: "image",
+  Json: "json",
+  Redirect: "redirect",
+} as const;
+/**
+ * 响应格式。可以传 `image`、`json` 或 `redirect`。不传时默认是 `image`。
+ */
+export type GetImageBingDailyFormat = ClosedEnum<
+  typeof GetImageBingDailyFormat
+>;
+
+export const GetImageBingDailyFormat$zodSchema = z.enum([
+  "image",
+  "json",
+  "redirect",
+]).describe(
+  "响应格式。可以传 `image`、`json` 或 `redirect`。不传时默认是 `image`。",
 );
 
-export type GetImageBingDailyResponse =
+export type GetImageBingDailyRequest = {
+  date?: string | undefined;
+  resolution?: GetImageBingDailyResolution | undefined;
+  format?: GetImageBingDailyFormat | undefined;
+};
+
+export const GetImageBingDailyRequest$zodSchema: z.ZodType<
+  GetImageBingDailyRequest
+> = z.object({
+  date: z.string().describe(
+    "壁纸日期，格式是 `YYYY-MM-DD`。不传时返回当天壁纸。",
+  ).optional(),
+  format: GetImageBingDailyFormat$zodSchema.default("image").describe(
+    "响应格式。可以传 `image`、`json` 或 `redirect`。不传时默认是 `image`。",
+  ),
+  resolution: GetImageBingDailyResolution$zodSchema.default("4k").describe(
+    "返回图片的目标分辨率。可以传 `4k` 或 `1080`，不传时默认是 `4k`。",
+  ),
+});
+
+/**
+ * 服务器处理失败，请稍后重试。
+ */
+export type GetImageBingDailyInternalServerErrorResponseBody = {
+  error?: string | undefined;
+};
+
+export const GetImageBingDailyInternalServerErrorResponseBody$zodSchema:
+  z.ZodType<GetImageBingDailyInternalServerErrorResponseBody> = z.object({
+    error: z.string().optional(),
+  }).describe("服务器处理失败，请稍后重试。");
+
+/**
+ * 指定日期没有找到对应的壁纸。
+ */
+export type GetImageBingDailyNotFoundResponseBody = {
+  error?: string | undefined;
+};
+
+export const GetImageBingDailyNotFoundResponseBody$zodSchema: z.ZodType<
+  GetImageBingDailyNotFoundResponseBody
+> = z.object({
+  error: z.string().optional(),
+}).describe("指定日期没有找到对应的壁纸。");
+
+/**
+ * 请求参数不正确。
+ */
+export type GetImageBingDailyBadRequestResponseBody = {
+  error?: string | undefined;
+};
+
+export const GetImageBingDailyBadRequestResponseBody$zodSchema: z.ZodType<
+  GetImageBingDailyBadRequestResponseBody
+> = z.object({
+  error: z.string().optional(),
+}).describe("请求参数不正确。");
+
+export type GetImageBingDailyOption = {
+  bullet?: string | undefined;
+  text?: string | undefined;
+  url?: string | undefined;
+};
+
+export const GetImageBingDailyOption$zodSchema: z.ZodType<
+  GetImageBingDailyOption
+> = z.object({
+  bullet: z.string().optional(),
+  text: z.string().optional(),
+  url: z.string().optional(),
+});
+
+export type GetImageBingDailyTrivia = {
+  question?: string | undefined;
+  options?: Array<GetImageBingDailyOption> | undefined;
+};
+
+export const GetImageBingDailyTrivia$zodSchema: z.ZodType<
+  GetImageBingDailyTrivia
+> = z.object({
+  options: z.array(z.lazy(() => GetImageBingDailyOption$zodSchema)).optional(),
+  question: z.string().optional(),
+});
+
+/**
+ * 请求成功。`format=image` 返回图片二进制，`format=json` 返回壁纸元数据。
+ */
+export type FormatEqualJson = {
+  date?: string | undefined;
+  market?: string | undefined;
+  title?: string | undefined;
+  subtitle?: string | undefined;
+  headline?: string | undefined;
+  description?: string | undefined;
+  copyright?: string | undefined;
+  copyright_link?: string | undefined;
+  quiz_id?: string | undefined;
+  trivia?: GetImageBingDailyTrivia | undefined;
+  resolution?: string | undefined;
+  image_url?: string | undefined;
+  image_url_4k?: string | undefined;
+  image_url_1080?: string | undefined;
+  fetched_at?: string | undefined;
+  updated_at?: string | undefined;
+};
+
+export const FormatEqualJson$zodSchema: z.ZodType<FormatEqualJson> = z.object({
+  copyright: z.string().optional(),
+  copyright_link: z.string().optional(),
+  date: z.string().optional(),
+  description: z.string().optional(),
+  fetched_at: z.string().optional(),
+  headline: z.string().optional(),
+  image_url: z.string().optional(),
+  image_url_1080: z.string().optional(),
+  image_url_4k: z.string().optional(),
+  market: z.string().optional(),
+  quiz_id: z.string().optional(),
+  resolution: z.string().optional(),
+  subtitle: z.string().optional(),
+  title: z.string().optional(),
+  trivia: z.lazy(() => GetImageBingDailyTrivia$zodSchema).optional(),
+  updated_at: z.string().optional(),
+}).describe(
+  "请求成功。`format=image` 返回图片二进制，`format=json` 返回壁纸元数据。",
+);
+
+export type GetImageBingDailyResponseResult =
   | Uint8Array
   | string
-  | GetImageBingDailyResponseBody;
+  | FormatEqualJson
+  | GetImageBingDailyBadRequestResponseBody
+  | GetImageBingDailyNotFoundResponseBody
+  | GetImageBingDailyInternalServerErrorResponseBody;
 
-export const GetImageBingDailyResponse$zodSchema: z.ZodType<
-  GetImageBingDailyResponse
+export const GetImageBingDailyResponseResult$zodSchema: z.ZodType<
+  GetImageBingDailyResponseResult
 > = z.union([
   z.string().describe("Base64-encoded binary content").transform(
     b64$.bytesFromBase64,
   ),
-  z.lazy(() => GetImageBingDailyResponseBody$zodSchema),
+  z.lazy(() => FormatEqualJson$zodSchema),
+  z.lazy(() => GetImageBingDailyBadRequestResponseBody$zodSchema),
+  z.lazy(() => GetImageBingDailyNotFoundResponseBody$zodSchema),
+  z.lazy(() => GetImageBingDailyInternalServerErrorResponseBody$zodSchema),
 ]);
+
+export type GetImageBingDailyResponse = {
+  Headers: { [k: string]: Array<string> };
+  Result?:
+    | Uint8Array
+    | string
+    | FormatEqualJson
+    | GetImageBingDailyBadRequestResponseBody
+    | GetImageBingDailyNotFoundResponseBody
+    | GetImageBingDailyInternalServerErrorResponseBody
+    | undefined;
+};
+
+export const GetImageBingDailyResponse$zodSchema: z.ZodType<
+  GetImageBingDailyResponse
+> = z.object({
+  Headers: z.record(z.string(), z.array(z.string())).default({}),
+  Result: z.union([
+    z.string().describe("Base64-encoded binary content").transform(
+      b64$.bytesFromBase64,
+    ),
+    z.lazy(() => FormatEqualJson$zodSchema),
+    z.lazy(() => GetImageBingDailyBadRequestResponseBody$zodSchema),
+    z.lazy(() => GetImageBingDailyNotFoundResponseBody$zodSchema),
+    z.lazy(() => GetImageBingDailyInternalServerErrorResponseBody$zodSchema),
+  ]).optional(),
+});

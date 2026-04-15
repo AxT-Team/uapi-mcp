@@ -75,9 +75,6 @@ export const To$zodSchema = z.enum([
   "sha512",
 ]).describe("目标格式类型");
 
-/**
- * 包含转换配置的JSON对象
- */
 export type PostTextConvertRequest = {
   text: string;
   from: From;
@@ -88,11 +85,13 @@ export type PostTextConvertRequest = {
 export const PostTextConvertRequest$zodSchema: z.ZodType<
   PostTextConvertRequest
 > = z.object({
-  from: From$zodSchema,
-  options: z.record(z.string(), z.any()).optional(),
-  text: z.string(),
-  to: To$zodSchema,
-}).describe("包含转换配置的JSON对象");
+  from: From$zodSchema.describe("源格式类型"),
+  options: z.record(z.string(), z.any()).optional().describe(
+    "可选参数（预留，当前未使用）",
+  ),
+  text: z.string().describe("待转换的文本内容"),
+  to: To$zodSchema.describe("目标格式类型"),
+});
 
 /**
  * 转换失败或参数错误
@@ -125,11 +124,11 @@ export type PostTextConvertResponseBody = {
 export const PostTextConvertResponseBody$zodSchema: z.ZodType<
   PostTextConvertResponseBody
 > = z.object({
-  from: z.string().optional(),
-  info: z.string().optional(),
-  length: z.int().optional(),
-  result: z.string().optional(),
-  to: z.string().optional(),
+  from: z.string().optional().describe("源格式"),
+  info: z.string().optional().describe("额外信息（如哈希不可逆提示）"),
+  length: z.int().optional().describe("结果长度"),
+  result: z.string().optional().describe("转换结果"),
+  to: z.string().optional().describe("目标格式"),
 }).describe("转换成功");
 
 export type PostTextConvertResponse =

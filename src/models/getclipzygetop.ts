@@ -45,7 +45,9 @@ export type GetClipzyGetResponseBody = { compressedData?: string | undefined };
 export const GetClipzyGetResponseBody$zodSchema: z.ZodType<
   GetClipzyGetResponseBody
 > = z.object({
-  compressedData: z.string().optional(),
+  compressedData: z.string().optional().describe(
+    "加密并使用 LZString 压缩后的 Base64 数据。",
+  ),
 }).describe("获取成功！返回加密并压缩后的数据。");
 
 export type GetClipzyGetResponse =

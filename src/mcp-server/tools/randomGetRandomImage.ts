@@ -28,13 +28,9 @@ export const tool$randomGetRandomImage: ToolDefinition<typeof args> = {
 
 ### 支持的主类别与子类别
 - **acg**（二次元动漫）
-
-
     - pc
     - mb
 - **外部图床精选/混合动漫**
-
-
   - **landscape**: 风景图。
   - **anime**: 混合了UapiPro服务器的acg和外部图床的general_anime分类下的图片。
   - **pc_wallpaper**: 电脑壁纸。
@@ -42,8 +38,6 @@ export const tool$randomGetRandomImage: ToolDefinition<typeof args> = {
   - **general_anime**: 动漫图。
   - **ai_drawing**: AI绘画。
 - **其他分类**
-
-
   - **bq**（表情包/趣图）
     - eciyuan
     - ikun

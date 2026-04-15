@@ -49,9 +49,15 @@ export type PostImageMotouRequest = {
 
 export const PostImageMotouRequest$zodSchema: z.ZodType<PostImageMotouRequest> =
   z.object({
-    bg_color: PostImageMotouBgColor$zodSchema.optional(),
-    file: z.lazy(() => PostImageMotouFile$zodSchema).optional(),
-    image_url: z.string().optional(),
+    bg_color: PostImageMotouBgColor$zodSchema.optional().describe(
+      "GIF的背景颜色。可选值为 'white', 'black', 'transparent'。",
+    ),
+    file: z.lazy(() => PostImageMotouFile$zodSchema).optional().describe(
+      "上传的图片文件。支持JPG、PNG、GIF等常见格式。",
+    ),
+    image_url: z.string().optional().describe(
+      "图片的URL地址。如果提供此项，将优先使用该URL的图片。",
+    ),
   }).describe(
     "包含图片来源和背景色的表单数据。必须提供 'image_url' 或 'file' 两者之一。",
   );

@@ -4,17 +4,18 @@
 
 import * as z from "zod";
 
-/**
- * 包含待校验文本 'text' 和哈希值 'hash' 的JSON对象
- */
 export type PostTextMd5VerifyRequest = { hash: string; text: string };
 
 export const PostTextMd5VerifyRequest$zodSchema: z.ZodType<
   PostTextMd5VerifyRequest
 > = z.object({
-  hash: z.string(),
-  text: z.string(),
-}).describe("包含待校验文本 'text' 和哈希值 'hash' 的JSON对象");
+  hash: z.string().describe(
+    "用于比对的 MD5 哈希值（32 位小写十六进制字符串）。",
+  ),
+  text: z.string().describe(
+    "待校验的原始文本，会先计算其 MD5 再与 hash 进行比对。",
+  ),
+});
 
 export type PostTextMd5VerifyDetails = {};
 

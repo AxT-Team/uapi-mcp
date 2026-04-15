@@ -1,18 +1,9 @@
 /// <reference types="bun-types" />
 
 import { build } from "bun";
-import {
-  chmod,
-  copyFile,
-  mkdir,
-  mkdtemp,
-  readFile,
-  rm,
-  writeFile,
-} from "node:fs/promises";
+import { chmod, cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { packExtension } from "@anthropic-ai/mcpb";
 import { join } from "node:path";
-import { tmpdir } from "node:os";
 import { createMCPServer } from "./server.ts";
 import { createConsoleLogger } from "./console-logger.ts";
 
@@ -51,16 +42,13 @@ export const toolNames: Array<{ name: string; description: string }>= ${JSON.str
 `;
   await writeFile("./src/tool-names.ts", toolNamesContent);
 
-  await rm(destinationDir, { recursive: true, force: true });
-  await mkdir(destinationDir, { recursive: true });
-
   await build({
     entrypoints: [entrypoint],
     outdir: destinationDir,
-    sourcemap: "none",
+    sourcemap: shouldPack ? "none" : "linked",
     target: "node",
     format: "esm",
-    minify: false,
+    minify: shouldPack,
     throw: true,
     banner: "#!/usr/bin/env node",
   });
@@ -71,22 +59,32 @@ export const toolNames: Array<{ name: string; description: string }>= ${JSON.str
 
   // Build the MCP bundle file
   if (shouldPack) {
-    const stagingDir = await mkdtemp(join(tmpdir(), "uapi-mcpb-"));
+    // Stage only the files needed for distribution to avoid bloated bundles.
+    // Without this, packExtension would include node_modules and source files.
+    const stageDir = ".mcpb-stage";
+    await mkdir(join(stageDir, "bin"), { recursive: true });
+    await cp(
+      join(destinationDir, "mcp-server.js"),
+      join(stageDir, "bin", "mcp-server.js"),
+    );
+    await cp("manifest.json", join(stageDir, "manifest.json"));
 
-    try {
-      const stagingBinDir = join(stagingDir, "bin");
-      await mkdir(stagingBinDir, { recursive: true });
-      await copyFile("manifest.json", join(stagingDir, "manifest.json"));
-      await copyFile(outputFile, join(stagingBinDir, "mcp-server.js"));
-
-      await packExtension({
-        extensionPath: stagingDir,
-        outputPath: "./mcp-server.mcpb",
-        silent: false,
-      });
-    } finally {
-      await rm(stagingDir, { recursive: true, force: true });
+    // Copy icon and screenshot assets if they exist
+    const assetExts = [".png", ".jpg", ".jpeg", ".gif", ".webp"];
+    for (const file of await readdir(".")) {
+      if (assetExts.some((ext) => file.toLowerCase().endsWith(ext))) {
+        await cp(file, join(stageDir, file));
+      }
     }
+
+    await packExtension({
+      extensionPath: stageDir,
+      outputPath: "./mcp-server.mcpb",
+      silent: false,
+    });
+
+    // Clean up staging directory
+    await rm(stageDir, { recursive: true, force: true });
   }
 }
 

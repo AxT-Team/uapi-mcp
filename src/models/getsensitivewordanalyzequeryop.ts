@@ -10,7 +10,7 @@ export type GetSensitiveWordAnalyzeQueryRequest = { keyword: string };
 export const GetSensitiveWordAnalyzeQueryRequest$zodSchema: z.ZodType<
   GetSensitiveWordAnalyzeQueryRequest
 > = z.object({
-  keyword: z.string().describe("要分析的关键词，最长50字符。"),
+  keyword: z.string().describe("要分析的关键词，最长1,000字符。"),
 });
 
 /**

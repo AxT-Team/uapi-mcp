@@ -6,15 +6,19 @@ import * as z from "zod";
 import { ClosedEnum } from "../types/enums.js";
 
 /**
- * 包含待检测文本 'keywords' 的JSON对象
+ * 包含待检测关键词列表 `keywords` 的 JSON 对象。单条关键词最多 1,000 字符，总字符数最多 20,000。
  */
 export type PostSensitiveWordAnalyzeRequest = { keywords: Array<string> };
 
 export const PostSensitiveWordAnalyzeRequest$zodSchema: z.ZodType<
   PostSensitiveWordAnalyzeRequest
 > = z.object({
-  keywords: z.array(z.string()),
-}).describe("包含待检测文本 'keywords' 的JSON对象");
+  keywords: z.array(z.string()).describe(
+    "要分析的关键词列表，单次最多100个。单条关键词最多1,000字符，总字符数最多20,000。",
+  ),
+}).describe(
+  "包含待检测关键词列表 `keywords` 的 JSON 对象。单条关键词最多 1,000 字符，总字符数最多 20,000。",
+);
 
 /**
  * 请求频率超限

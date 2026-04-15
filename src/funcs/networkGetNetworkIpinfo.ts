@@ -29,12 +29,12 @@ import { Result } from "../types/fp.js";
  * 查询 IP
  *
  * @remarks
- * 想知道一个IP地址或域名来自地球的哪个角落？这个接口可以帮你定位它。你可以使用默认数据源，也可以指定 `source=commercial` 参数来查询更详细的商业级IP归属信息。
+ * 想知道一个IP地址或域名来自哪里？这个接口可以帮你定位它。默认返回标准结果；如果传 `source=commercial`，可以返回更完整的位置信息。
  *
  * ## 功能概述
  * 提供一个公网IPv4、IPv6地址或域名，我们会查询并返回它的地理位置（国家、省份、城市）、经纬度、以及所属的运营商（ISP）和自治系统（ASN）信息。这在网络安全分析、访问来源统计等领域非常有用。
  *
- * 当使用 `source=commercial` 参数时，接口将调用高性能商业API，提供更精确的市、区、运营商、时区、海拔等信息。请注意，商业查询的响应时间可能会稍长。
+ * 当传 `source=commercial` 时，响应中会补充更完整的市、区、运营商、时区、海拔等信息，响应时间可能会稍长。
  */
 export function networkGetNetworkIpinfo(
   client$: UapiMcpCore,

@@ -38,21 +38,6 @@ export enum GetImageQrcodeAcceptEnum {
  *
  * ## 功能概述
  * 你提供一段文本内容，我们为你生成对应的二维码图片。你可以自定义尺寸、前景色、背景色，还支持透明背景，并选择不同的返回格式以适应不同场景。
- *
- * ## 使用须知
- *
- * > [!IMPORTANT]
- * > **关键参数 `format`**
- * > 此参数决定了成功响应的内容类型和结构，请务必根据你的需求选择并正确处理响应：
- * > - **`image`** (默认): 直接返回 `image/png` 格式的图片二进制数据，适合在 `<img>` 标签中直接使用。
- * > - **`json`**: 返回一个包含 Base64 Data URI 的 JSON 对象，适合需要在前端直接嵌入CSS或HTML的场景。
- * > - **`json_url`**: 返回一个包含图片临时URL的JSON对象，适合需要图片链接的场景。
- *
- * > [!TIP]
- * > **颜色参数说明**
- * > - 颜色参数使用十六进制格式（如 `#FF0000`）
- * > - URL 中需要对 `#` 进行编码，即 `%23`（例如：`fgcolor=%23FF0000`）
- * > - 当 `transparent=true` 时，`bgcolor` 参数会被忽略
  */
 export function imageGetImageQrcode(
   client$: UapiMcpCore,

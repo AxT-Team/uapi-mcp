@@ -109,17 +109,17 @@ export type Video = {
 };
 
 export const Video$zodSchema: z.ZodType<Video> = z.object({
-  aid: z.int().optional(),
-  bvid: z.string().optional(),
-  cover: z.string().optional(),
-  create_time: z.int().optional(),
-  duration: z.int().optional(),
-  is_interactive: z.boolean().optional(),
-  is_ugc_pay: z.int().optional(),
-  play_count: z.int().optional(),
-  publish_time: z.int().optional(),
-  state: z.int().optional(),
-  title: z.string().optional(),
+  aid: z.int().optional().describe("视频AID"),
+  bvid: z.string().optional().describe("BV号"),
+  cover: z.string().optional().describe("封面URL"),
+  create_time: z.int().optional().describe("创建时间戳"),
+  duration: z.int().optional().describe("时长(秒)"),
+  is_interactive: z.boolean().optional().describe("是否为互动视频"),
+  is_ugc_pay: z.int().optional().describe("是否付费视频。0=免费，1=付费"),
+  play_count: z.int().optional().describe("播放量"),
+  publish_time: z.int().optional().describe("发布时间戳"),
+  state: z.int().optional().describe("视频状态"),
+  title: z.string().optional().describe("标题"),
 });
 
 /**
@@ -135,10 +135,12 @@ export type GetSocialBilibiliArchivesResponseBody = {
 export const GetSocialBilibiliArchivesResponseBody$zodSchema: z.ZodType<
   GetSocialBilibiliArchivesResponseBody
 > = z.object({
-  page: z.int().optional(),
-  size: z.int().optional(),
-  total: z.int().optional(),
-  videos: z.array(z.lazy(() => Video$zodSchema)).optional(),
+  page: z.int().optional().describe("当前页码"),
+  size: z.int().optional().describe("每页数量"),
+  total: z.int().optional().describe("总稿件数"),
+  videos: z.array(z.lazy(() => Video$zodSchema)).optional().describe(
+    "视频列表",
+  ),
 }).describe("成功！返回用户的投稿视频列表。");
 
 export type GetSocialBilibiliArchivesResponse =

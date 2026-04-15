@@ -45,15 +45,21 @@ export type GetStatusRatelimitResponseBody = {
 export const GetStatusRatelimitResponseBody$zodSchema: z.ZodType<
   GetStatusRatelimitResponseBody
 > = z.object({
-  accepts: z.int().optional(),
-  in_flight: z.int().optional(),
-  last_update: z.string().optional(),
-  limit: z.int().optional(),
-  load: z.number().optional(),
-  min_rtt: z.number().optional(),
-  rejects: z.int().optional(),
-  rtt: z.number().optional(),
-  throttled: z.int().optional(),
+  accepts: z.int().optional().describe("Total number of accepted requests"),
+  in_flight: z.int().optional().describe(
+    "Number of current in-flight requests",
+  ),
+  last_update: z.string().optional().describe("Last update time of the status"),
+  limit: z.int().optional().describe("Current concurrency limit"),
+  load: z.number().optional().describe(
+    "Calculated system load (in_flight / limit)",
+  ),
+  min_rtt: z.number().optional().describe(
+    "Minimum observed RTT in milliseconds",
+  ),
+  rejects: z.int().optional().describe("Total number of rejected requests"),
+  rtt: z.number().optional().describe("Smoothed RTT in milliseconds"),
+  throttled: z.int().optional().describe("Total number of throttled requests"),
 }).describe("查询成功，返回限流器的详细状态数据。");
 
 export type GetStatusRatelimitResponse =

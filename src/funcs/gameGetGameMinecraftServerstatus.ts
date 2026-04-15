@@ -32,7 +32,9 @@ import { Result } from "../types/fp.js";
  * 想在加入服务器前看看有多少人在线？或者检查一下服务器开没开？用这个接口就对了！
  *
  * ## 功能概述
- * 你可以通过提供服务器地址（域名或IP），来获取一个 Minecraft Java 版服务器的实时状态。返回信息非常丰富，包括服务器是否在线、当前玩家数、最大玩家数、服务器版本、MOTD（每日消息）以及服务器图标等。
+ * 你可以通过提供服务器地址（域名或IP），来获取一个 Minecraft Java 版服务器的实时状态。返回信息包括服务器是否在线、当前玩家数、最大玩家数、服务器版本、MOTD（每日消息）以及服务器图标等。
+ *
+ * 如果服务器返回当前在线玩家列表，响应里还会带上 `online_players` 字段。这个字段可能省略，部分服务器返回的列表也可能不完整。
  */
 export function gameGetGameMinecraftServerstatus(
   client$: UapiMcpCore,

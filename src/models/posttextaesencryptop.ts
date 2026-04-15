@@ -4,17 +4,16 @@
 
 import * as z from "zod";
 
-/**
- * 包含待加密文本 'text' 和密钥 'key' 的JSON对象
- */
 export type PostTextAesEncryptRequest = { key: string; text: string };
 
 export const PostTextAesEncryptRequest$zodSchema: z.ZodType<
   PostTextAesEncryptRequest
 > = z.object({
-  key: z.string(),
-  text: z.string(),
-}).describe("包含待加密文本 'text' 和密钥 'key' 的JSON对象");
+  key: z.string().describe(
+    "密钥长度必须为 16、24 或 32 字节，分别对应 AES-128、AES-192、AES-256。",
+  ),
+  text: z.string().describe("待加密的明文文本。"),
+});
 
 export type PostTextAesEncryptInternalServerErrorDetails = {};
 

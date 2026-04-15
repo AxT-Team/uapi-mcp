@@ -34,7 +34,7 @@ export enum GetAvatarGravatarAcceptEnum {
  * 获取Gravatar头像
  *
  * @remarks
- * 提供一个超高速、高可用的Gravatar头像代理服务。内置了强大的ETag条件缓存，确保用户在更新Gravatar头像后能几乎立刻看到变化，同时最大化地利用缓存。
+ * 提供稳定、易用的头像获取能力，适合在网页或应用中直接展示头像。
  */
 export function imageGetAvatarGravatar(
   client$: UapiMcpCore,

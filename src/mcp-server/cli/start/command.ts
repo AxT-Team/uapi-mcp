@@ -44,6 +44,13 @@ export const startCommand = buildCommand({
         values: ["dynamic"],
         optional: true,
       },
+      "tool-annotations": {
+        kind: "parsed",
+        brief:
+          "Filter tools by annotations (comma-separated: readOnly, destructive, idempotent, openWorld). Listed = required true, unlisted = required false.",
+        optional: true,
+        parse: (value) => value.split(",").map(s => s.trim()),
+      },
       scope: {
         kind: "enum",
         brief: "Mount tools/resources that match given scope (repeatable flag)",
@@ -51,19 +58,19 @@ export const startCommand = buildCommand({
         variadic: true,
         optional: true,
       },
-      "uapi-admin-bearer-auth": {
+      uapikey: {
         kind: "parsed",
         brief:
-          "Optional admin token used only when calling admin-scoped tools",
+          "Optional UAPI key applied to all upstream requests",
         optional: true,
         parse: (value) => {
           return z.string().parse(value);
         },
       },
-      uapikey: {
+      "uapi-admin-bearer-auth": {
         kind: "parsed",
         brief:
-          "Optional UAPI key applied to all upstream requests",
+          "Optional admin token used only when calling admin-scoped tools",
         optional: true,
         parse: (value) => {
           return z.string().parse(value);

@@ -57,23 +57,21 @@ export const GetNetworkPingmyipBadRequestResponseBody$zodSchema: z.ZodType<
  * Ping 操作成功！返回到你客户端IP的延迟统计数据。
  */
 export type GetNetworkPingmyipResponseBody = {
-  avg?: number | undefined;
-  host?: string | undefined;
-  ip?: string | undefined;
-  location?: string | undefined;
-  max?: number | undefined;
-  min?: number | undefined;
+  client_ip?: string | undefined;
+  ping_successful?: boolean | undefined;
+  message?: string | undefined;
 };
 
 export const GetNetworkPingmyipResponseBody$zodSchema: z.ZodType<
   GetNetworkPingmyipResponseBody
 > = z.object({
-  avg: z.number().optional(),
-  host: z.string().optional(),
-  ip: z.string().optional(),
-  location: z.string().optional(),
-  max: z.number().optional(),
-  min: z.number().optional(),
+  client_ip: z.string().optional().describe("当前客户端的公网 IP 地址。"),
+  message: z.string().optional().describe(
+    "操作结果说明。成功时通常会附带平均延迟信息。",
+  ),
+  ping_successful: z.boolean().optional().describe(
+    "是否成功完成对当前客户端 IP 的 Ping。",
+  ),
 }).describe("Ping 操作成功！返回到你客户端IP的延迟统计数据。");
 
 export type GetNetworkPingmyipResponse =

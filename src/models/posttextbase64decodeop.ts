@@ -4,16 +4,13 @@
 
 import * as z from "zod";
 
-/**
- * 包含待解码文本 'text' 的JSON对象
- */
 export type PostTextBase64DecodeRequest = { text: string };
 
 export const PostTextBase64DecodeRequest$zodSchema: z.ZodType<
   PostTextBase64DecodeRequest
 > = z.object({
   text: z.string(),
-}).describe("包含待解码文本 'text' 的JSON对象");
+});
 
 export type PostTextBase64DecodeDetails = {};
 

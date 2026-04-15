@@ -7,7 +7,9 @@ import { PostConvertJsonRequest$zodSchema } from "../../models/postconvertjsonop
 import { formatResult, ToolDefinition } from "../tools.js";
 
 const args = {
-  request: PostConvertJsonRequest$zodSchema,
+  request: PostConvertJsonRequest$zodSchema.describe(
+    `这是一个JSON对象，里面必须包含一个名为 \`content\` 的字段。这个字段的值，就是你希望格式化的、原始的JSON字符串。`,
+  ),
 };
 
 export const tool$convertPostConvertJson: ToolDefinition<typeof args> = {

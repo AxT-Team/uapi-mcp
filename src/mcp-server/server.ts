@@ -12,7 +12,11 @@ import {
   createRegisterResourceTemplate,
 } from "./resources.js";
 import { MCPScope } from "./scopes.js";
-import { createRegisterTool, registerDynamicTools } from "./tools.js";
+import {
+  createRegisterTool,
+  MCPToolAnnotationFilter,
+  registerDynamicTools,
+} from "./tools.js";
 import { tool$clipzyGetClipzyGet } from "./tools/clipzyGetClipzyGet.js";
 import { tool$clipzyGetClipzyRaw } from "./tools/clipzyGetClipzyRaw.js";
 import { tool$clipzyPostClipzyStore } from "./tools/clipzyPostClipzyStore.js";
@@ -28,13 +32,16 @@ import { tool$getSearchEngines } from "./tools/getSearchEngines.js";
 import { tool$getSensitiveWordAnalyzeQuery } from "./tools/getSensitiveWordAnalyzeQuery.js";
 import { tool$imageGetAvatarGravatar } from "./tools/imageGetAvatarGravatar.js";
 import { tool$imageGetImageBingDaily } from "./tools/imageGetImageBingDaily.js";
+import { tool$imageGetImageBingDailyHistory } from "./tools/imageGetImageBingDailyHistory.js";
 import { tool$imageGetImageMotou } from "./tools/imageGetImageMotou.js";
 import { tool$imageGetImageQrcode } from "./tools/imageGetImageQrcode.js";
 import { tool$imageGetImageTobase64 } from "./tools/imageGetImageTobase64.js";
 import { tool$imagePostImageCompress } from "./tools/imagePostImageCompress.js";
+import { tool$imagePostImageDecode } from "./tools/imagePostImageDecode.js";
 import { tool$imagePostImageFrombase64 } from "./tools/imagePostImageFrombase64.js";
 import { tool$imagePostImageMotou } from "./tools/imagePostImageMotou.js";
 import { tool$imagePostImageNsfw } from "./tools/imagePostImageNsfw.js";
+import { tool$imagePostImageOcr } from "./tools/imagePostImageOcr.js";
 import { tool$imagePostImageSpeechless } from "./tools/imagePostImageSpeechless.js";
 import { tool$imagePostImageSvg } from "./tools/imagePostImageSvg.js";
 import { tool$miscGetHistoryProgrammer } from "./tools/miscGetHistoryProgrammer.js";
@@ -71,6 +78,7 @@ import { tool$randomGetRandomImage } from "./tools/randomGetRandomImage.js";
 import { tool$randomGetRandomString } from "./tools/randomGetRandomString.js";
 import { tool$randomPostAnswerbookAsk } from "./tools/randomPostAnswerbookAsk.js";
 import { tool$socialGetGithubRepo } from "./tools/socialGetGithubRepo.js";
+import { tool$socialGetGithubUser } from "./tools/socialGetGithubUser.js";
 import { tool$socialGetSocialBilibiliArchives } from "./tools/socialGetSocialBilibiliArchives.js";
 import { tool$socialGetSocialBilibiliLiveroom } from "./tools/socialGetSocialBilibiliLiveroom.js";
 import { tool$socialGetSocialBilibiliReplies } from "./tools/socialGetSocialBilibiliReplies.js";
@@ -89,6 +97,8 @@ import { tool$textPostTextAnalyze } from "./tools/textPostTextAnalyze.js";
 import { tool$textPostTextBase64Decode } from "./tools/textPostTextBase64Decode.js";
 import { tool$textPostTextBase64Encode } from "./tools/textPostTextBase64Encode.js";
 import { tool$textPostTextConvert } from "./tools/textPostTextConvert.js";
+import { tool$textPostTextMarkdownToHtml } from "./tools/textPostTextMarkdownToHtml.js";
+import { tool$textPostTextMarkdownToPdf } from "./tools/textPostTextMarkdownToPdf.js";
 import { tool$textPostTextMd5 } from "./tools/textPostTextMd5.js";
 import { tool$textPostTextMd5Verify } from "./tools/textPostTextMd5Verify.js";
 import { tool$translateGetAiTranslateLanguages } from "./tools/translateGetAiTranslateLanguages.js";
@@ -105,6 +115,7 @@ export function createMCPServer(deps: {
   allowedTools?: string[] | undefined;
   dynamic?: boolean | undefined;
   scopes?: MCPScope[] | undefined;
+  annotationFilter?: MCPToolAnnotationFilter | undefined;
   getSDK?: () => UapiMcpCore;
   serverURL?: string | undefined;
   security?: SDKOptions["security"] | undefined;
@@ -112,7 +123,7 @@ export function createMCPServer(deps: {
 }) {
   const server = new McpServer({
     name: "Uapi Mcp",
-    version: "0.1.0",
+    version: "0.1.1",
     websiteUrl: "https://uapis.cn/docs",
   }, {
     instructions: [
@@ -147,6 +158,7 @@ export function createMCPServer(deps: {
     scopes,
     allowedTools,
     deps.dynamic,
+    deps.annotationFilter,
   );
   const resource = createRegisterResource(
     deps.logger,
@@ -173,15 +185,18 @@ export function createMCPServer(deps: {
   tool(tool$gameGetGameSteamSummary);
   tool(tool$gameGetGameEpicFree);
   tool(tool$imageGetImageBingDaily);
+  tool(tool$imageGetImageBingDailyHistory);
   tool(tool$imagePostImageFrombase64);
   tool(tool$imageGetImageMotou);
   tool(tool$imagePostImageMotou);
   tool(tool$imagePostImageSpeechless);
   tool(tool$imageGetImageQrcode);
   tool(tool$imageGetImageTobase64);
+  tool(tool$imagePostImageDecode);
   tool(tool$imagePostImageSvg);
   tool(tool$imagePostImageCompress);
   tool(tool$imageGetAvatarGravatar);
+  tool(tool$imagePostImageOcr);
   tool(tool$imagePostImageNsfw);
   tool(tool$miscGetMiscHotboard);
   tool(tool$miscGetMiscPhoneinfo);
@@ -221,6 +236,7 @@ export function createMCPServer(deps: {
   tool(tool$socialGetSocialBilibiliLiveroom);
   tool(tool$socialGetSocialQqGroupinfo);
   tool(tool$socialGetGithubRepo);
+  tool(tool$socialGetGithubUser);
   tool(tool$statusGetStatusRatelimit);
   tool(tool$statusGetStatusUsage);
   tool(tool$textPostTextAesDecrypt);
@@ -233,6 +249,8 @@ export function createMCPServer(deps: {
   tool(tool$textPostTextMd5Verify);
   tool(tool$textPostTextAesEncryptAdvanced);
   tool(tool$textPostTextAesDecryptAdvanced);
+  tool(tool$textPostTextMarkdownToHtml);
+  tool(tool$textPostTextMarkdownToPdf);
   tool(tool$textPostTextConvert);
   tool(tool$translatePostTranslateText);
   tool(tool$translatePostAiTranslate);

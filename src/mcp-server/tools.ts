@@ -20,43 +20,27 @@ import { MCPServerFlags } from "./flags.js";
 import { MCPScope, mcpScopes } from "./scopes.js";
 import { valueToBase64 } from "./shared.js";
 
-export type ToolDefinition<
-  Args extends undefined | ZodRawShapeCompat = undefined,
-> = Args extends ZodRawShapeCompat ? {
-    name: string;
-    description: string;
-    scopes?: MCPScope[];
-    args: Args;
-    annotations: {
-      title: string;
-      destructiveHint: boolean;
-      idempotentHint: boolean;
-      openWorldHint: boolean;
-      readOnlyHint: boolean;
-    };
-    tool: (
-      client: UapiMcpCore,
-      args: ShapeOutput<Args>,
-      extra: RequestHandlerExtra<ServerRequest, ServerNotification>,
-    ) => CallToolResult | Promise<CallToolResult>;
-  }
-  : {
-    name: string;
-    description: string;
-    scopes?: MCPScope[];
-    args?: undefined;
-    annotations: {
-      title: string;
-      destructiveHint: boolean;
-      idempotentHint: boolean;
-      openWorldHint: boolean;
-      readOnlyHint: boolean;
-    };
-    tool: (
-      client: UapiMcpCore,
-      extra: RequestHandlerExtra<ServerRequest, ServerNotification>,
-    ) => CallToolResult | Promise<CallToolResult>;
-  };
+export type MCPToolAnnotationFilter = {
+  readOnlyHint?: boolean;
+  destructiveHint?: boolean;
+  idempotentHint?: boolean;
+  openWorldHint?: boolean;
+};
+
+const VALID_ANNOTATIONS = [
+  "readOnly",
+  "destructive",
+  "idempotent",
+  "openWorld",
+] as const;
+type AnnotationName = typeof VALID_ANNOTATIONS[number];
+
+const annotationToKey: Record<AnnotationName, keyof MCPToolAnnotationFilter> = {
+  readOnly: "readOnlyHint",
+  destructive: "destructiveHint",
+  idempotent: "idempotentHint",
+  openWorld: "openWorldHint",
+};
 
 const UAPIPRO_URL = "https://uapipro.cn";
 const LIST_TOOLS_DESCRIPTION_MAX_LENGTH = 96;
@@ -236,7 +220,10 @@ function buildAiFriendlyHints(reason: string, status?: number): string[] {
     );
   }
 
-  if (/429|too many requests|rate limit/i.test(reason) && !isQuotaLikeError(reason, status)) {
+  if (
+    /429|too many requests|rate limit/i.test(reason)
+    && !isQuotaLikeError(reason, status)
+  ) {
     hints.push("这更像是请求频率过高，稍后重试通常更合适。");
   }
 
@@ -342,6 +329,28 @@ function jsonRpcErrorBody(code: number, message: string) {
   };
 }
 
+export function buildAnnotationFilter(
+  annotations: string[] | undefined,
+): MCPToolAnnotationFilter {
+  const filter: MCPToolAnnotationFilter = {};
+  if (!annotations || annotations.length === 0) {
+    return filter;
+  }
+  for (const a of annotations) {
+    if (!VALID_ANNOTATIONS.includes(a as AnnotationName)) {
+      throw new Error(
+        `Invalid annotation filter: "${a}". Valid values are: ${
+          VALID_ANNOTATIONS.join(", ")
+        }`,
+      );
+    }
+  }
+  for (const name of VALID_ANNOTATIONS) {
+    filter[annotationToKey[name]] = annotations.includes(name);
+  }
+  return filter;
+}
+
 export function buildTransportErrorResponse(error: unknown): {
   status: number;
   body: ReturnType<typeof jsonRpcErrorBody>;
@@ -366,7 +375,10 @@ export function buildTransportErrorResponse(error: unknown): {
     };
   }
 
-  if (expressLikeError?.status === 413 || expressLikeError?.code === "LIMIT_FILE_SIZE") {
+  if (
+    expressLikeError?.status === 413
+    || expressLikeError?.code === "LIMIT_FILE_SIZE"
+  ) {
     return {
       status: 413,
       body: jsonRpcErrorBody(
@@ -433,6 +445,45 @@ function normalizeToolResult(
   return errorResult(buildToolFailureText(toolName, merged));
 }
 
+export type ToolDefinition<
+  Args extends undefined | ZodRawShapeCompat = undefined,
+> = Args extends ZodRawShapeCompat ? {
+    name: string;
+    description: string;
+    scopes?: MCPScope[];
+    args: Args;
+    annotations: {
+      title: string;
+      destructiveHint: boolean;
+      idempotentHint: boolean;
+      openWorldHint: boolean;
+      readOnlyHint: boolean;
+    };
+    tool: (
+      client: UapiMcpCore,
+      args: ShapeOutput<Args>,
+      extra: RequestHandlerExtra<ServerRequest, ServerNotification>,
+    ) => CallToolResult | Promise<CallToolResult>;
+  }
+  : {
+    name: string;
+    description: string;
+    scopes?: MCPScope[];
+    args?: undefined;
+    annotations: {
+      title: string;
+      destructiveHint: boolean;
+      idempotentHint: boolean;
+      openWorldHint: boolean;
+      readOnlyHint: boolean;
+    };
+    tool: (
+      client: UapiMcpCore,
+      extra: RequestHandlerExtra<ServerRequest, ServerNotification>,
+    ) => CallToolResult | Promise<CallToolResult>;
+  };
+
+// Optional function to assist with formatting tool results
 export async function formatResult(
   response: Response,
 ): Promise<CallToolResult> {
@@ -477,6 +528,7 @@ export function createRegisterTool(
   allowedScopes: Set<MCPScope>,
   allowedTools?: Set<string>,
   dynamic?: boolean,
+  annotationFilter?: MCPToolAnnotationFilter,
 ): [
   <A extends ZodRawShapeCompat | undefined>(tool: ToolDefinition<A>) => void,
   Array<{ name: string; description: string }>,
@@ -517,6 +569,34 @@ export function createRegisterTool(
       && !scopes.every((s: MCPScope) => allowedScopes.has(s))
     ) {
       return;
+    }
+
+    if (annotationFilter) {
+      const a = tool.annotations;
+      if (
+        annotationFilter.readOnlyHint !== undefined
+        && a.readOnlyHint !== annotationFilter.readOnlyHint
+      ) {
+        return;
+      }
+      if (
+        annotationFilter.destructiveHint !== undefined
+        && a.destructiveHint !== annotationFilter.destructiveHint
+      ) {
+        return;
+      }
+      if (
+        annotationFilter.idempotentHint !== undefined
+        && a.idempotentHint !== annotationFilter.idempotentHint
+      ) {
+        return;
+      }
+      if (
+        annotationFilter.openWorldHint !== undefined
+        && a.openWorldHint !== annotationFilter.openWorldHint
+      ) {
+        return;
+      }
     }
 
     toolMap.set(

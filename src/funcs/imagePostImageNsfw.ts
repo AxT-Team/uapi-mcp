@@ -3,8 +3,9 @@
  */
 
 import { UapiMcpCore } from "../core.js";
-import { appendForm } from "../lib/encodings.js";
+import { appendForm, normalizeBlob } from "../lib/encodings.js";
 import {
+  bytesToBlob,
   getContentTypeFromFileName,
   readableStreamToArrayBuffer,
 } from "../lib/files.js";
@@ -36,9 +37,6 @@ import { isReadableStream } from "../types/streams.js";
  *
  * @remarks
  * 这是一个图片内容审核接口，自动识别图片中的违规内容并返回处理建议。
- *
- * > [!VIP]
- * > 此接口限时免费开放，无需企业认证即可使用。
  *
  * ## 功能概述
  * 上传图片文件或提供图片URL，接口会自动分析图片内容，返回是否违规、风险等级和处理建议。适合对接到用户上传流程中，实现自动化内容审核。
@@ -113,20 +111,27 @@ async function $do(
   const body$ = new FormData();
   if (payload$.file !== undefined) {
     if (isBlobLike(payload$.file)) {
-      appendForm(body$, "file", payload$.file);
+      const file = payload$.file;
+      const blob = await normalizeBlob(file);
+      const name = "name" in file ? (file.name as string) : undefined;
+      appendForm(body$, "file", blob, name);
     } else if (isReadableStream(payload$.file.content)) {
       const buffer = await readableStreamToArrayBuffer(payload$.file.content);
       const contentType = getContentTypeFromFileName(payload$.file.fileName)
         || "application/octet-stream";
-      const blob = new Blob([buffer], { type: contentType });
-      appendForm(body$, "file", blob, payload$.file.fileName);
+      appendForm(
+        body$,
+        "file",
+        bytesToBlob(buffer, contentType),
+        payload$.file.fileName,
+      );
     } else {
       const contentType = getContentTypeFromFileName(payload$.file.fileName)
         || "application/octet-stream";
       appendForm(
         body$,
         "file",
-        new Blob([payload$.file.content], { type: contentType }),
+        bytesToBlob(payload$.file.content, contentType),
         payload$.file.fileName,
       );
     }

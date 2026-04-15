@@ -6,7 +6,7 @@ import * as z from "zod";
 import { ClosedEnum } from "../types/enums.js";
 
 /**
- * 目标语言代码。请从支持的语言列表中选择一个语言代码。
+ * 目标语言代码。请从[支持的语言列表](#enum-list)中选择一个语言代码。
  */
 export const TargetLang = {
   Sq: "sq",
@@ -116,11 +116,11 @@ export const TargetLang = {
   Yua: "yua",
   Yo: "yo",
   Vi: "vi",
-  ZhCHS: "zh-CHS",
-  ZhCHT: "zh-CHT",
+  Zh: "zh",
+  ZhTW: "zh-TW",
 } as const;
 /**
- * 目标语言代码。请从支持的语言列表中选择一个语言代码。
+ * 目标语言代码。请从[支持的语言列表](#enum-list)中选择一个语言代码。
  */
 export type TargetLang = ClosedEnum<typeof TargetLang>;
 
@@ -232,9 +232,11 @@ export const TargetLang$zodSchema = z.enum([
   "yua",
   "yo",
   "vi",
-  "zh-CHS",
-  "zh-CHT",
-]).describe("目标语言代码。请从支持的语言列表中选择一个语言代码。");
+  "zh",
+  "zh-TW",
+]).describe(
+  "目标语言代码。请从[支持的语言列表](#enum-list)中选择一个语言代码。",
+);
 
 /**
  * 翻译风格，可选。支持casual(随意口语化)、professional(专业商务，默认)、academic(学术正式)、literary(文学艺术)。
@@ -292,32 +294,31 @@ export const PostAiTranslateContext$zodSchema = z.enum([
   "翻译上下文场景，可选。支持general(通用，默认)、business(商务)、technical(技术)、medical(医疗)、legal(法律)、marketing(市场营销)、entertainment(娱乐)、education(教育)、news(新闻)。",
 );
 
-/**
- * 包含翻译参数的JSON对象，支持单个文本或批量文本翻译
- */
 export type PostAiTranslateRequestBody = {
-  text?: string | undefined;
-  texts?: Array<string> | undefined;
+  text: string;
   source_lang?: string | undefined;
   style?: PostAiTranslateStyle | undefined;
   context?: PostAiTranslateContext | undefined;
   preserve_format?: boolean | undefined;
-  fast_mode?: boolean | undefined;
-  max_concurrency?: number | undefined;
 };
 
 export const PostAiTranslateRequestBody$zodSchema: z.ZodType<
   PostAiTranslateRequestBody
 > = z.object({
-  context: PostAiTranslateContext$zodSchema.default("general"),
-  fast_mode: z.boolean().default(false),
-  max_concurrency: z.int().default(3),
-  preserve_format: z.boolean().default(true),
-  source_lang: z.string().optional(),
-  style: PostAiTranslateStyle$zodSchema.default("professional"),
-  text: z.string().optional(),
-  texts: z.array(z.string()).optional(),
-}).describe("包含翻译参数的JSON对象，支持单个文本或批量文本翻译");
+  context: PostAiTranslateContext$zodSchema.default("general").describe(
+    "翻译上下文场景，可选。支持general(通用，默认)、business(商务)、technical(技术)、medical(医疗)、legal(法律)、marketing(市场营销)、entertainment(娱乐)、education(教育)、news(新闻)。",
+  ),
+  preserve_format: z.boolean().default(true).describe(
+    "是否保留原文格式，包括换行、缩进等。",
+  ),
+  source_lang: z.string().optional().describe(
+    "源语言代码，可选。如果不指定，系统会自动检测源语言。",
+  ),
+  style: PostAiTranslateStyle$zodSchema.default("professional").describe(
+    "翻译风格，可选。支持casual(随意口语化)、professional(专业商务，默认)、academic(学术正式)、literary(文学艺术)。",
+  ),
+  text: z.string().describe("待翻译的文本内容。最大长度10,000字符。"),
+});
 
 export type PostAiTranslateRequest = {
   target_lang: TargetLang;
@@ -328,7 +329,9 @@ export const PostAiTranslateRequest$zodSchema: z.ZodType<
   PostAiTranslateRequest
 > = z.object({
   body: z.lazy(() => PostAiTranslateRequestBody$zodSchema),
-  target_lang: TargetLang$zodSchema,
+  target_lang: TargetLang$zodSchema.describe(
+    "目标语言代码。请从[支持的语言列表](#enum-list)中选择一个语言代码。",
+  ),
 });
 
 /**
@@ -338,14 +341,12 @@ export type PostAiTranslateInternalServerErrorResponseBody = {
   code?: number | undefined;
   message?: string | undefined;
   error?: string | undefined;
-  is_batch?: boolean | undefined;
 };
 
 export const PostAiTranslateInternalServerErrorResponseBody$zodSchema:
   z.ZodType<PostAiTranslateInternalServerErrorResponseBody> = z.object({
     code: z.int().optional(),
     error: z.string().optional(),
-    is_batch: z.boolean().optional(),
     message: z.string().optional(),
   }).describe("翻译服务内部错误。请稍后重试或联系技术支持。");
 
@@ -400,126 +401,46 @@ export const PostAiTranslateBadRequestResponseBody$zodSchema: z.ZodType<
   message: z.string().optional(),
 }).describe("请求参数错误。请检查必填参数和参数格式是否正确。");
 
-export type KeyPhrase = {};
-
-export const KeyPhrase$zodSchema: z.ZodType<KeyPhrase> = z.object({});
-
-export type Explanation = {
-  key_phrases?: Array<KeyPhrase> | undefined;
-  cultural_notes?: Array<string> | undefined;
-  grammar_notes?: Array<string> | undefined;
-};
-
-export const Explanation$zodSchema: z.ZodType<Explanation> = z.object({
-  cultural_notes: z.array(z.string()).optional(),
-  grammar_notes: z.array(z.string()).optional(),
-  key_phrases: z.array(z.lazy(() => KeyPhrase$zodSchema)).optional(),
-});
-
 /**
- * 单个翻译的详细结果，仅在单个翻译时返回。
+ * 翻译结果的详细信息。
  */
-export type PostAiTranslateData = {
-  original_text?: string | undefined;
-  translated_text?: string | undefined;
-  detected_lang?: string | undefined;
-  confidence_score?: number | undefined;
-  alternatives?: Array<string> | undefined;
-  explanation?: Explanation | undefined;
-};
+export type PostAiTranslateData = { translated_text?: string | undefined };
 
 export const PostAiTranslateData$zodSchema: z.ZodType<PostAiTranslateData> = z
   .object({
-    alternatives: z.array(z.string()).optional(),
-    confidence_score: z.number().optional(),
-    detected_lang: z.string().optional(),
-    explanation: z.lazy(() => Explanation$zodSchema).optional(),
-    original_text: z.string().optional(),
     translated_text: z.string().optional(),
-  }).describe("单个翻译的详细结果，仅在单个翻译时返回。");
-
-export type BatchDatum = {
-  original_text?: string | undefined;
-  translated_text?: string | undefined;
-  confidence_score?: number | undefined;
-};
-
-export const BatchDatum$zodSchema: z.ZodType<BatchDatum> = z.object({
-  confidence_score: z.number().optional(),
-  original_text: z.string().optional(),
-  translated_text: z.string().optional(),
-});
-
-/**
- * 批量翻译汇总信息，仅在批量翻译时返回。
- */
-export type BatchSummary = {
-  total_items?: number | undefined;
-  success_items?: number | undefined;
-  failed_items?: number | undefined;
-  average_quality?: number | undefined;
-};
-
-export const BatchSummary$zodSchema: z.ZodType<BatchSummary> = z.object({
-  average_quality: z.number().optional(),
-  failed_items: z.int().optional(),
-  success_items: z.int().optional(),
-  total_items: z.int().optional(),
-}).describe("批量翻译汇总信息，仅在批量翻译时返回。");
+  }).describe("翻译结果的详细信息。");
 
 export type PostAiTranslatePerformance = {
   processing_time_ms?: number | undefined;
-  cache_hit?: boolean | undefined;
 };
 
 export const PostAiTranslatePerformance$zodSchema: z.ZodType<
   PostAiTranslatePerformance
 > = z.object({
-  cache_hit: z.boolean().optional(),
   processing_time_ms: z.int().optional(),
 });
 
 /**
- * 翻译质量指标，仅在单个翻译时返回。
- */
-export type QualityMetrics = {
-  fluency_score?: number | undefined;
-  accuracy_score?: number | undefined;
-  completeness_score?: number | undefined;
-  total_score?: number | undefined;
-};
-
-export const QualityMetrics$zodSchema: z.ZodType<QualityMetrics> = z.object({
-  accuracy_score: z.number().optional(),
-  completeness_score: z.number().optional(),
-  fluency_score: z.number().optional(),
-  total_score: z.number().optional(),
-}).describe("翻译质量指标，仅在单个翻译时返回。");
-
-/**
- * 翻译成功！返回翻译结果、质量指标和性能统计。
+ * 翻译成功！返回翻译结果和性能统计。
  */
 export type PostAiTranslateResponseBody = {
   message?: string | undefined;
-  is_batch?: boolean | undefined;
   data?: PostAiTranslateData | undefined;
-  batch_data?: Array<BatchDatum> | undefined;
-  batch_summary?: BatchSummary | undefined;
   performance?: PostAiTranslatePerformance | undefined;
-  quality_metrics?: QualityMetrics | undefined;
+  is_batch?: boolean | undefined;
 };
 
 export const PostAiTranslateResponseBody$zodSchema: z.ZodType<
   PostAiTranslateResponseBody
 > = z.object({
-  batch_data: z.array(z.lazy(() => BatchDatum$zodSchema)).optional(),
-  batch_summary: z.lazy(() => BatchSummary$zodSchema).optional(),
-  data: z.lazy(() => PostAiTranslateData$zodSchema).optional(),
-  is_batch: z.boolean().optional(),
+  data: z.lazy(() => PostAiTranslateData$zodSchema).optional().describe(
+    "翻译结果的详细信息。",
+  ),
+  is_batch: z.boolean().optional().describe("是否为批量翻译请求。"),
   message: z.string().optional(),
   performance: z.lazy(() => PostAiTranslatePerformance$zodSchema).optional(),
-  quality_metrics: z.lazy(() => QualityMetrics$zodSchema).optional(),
-}).describe("翻译成功！返回翻译结果、质量指标和性能统计。");
+}).describe("翻译成功！返回翻译结果和性能统计。");
 
 export type PostAiTranslateResponse =
   | PostAiTranslateResponseBody

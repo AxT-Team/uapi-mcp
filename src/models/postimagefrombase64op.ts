@@ -4,18 +4,15 @@
 
 import * as z from "zod";
 
-/**
- * 一个JSON对象，包含 `imageData` 字段，其值为你想要上传图片的完整Base64 Data URI。
- */
 export type PostImageFrombase64Request = { imageData: string };
 
 export const PostImageFrombase64Request$zodSchema: z.ZodType<
   PostImageFrombase64Request
 > = z.object({
-  imageData: z.string(),
-}).describe(
-  "一个JSON对象，包含 `imageData` 字段，其值为你想要上传图片的完整Base64 Data URI。",
-);
+  imageData: z.string().describe(
+    "图片的Base64 Data URI，必须包含MIME类型头。例如：`data:image/png;base64,...`",
+  ),
+});
 
 export type PostImageFrombase64InternalServerErrorDetails = {};
 
@@ -80,8 +77,10 @@ export type PostImageFrombase64ResponseBody = {
 export const PostImageFrombase64ResponseBody$zodSchema: z.ZodType<
   PostImageFrombase64ResponseBody
 > = z.object({
-  image_url: z.string().optional(),
-  msg: z.string().optional(),
+  image_url: z.string().optional().describe(
+    "图片保存后在服务器上的绝对访问URL。",
+  ),
+  msg: z.string().optional().describe("操作结果描述。"),
 }).describe("上传成功！返回图片的访问地址。");
 
 export type PostImageFrombase64Response =

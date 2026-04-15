@@ -13,6 +13,7 @@ import {
 import { MCPServerFlags } from "../../flags.js";
 import { createMCPServer } from "../../server.js";
 import {
+  buildAnnotationFilter,
   buildMissingSSESessionResponse,
   buildTransportErrorResponse,
 } from "../../tools.js";
@@ -69,6 +70,7 @@ async function startStdio(flags: StartCommandFlags) {
     logger,
     allowedTools: flags.tool,
     dynamic: flags.mode === "dynamic",
+    annotationFilter: buildAnnotationFilter(flags["tool-annotations"]),
     scopes: flags.scope,
     security: {
       UapiAdminBearerAuth: flags["uapi-admin-bearer-auth"],
@@ -124,6 +126,7 @@ async function startSSE(cliFlags: StartCommandFlags) {
       logger,
       allowedTools: flags.tool,
       dynamic: flags.mode === "dynamic",
+      annotationFilter: buildAnnotationFilter(flags["tool-annotations"]),
       scopes: flags.scope,
       security: {
         UapiAdminBearerAuth: flags["uapi-admin-bearer-auth"],

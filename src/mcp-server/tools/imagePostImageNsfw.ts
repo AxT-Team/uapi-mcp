@@ -7,7 +7,9 @@ import { PostImageNsfwRequest$zodSchema } from "../../models/postimagensfwop.js"
 import { formatResult, ToolDefinition } from "../tools.js";
 
 const args = {
-  request: PostImageNsfwRequest$zodSchema,
+  request: PostImageNsfwRequest$zodSchema.describe(
+    `包含图片来源的表单数据。必须提供 'file' 或 'url' 两者之一。`,
+  ),
 };
 
 export const tool$imagePostImageNsfw: ToolDefinition<typeof args> = {
@@ -15,9 +17,6 @@ export const tool$imagePostImageNsfw: ToolDefinition<typeof args> = {
   description: `图片敏感检测
 
 这是一个图片内容审核接口，自动识别图片中的违规内容并返回处理建议。
-
-> [!VIP]
-> 此接口限时免费开放，无需企业认证即可使用。
 
 ## 功能概述
 上传图片文件或提供图片URL，接口会自动分析图片内容，返回是否违规、风险等级和处理建议。适合对接到用户上传流程中，实现自动化内容审核。

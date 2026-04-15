@@ -16,9 +16,6 @@ export const tool$miscGetMiscTrackingDetect: ToolDefinition<typeof args> = {
 
 不确定手里的快递单号属于哪家快递公司？这个接口专门做识别，不查物流。
 
-> [!VIP]
-> 本API目前处于**限时免费**阶段，我们鼓励开发者集成和测试。未来，它将转为付费API，为用户提供更稳定和强大的服务。
-
 ## 功能概述
 输入快递单号，系统会根据单号规则快速识别出最可能的快递公司。如果存在多个可能的匹配结果，还会在 \`alternatives\` 字段中返回备选项，供你参考选择。
 

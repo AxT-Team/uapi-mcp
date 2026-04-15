@@ -19,7 +19,7 @@ export const GetNetworkWxdomainBadGatewayDetails$zodSchema: z.ZodType<
 > = z.object({});
 
 /**
- * 查询上游接口失败。
+ * 暂时无法完成查询，请稍后重试。
  */
 export type GetNetworkWxdomainBadGatewayResponseBody = {
   code?: string | undefined;
@@ -34,7 +34,7 @@ export const GetNetworkWxdomainBadGatewayResponseBody$zodSchema: z.ZodType<
   details: z.lazy(() => GetNetworkWxdomainBadGatewayDetails$zodSchema)
     .optional(),
   message: z.string().optional(),
-}).describe("查询上游接口失败。");
+}).describe("暂时无法完成查询，请稍后重试。");
 
 export type GetNetworkWxdomainBadRequestDetails = {};
 
@@ -73,8 +73,8 @@ export const GetNetworkWxdomainResponseBody$zodSchema: z.ZodType<
   GetNetworkWxdomainResponseBody
 > = z.object({
   domain: z.string().optional(),
-  title: z.string().optional(),
-  type: z.string().optional(),
+  title: z.string().optional().describe("状态标题"),
+  type: z.string().optional().describe("状态类型"),
 }).describe("查询成功！返回该域名在微信中的状态。");
 
 export type GetNetworkWxdomainResponse =

@@ -3,24 +3,29 @@
  */
 
 import { imageGetImageBingDaily } from "../../funcs/imageGetImageBingDaily.js";
+import { GetImageBingDailyRequest$zodSchema } from "../../models/getimagebingdailyop.js";
 import { formatResult, ToolDefinition } from "../tools.js";
 
-export const tool$imageGetImageBingDaily: ToolDefinition = {
-  name: "image-get-image-bing-daily",
-  description: `必应壁纸
+const args = {
+  request: GetImageBingDailyRequest$zodSchema.optional(),
+};
 
-每天都想换张新壁纸？让必应的美图点亮你的一天吧！
+export const tool$imageGetImageBingDaily: ToolDefinition<typeof args> = {
+  name: "image-get-image-bing-daily",
+  description: `获取必应每日壁纸
+
+这个接口可以获取最新或指定日期的必应壁纸。默认直接返回图片，也可以传 \`format=json\` 获取元数据，或者传 \`format=redirect\` 直接跳转到最终图片地址。
 
 ## 功能概述
-这个接口会获取 Bing 搜索引擎当天全球同步的每日壁纸，并直接以图片形式返回。你可以用它来做应用的启动页、网站背景，或者任何需要每日更新精美图片的地方。
+- 不传参数时，默认返回当天壁纸图片二进制
+- 可以传 \`date\` 查询指定日期的壁纸
+- 可以传 \`resolution\` 选择 \`4k\` 或 \`1080\`
+- 可以传 \`format\` 控制返回图片、JSON 或 302 跳转
+- 当传 \`format=json\` 时，返回的是扁平 JSON 对象，里面会包含标题、副标题、说明文案、版权信息、问答信息和图片地址等字段
 
-## 使用须知
-
-> [!NOTE]
-> **响应格式是图片**
-> 请注意，此接口成功时直接返回图片二进制数据（通常为 \`image/jpeg\`），而非 JSON 格式。请确保客户端能够正确处理。
-
-我们内置了备用方案：如果从必应官方获取图片失败，系统会尝试返回一张预存的高质量风景图，以保证服务的稳定性。`,
+## 参数说明
+\`resolution\` 默认是 \`4k\`。
+\`format\` 默认是 \`image\`。`,
   scopes: ["read"],
   annotations: {
     "title": "",
@@ -29,9 +34,11 @@ export const tool$imageGetImageBingDaily: ToolDefinition = {
     "openWorldHint": true,
     "readOnlyHint": true,
   },
-  tool: async (client, ctx) => {
+  args,
+  tool: async (client, args, ctx) => {
     const [result] = await imageGetImageBingDaily(
       client,
+      args.request,
       { fetchOptions: { signal: ctx.signal } },
     ).$inspect();
 

@@ -13,7 +13,7 @@ export const GetSocialQqGroupinfoRequest$zodSchema: z.ZodType<
 });
 
 /**
- * QQ群不存在或无法访问（经优化后，此接口遵循RESTful规范，群不存在时返回404而非500）
+ * QQ群不存在或暂时无法访问
  */
 export type GetSocialQqGroupinfoNotFoundResponseBody = {
   error?: string | undefined;
@@ -23,9 +23,7 @@ export const GetSocialQqGroupinfoNotFoundResponseBody$zodSchema: z.ZodType<
   GetSocialQqGroupinfoNotFoundResponseBody
 > = z.object({
   error: z.string().optional(),
-}).describe(
-  "QQ群不存在或无法访问（经优化后，此接口遵循RESTful规范，群不存在时返回404而非500）",
-);
+}).describe("QQ群不存在或暂时无法访问");
 
 export type GetSocialQqGroupinfoDetails = {};
 
@@ -77,24 +75,28 @@ export type GetSocialQqGroupinfoResponseBody = {
 export const GetSocialQqGroupinfoResponseBody$zodSchema: z.ZodType<
   GetSocialQqGroupinfoResponseBody
 > = z.object({
-  active_member_num: z.int().optional(),
-  avatar_url: z.string().optional(),
-  cert_text: z.string().optional(),
-  cert_type: z.int().optional(),
-  create_time: z.int().optional(),
-  create_time_str: z.string().optional(),
-  description: z.string().optional(),
-  group_grade: z.int().optional(),
-  group_id: z.string().optional(),
-  group_memo: z.string().optional(),
-  group_name: z.string().optional(),
-  join_url: z.string().optional(),
-  last_updated: z.string().optional(),
-  max_member_count: z.int().optional(),
-  member_count: z.int().optional(),
-  owner_uid: z.string().optional(),
-  owner_uin: z.string().optional(),
-  tag: z.string().optional(),
+  active_member_num: z.int().optional().describe(
+    "活跃成员数（可选，部分群有此数据）",
+  ),
+  avatar_url: z.string().optional().describe("群头像URL（标准尺寸100x100）"),
+  cert_text: z.string().optional().describe("认证说明文本（可选）"),
+  cert_type: z.int().optional().describe("认证类型（0=未认证，可选）"),
+  create_time: z.int().optional().describe("建群时间戳（Unix时间戳，可选）"),
+  create_time_str: z.string().optional().describe(
+    "建群时间格式化字符串（可选）",
+  ),
+  description: z.string().optional().describe("群描述/简介"),
+  group_grade: z.int().optional().describe("群等级（可选）"),
+  group_id: z.string().optional().describe("群号"),
+  group_memo: z.string().optional().describe("群公告/简介（可选）"),
+  group_name: z.string().optional().describe("群名称"),
+  join_url: z.string().optional().describe("加群链接（QR码URL）"),
+  last_updated: z.string().optional().describe("最后更新时间（ISO 8601格式）"),
+  max_member_count: z.int().optional().describe("最大成员数"),
+  member_count: z.int().optional().describe("当前成员数"),
+  owner_uid: z.string().optional().describe("群主UID（可选）"),
+  owner_uin: z.string().optional().describe("群主QQ号（可选）"),
+  tag: z.string().optional().describe("群标签"),
 }).describe("成功响应，返回QQ群的详细信息");
 
 export type GetSocialQqGroupinfoResponse =

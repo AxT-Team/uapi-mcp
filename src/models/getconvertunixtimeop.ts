@@ -35,9 +35,10 @@ export type GetConvertUnixtimeBadRequestResponseBody = {
 export const GetConvertUnixtimeBadRequestResponseBody$zodSchema: z.ZodType<
   GetConvertUnixtimeBadRequestResponseBody
 > = z.object({
-  code: z.string().optional(),
-  details: z.lazy(() => GetConvertUnixtimeDetails$zodSchema).optional(),
-  message: z.string().optional(),
+  code: z.string().optional().describe("机器可读的错误代码。"),
+  details: z.lazy(() => GetConvertUnixtimeDetails$zodSchema).optional()
+    .describe("包含错误详情的对象。"),
+  message: z.string().optional().describe("人类可读的错误描述信息。"),
 }).describe(
   "请求失败。请检查你提供的 `time` 参数是否是有效的时间戳或我们支持的日期格式（YYYY-MM-DD HH:mm:ss）。",
 );
@@ -53,8 +54,10 @@ export type GetConvertUnixtimeResponseBody = {
 export const GetConvertUnixtimeResponseBody$zodSchema: z.ZodType<
   GetConvertUnixtimeResponseBody
 > = z.object({
-  datetime: z.string().optional(),
-  timestamp: z.int().optional(),
+  datetime: z.string().optional().describe(
+    "标准格式（YYYY-MM-DD HH:mm:ss）的日期时间字符串。",
+  ),
+  timestamp: z.int().optional().describe("转换后的10位秒级Unix时间戳。"),
 }).describe(
   "转换成功！响应中会同时包含标准日期字符串和秒级Unix时间戳，方便你使用。",
 );

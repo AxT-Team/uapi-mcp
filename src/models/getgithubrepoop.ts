@@ -12,7 +12,7 @@ export const GetGithubRepoRequest$zodSchema: z.ZodType<GetGithubRepoRequest> = z
   });
 
 /**
- * 上游 GitHub API 出错或不可用。响应中会包含来自上游的原始错误信息，便于排查问题。
+ * 暂时无法获取仓库信息，请稍后重试。
  */
 export type GetGithubRepoBadGatewayResponseBody = {
   code?: string | undefined;
@@ -24,9 +24,7 @@ export const GetGithubRepoBadGatewayResponseBody$zodSchema: z.ZodType<
 > = z.object({
   code: z.string().optional(),
   message: z.string().optional(),
-}).describe(
-  "上游 GitHub API 出错或不可用。响应中会包含来自上游的原始错误信息，便于排查问题。",
-);
+}).describe("暂时无法获取仓库信息，请稍后重试。");
 
 /**
  * 请求参数缺失或格式错误。请确保 `repo` 参数已提供且格式为 `owner/repo`。
@@ -53,10 +51,10 @@ export type Collaborator = {
 };
 
 export const Collaborator$zodSchema: z.ZodType<Collaborator> = z.object({
-  email: z.string().optional(),
-  login: z.string().optional(),
-  name: z.string().optional(),
-  url: z.string().optional(),
+  email: z.string().optional().describe("公开邮箱。"),
+  login: z.string().optional().describe("GitHub 登录名。"),
+  name: z.string().optional().describe("显示名称。"),
+  url: z.string().optional().describe("GitHub 主页链接。"),
 });
 
 export type Maintainer = {
@@ -67,10 +65,10 @@ export type Maintainer = {
 };
 
 export const Maintainer$zodSchema: z.ZodType<Maintainer> = z.object({
-  email: z.string().optional(),
-  login: z.string().optional(),
-  name: z.string().optional(),
-  url: z.string().optional(),
+  email: z.string().optional().describe("公开邮箱。"),
+  login: z.string().optional().describe("GitHub 登录名。"),
+  name: z.string().optional().describe("显示名称。"),
+  url: z.string().optional().describe("GitHub 主页链接。"),
 });
 
 /**
@@ -86,12 +84,14 @@ export type LatestRelease = {
 };
 
 export const LatestRelease$zodSchema: z.ZodType<LatestRelease> = z.object({
-  draft: z.boolean().optional(),
-  html_url: z.string().optional(),
-  name: z.string().optional(),
-  prerelease: z.boolean().optional(),
-  published_at: z.iso.datetime({ offset: true }).optional(),
-  tag_name: z.string().optional(),
+  draft: z.boolean().optional().describe("是否为草稿"),
+  html_url: z.string().optional().describe("Release 页面链接"),
+  name: z.string().optional().describe("发布名称"),
+  prerelease: z.boolean().optional().describe("是否为预发布版本"),
+  published_at: z.iso.datetime({ offset: true }).optional().describe(
+    "发布时间",
+  ),
+  tag_name: z.string().optional().describe("版本标签"),
 }).describe(
   "仓库最新发布版本信息，如果没有 Release 则为 null。可用于实现应用更新检查功能。",
 );
@@ -129,31 +129,50 @@ export type GetGithubRepoResponseBody = {
 export const GetGithubRepoResponseBody$zodSchema: z.ZodType<
   GetGithubRepoResponseBody
 > = z.object({
-  archived: z.boolean().optional(),
+  archived: z.boolean().optional().describe("仓库是否已归档。"),
   collaborators: z.array(z.lazy(() => Collaborator$zodSchema)).nullable()
-    .optional(),
-  created_at: z.iso.datetime({ offset: true }).optional(),
-  default_branch: z.string().optional(),
-  default_branch_sha: z.string().optional(),
-  description: z.string().optional(),
-  disabled: z.boolean().optional(),
-  fork: z.boolean().optional(),
-  forks: z.int().optional(),
-  full_name: z.string().optional(),
-  homepage: z.string().optional(),
-  language: z.string().optional(),
-  languages: z.record(z.string(), z.int()).optional(),
-  latest_release: z.lazy(() => LatestRelease$zodSchema).nullable().optional(),
-  license: z.string().optional(),
-  maintainers: z.array(z.lazy(() => Maintainer$zodSchema)).optional(),
-  open_issues: z.int().optional(),
-  primary_branch: z.string().optional(),
-  pushed_at: z.iso.datetime({ offset: true }).optional(),
-  stargazers: z.int().optional(),
-  topics: z.array(z.string()).optional(),
-  updated_at: z.iso.datetime({ offset: true }).optional(),
-  visibility: z.string().optional(),
-  watchers: z.int().optional(),
+    .optional().describe("协作者列表。受权限限制时可能为 null 或空数组。"),
+  created_at: z.iso.datetime({ offset: true }).optional().describe(
+    "创建时间（ISO 8601）。",
+  ),
+  default_branch: z.string().optional().describe("默认分支名称。"),
+  default_branch_sha: z.string().optional().describe(
+    "默认分支最新提交的 SHA 哈希。",
+  ),
+  description: z.string().optional().describe("仓库简介。"),
+  disabled: z.boolean().optional().describe("仓库是否被禁用。"),
+  fork: z.boolean().optional().describe("是否为 Fork 仓库。"),
+  forks: z.int().optional().describe("Fork 数。"),
+  full_name: z.string().optional().describe("仓库完整名称。"),
+  homepage: z.string().optional().describe("仓库主页链接。"),
+  language: z.string().optional().describe("主要语言。"),
+  languages: z.record(z.string(), z.int()).optional().describe(
+    "语言统计（键为语言名，值为代码字节数）。",
+  ),
+  latest_release: z.lazy(() => LatestRelease$zodSchema).nullable().optional()
+    .describe(
+      "仓库最新发布版本信息，如果没有 Release 则为 null。可用于实现应用更新检查功能。",
+    ),
+  license: z.string().optional().describe("开源许可证名称。"),
+  maintainers: z.array(z.lazy(() => Maintainer$zodSchema)).optional().describe(
+    "维护者列表（根据默认分支近期提交推断）。",
+  ),
+  open_issues: z.int().optional().describe("开放 Issue 数。"),
+  primary_branch: z.string().optional().describe(
+    "主要分支名称（通常与默认分支一致）。",
+  ),
+  pushed_at: z.iso.datetime({ offset: true }).optional().describe(
+    "最后推送时间（ISO 8601）。",
+  ),
+  stargazers: z.int().optional().describe("Star 数。"),
+  topics: z.array(z.string()).optional().describe("话题标签列表。"),
+  updated_at: z.iso.datetime({ offset: true }).optional().describe(
+    "更新时间（ISO 8601）。",
+  ),
+  visibility: z.string().optional().describe(
+    "仓库可见性，常见值为 `public` 或 `private`。",
+  ),
+  watchers: z.int().optional().describe("关注者数量（watchers/subscribers）。"),
 }).describe("成功获取仓库信息。");
 
 export type GetGithubRepoResponse =

@@ -64,17 +64,17 @@ export const GetWebparseExtractimagesBadRequestResponseBody$zodSchema:
  * 成功响应
  */
 export type GetWebparseExtractimagesResponseBody = {
-  count?: number | undefined;
-  images?: Array<string> | undefined;
-  url?: string | undefined;
+  page_url?: string | undefined;
+  image_urls?: Array<string> | undefined;
 };
 
 export const GetWebparseExtractimagesResponseBody$zodSchema: z.ZodType<
   GetWebparseExtractimagesResponseBody
 > = z.object({
-  count: z.int().optional(),
-  images: z.array(z.string()).optional(),
-  url: z.string().optional(),
+  image_urls: z.array(z.string()).optional().describe(
+    "页面中提取到的图片链接列表。",
+  ),
+  page_url: z.string().optional().describe("实际解析的网页地址。"),
 }).describe("成功响应");
 
 export type GetWebparseExtractimagesResponse =

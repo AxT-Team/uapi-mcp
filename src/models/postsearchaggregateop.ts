@@ -8,18 +8,16 @@ import { ClosedEnum } from "../types/enums.js";
 /**
  * 排序方式
  */
-export const PostSearchAggregateSort = {
+export const Sort = {
   Relevance: "relevance",
   Date: "date",
 } as const;
 /**
  * 排序方式
  */
-export type PostSearchAggregateSort = ClosedEnum<
-  typeof PostSearchAggregateSort
->;
+export type Sort = ClosedEnum<typeof Sort>;
 
-export const PostSearchAggregateSort$zodSchema = z.enum([
+export const Sort$zodSchema = z.enum([
   "relevance",
   "date",
 ]).describe("排序方式");
@@ -45,30 +43,29 @@ export const TimeRange$zodSchema = z.enum([
   "year",
 ]).describe("时间范围过滤");
 
-/**
- * 包含搜索参数的JSON对象
- */
 export type PostSearchAggregateRequest = {
   query: string;
   site?: string | undefined;
   filetype?: string | undefined;
   fetch_full?: boolean | undefined;
-  timeout_ms?: number | undefined;
-  sort?: PostSearchAggregateSort | undefined;
+  sort?: Sort | undefined;
   time_range?: TimeRange | undefined;
 };
 
 export const PostSearchAggregateRequest$zodSchema: z.ZodType<
   PostSearchAggregateRequest
 > = z.object({
-  fetch_full: z.boolean().default(false),
-  filetype: z.string().optional(),
-  query: z.string(),
-  site: z.string().optional(),
-  sort: PostSearchAggregateSort$zodSchema.default("relevance"),
-  time_range: TimeRange$zodSchema.optional(),
-  timeout_ms: z.int().default(8000),
-}).describe("包含搜索参数的JSON对象");
+  fetch_full: z.boolean().default(false).describe(
+    "是否获取页面完整正文（会影响响应时间）",
+  ),
+  filetype: z.string().optional().describe(
+    "限制文件类型，不需要 `filetype:` 前缀。支持 pdf、doc、docx、ppt、pptx、xls、xlsx、txt 等",
+  ),
+  query: z.string().describe("搜索查询关键词，支持中英文"),
+  site: z.string().optional().describe("限制搜索特定网站，不需要 `site:` 前缀"),
+  sort: Sort$zodSchema.default("relevance").describe("排序方式"),
+  time_range: TimeRange$zodSchema.optional().describe("时间范围过滤"),
+});
 
 /**
  * 服务器内部错误
@@ -76,14 +73,12 @@ export const PostSearchAggregateRequest$zodSchema: z.ZodType<
 export type PostSearchAggregateInternalServerErrorResponseBody = {
   code?: string | undefined;
   message?: string | undefined;
-  timestamp?: string | undefined;
 };
 
 export const PostSearchAggregateInternalServerErrorResponseBody$zodSchema:
   z.ZodType<PostSearchAggregateInternalServerErrorResponseBody> = z.object({
     code: z.string().optional(),
     message: z.string().optional(),
-    timestamp: z.iso.datetime({ offset: true }).optional(),
   }).describe("服务器内部错误");
 
 /**
@@ -92,14 +87,12 @@ export const PostSearchAggregateInternalServerErrorResponseBody$zodSchema:
 export type PostSearchAggregateTooManyRequestsResponseBody = {
   code?: string | undefined;
   message?: string | undefined;
-  timestamp?: string | undefined;
 };
 
 export const PostSearchAggregateTooManyRequestsResponseBody$zodSchema:
   z.ZodType<PostSearchAggregateTooManyRequestsResponseBody> = z.object({
     code: z.string().optional(),
     message: z.string().optional(),
-    timestamp: z.iso.datetime({ offset: true }).optional(),
   }).describe("请求过于频繁");
 
 /**
@@ -108,7 +101,6 @@ export const PostSearchAggregateTooManyRequestsResponseBody$zodSchema:
 export type PostSearchAggregateUnauthorizedResponseBody = {
   code?: string | undefined;
   message?: string | undefined;
-  timestamp?: string | undefined;
 };
 
 export const PostSearchAggregateUnauthorizedResponseBody$zodSchema: z.ZodType<
@@ -116,7 +108,6 @@ export const PostSearchAggregateUnauthorizedResponseBody$zodSchema: z.ZodType<
 > = z.object({
   code: z.string().optional(),
   message: z.string().optional(),
-  timestamp: z.iso.datetime({ offset: true }).optional(),
 }).describe("未授权");
 
 /**
@@ -125,7 +116,6 @@ export const PostSearchAggregateUnauthorizedResponseBody$zodSchema: z.ZodType<
 export type PostSearchAggregateBadRequestResponseBody = {
   code?: string | undefined;
   message?: string | undefined;
-  timestamp?: string | undefined;
 };
 
 export const PostSearchAggregateBadRequestResponseBody$zodSchema: z.ZodType<
@@ -133,7 +123,6 @@ export const PostSearchAggregateBadRequestResponseBody$zodSchema: z.ZodType<
 > = z.object({
   code: z.string().optional(),
   message: z.string().optional(),
-  timestamp: z.iso.datetime({ offset: true }).optional(),
 }).describe("请求参数错误");
 
 export type PostSearchAggregateResult = {
@@ -145,21 +134,21 @@ export type PostSearchAggregateResult = {
   position?: number | undefined;
   score?: number | undefined;
   publish_time?: string | undefined;
-  author?: string | null | undefined;
 };
 
 export const PostSearchAggregateResult$zodSchema: z.ZodType<
   PostSearchAggregateResult
 > = z.object({
-  author: z.string().nullable().optional(),
-  domain: z.string().optional(),
-  position: z.int().optional(),
-  publish_time: z.iso.datetime({ offset: true }).optional(),
-  score: z.number().optional(),
-  snippet: z.string().optional(),
+  domain: z.string().optional().describe("来源域名"),
+  position: z.int().optional().describe("原始排名位置"),
+  publish_time: z.iso.datetime({ offset: true }).optional().describe(
+    "发布时间（ISO 8601 格式）",
+  ),
+  score: z.number().optional().describe("综合得分（0-1，已经过排序）"),
+  snippet: z.string().optional().describe("结果摘要/描述"),
   source: z.string().optional(),
-  title: z.string().optional(),
-  url: z.string().optional(),
+  title: z.string().optional().describe("结果标题"),
+  url: z.string().optional().describe("结果链接"),
 });
 
 export type PostSearchAggregateSource = {
@@ -173,15 +162,53 @@ export type PostSearchAggregateSource = {
 export const PostSearchAggregateSource$zodSchema: z.ZodType<
   PostSearchAggregateSource
 > = z.object({
-  elapsed_ms: z.int().optional(),
-  first_result_host: z.string().optional(),
-  name: z.string().optional(),
-  result_count: z.int().optional(),
-  status: z.string().optional(),
+  elapsed_ms: z.int().optional().describe("该搜索引擎的耗时（毫秒）"),
+  first_result_host: z.string().optional().describe("该搜索源首条结果的域名"),
+  name: z.string().optional().describe("搜索引擎版本"),
+  result_count: z.int().optional().describe("该搜索引擎返回的结果数"),
+  status: z.string().optional().describe("本次搜索引擎调用状态"),
 });
 
 /**
- * 搜索成功，返回经过AI排序的高质量结果
+ * 服务端实际生效的请求参数回显
+ */
+export type RequestParams = {
+  query?: string | undefined;
+  limit?: number | undefined;
+  page?: number | undefined;
+  timeout_ms?: number | undefined;
+  sort?: string | undefined;
+};
+
+export const RequestParams$zodSchema: z.ZodType<RequestParams> = z.object({
+  limit: z.int().optional().describe("实际生效的返回条数"),
+  page: z.int().optional().describe("实际生效的页码"),
+  query: z.string().optional().describe("实际执行的搜索词"),
+  sort: z.string().optional().describe("实际生效的排序方式"),
+  timeout_ms: z.int().optional().describe("实际生效的超时时间（毫秒）"),
+}).describe("服务端实际生效的请求参数回显");
+
+/**
+ * 本次请求的处理元数据
+ */
+export type Metadata = {
+  request_params?: RequestParams | undefined;
+  dedupe_removed?: number | undefined;
+  rerank_applied?: boolean | undefined;
+  content_fetched?: number | undefined;
+};
+
+export const Metadata$zodSchema: z.ZodType<Metadata> = z.object({
+  content_fetched: z.int().optional().describe("额外抓取正文的结果数"),
+  dedupe_removed: z.int().optional().describe("去重后移除的结果数"),
+  request_params: z.lazy(() => RequestParams$zodSchema).optional().describe(
+    "服务端实际生效的请求参数回显",
+  ),
+  rerank_applied: z.boolean().optional().describe("是否执行了排序重排"),
+}).describe("本次请求的处理元数据");
+
+/**
+ * 搜索成功，返回经过智能排序的搜索结果、本次命中的搜索源信息和请求元数据
  */
 export type PostSearchAggregateResponseBody = {
   query?: string | undefined;
@@ -189,21 +216,25 @@ export type PostSearchAggregateResponseBody = {
   results?: Array<PostSearchAggregateResult> | undefined;
   sources?: Array<PostSearchAggregateSource> | undefined;
   process_time_ms?: number | undefined;
-  cached?: boolean | undefined;
+  metadata?: Metadata | undefined;
 };
 
 export const PostSearchAggregateResponseBody$zodSchema: z.ZodType<
   PostSearchAggregateResponseBody
 > = z.object({
-  cached: z.boolean().optional(),
-  process_time_ms: z.int().optional(),
-  query: z.string().optional(),
-  results: z.array(z.lazy(() => PostSearchAggregateResult$zodSchema))
-    .optional(),
-  sources: z.array(z.lazy(() => PostSearchAggregateSource$zodSchema))
-    .optional(),
-  total_results: z.int().optional(),
-}).describe("搜索成功，返回经过AI排序的高质量结果");
+  metadata: z.lazy(() => Metadata$zodSchema).optional().describe(
+    "本次请求的处理元数据",
+  ),
+  process_time_ms: z.int().optional().describe("本次请求总耗时（毫秒）"),
+  query: z.string().optional().describe("执行的搜索查询"),
+  results: z.array(z.lazy(() => PostSearchAggregateResult$zodSchema)).optional()
+    .describe("搜索结果列表"),
+  sources: z.array(z.lazy(() => PostSearchAggregateSource$zodSchema)).optional()
+    .describe("本次请求实际命中的搜索引擎信息"),
+  total_results: z.int().optional().describe("返回的搜索结果总数"),
+}).describe(
+  "搜索成功，返回经过智能排序的搜索结果、本次命中的搜索源信息和请求元数据",
+);
 
 export type PostSearchAggregateResponse =
   | PostSearchAggregateResponseBody

@@ -19,7 +19,7 @@ export const GetGameMinecraftUserinfoBadGatewayDetails$zodSchema: z.ZodType<
 > = z.object({});
 
 /**
- * 上游服务错误。在向 Mojang 的官方 API 请求数据时遇到了问题。这可能是他们的服务暂时中断，请稍后重试。
+ * 暂时无法获取相关游戏数据，请稍后重试。
  */
 export type GetGameMinecraftUserinfoBadGatewayResponseBody = {
   code?: string | undefined;
@@ -33,9 +33,7 @@ export const GetGameMinecraftUserinfoBadGatewayResponseBody$zodSchema:
     details: z.lazy(() => GetGameMinecraftUserinfoBadGatewayDetails$zodSchema)
       .optional(),
     message: z.string().optional(),
-  }).describe(
-    "上游服务错误。在向 Mojang 的官方 API 请求数据时遇到了问题。这可能是他们的服务暂时中断，请稍后重试。",
-  );
+  }).describe("暂时无法获取相关游戏数据，请稍后重试。");
 
 export type GetGameMinecraftUserinfoNotFoundDetails = {};
 
@@ -98,9 +96,11 @@ export type GetGameMinecraftUserinfoResponseBody = {
 export const GetGameMinecraftUserinfoResponseBody$zodSchema: z.ZodType<
   GetGameMinecraftUserinfoResponseBody
 > = z.object({
-  skin_url: z.string().optional(),
-  username: z.string().optional(),
-  uuid: z.string().optional(),
+  skin_url: z.string().optional().describe("玩家当前使用的皮肤图片URL。"),
+  username: z.string().optional().describe(
+    "玩家当前的准确用户名（注意大小写可能与输入不同）。",
+  ),
+  uuid: z.string().optional().describe("玩家的32位无破折号UUID。"),
 }).describe("查询成功！返回用户的UUID和皮肤链接。");
 
 export type GetGameMinecraftUserinfoResponse =

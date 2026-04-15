@@ -12,7 +12,11 @@ import {
 } from "../../console-logger.js";
 import { MCPServerFlags } from "../../flags.js";
 import { createMCPServer } from "../../server.js";
-import { buildSDK, buildTransportErrorResponse } from "../../tools.js";
+import {
+  buildAnnotationFilter,
+  buildSDK,
+  buildTransportErrorResponse,
+} from "../../tools.js";
 
 import { landingPageExpress } from "../../../landing-page.js";
 
@@ -86,18 +90,21 @@ async function startStreamableHTTP(cliFlags: ServeCommandFlags) {
       const headers = new Headers();
       for (const [key, value] of Object.entries(req.headers)) {
         if (Array.isArray(value)) {
-          for (const v of value) headers.append(key, v);
+          for (const v of value) {
+            headers.append(key, v);
+          }
         } else if (value !== undefined) {
           headers.set(key, value);
         }
       }
 
-      const transport = new StreamableHTTPServerTransport();
+      const transport = new StreamableHTTPServerTransport({});
 
       const { server: mcpServer } = createMCPServer({
         logger,
         allowedTools: cliFlags.tool,
         dynamic: cliFlags.mode === "dynamic",
+        annotationFilter: buildAnnotationFilter(cliFlags["tool-annotations"]),
         scopes: cliFlags.scope,
         serverURL: cliFlags["server-url"],
         getSDK: () =>

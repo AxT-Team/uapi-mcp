@@ -3,8 +3,13 @@
  */
 
 import { UapiMcpCore } from "../core.js";
-import { appendForm, encodeFormQuery } from "../lib/encodings.js";
 import {
+  appendForm,
+  encodeFormQuery,
+  normalizeBlob,
+} from "../lib/encodings.js";
+import {
+  bytesToBlob,
   getContentTypeFromFileName,
   readableStreamToArrayBuffer,
 } from "../lib/files.js";
@@ -100,7 +105,10 @@ async function $do(
   if (payload$?.body != null) {
     if (payload$?.body.file !== undefined) {
       if (isBlobLike(payload$?.body.file)) {
-        appendForm(body$, "file", payload$?.body.file);
+        const file = payload$?.body.file;
+        const blob = await normalizeBlob(file);
+        const name = "name" in file ? (file.name as string) : undefined;
+        appendForm(body$, "file", blob, name);
       } else if (isReadableStream(payload$?.body.file.content)) {
         const buffer = await readableStreamToArrayBuffer(
           payload$?.body.file.content,
@@ -108,8 +116,12 @@ async function $do(
         const contentType =
           getContentTypeFromFileName(payload$?.body.file.fileName)
           || "application/octet-stream";
-        const blob = new Blob([buffer], { type: contentType });
-        appendForm(body$, "file", blob, payload$?.body.file.fileName);
+        appendForm(
+          body$,
+          "file",
+          bytesToBlob(buffer, contentType),
+          payload$?.body.file.fileName,
+        );
       } else {
         const contentType =
           getContentTypeFromFileName(payload$?.body.file.fileName)
@@ -117,7 +129,7 @@ async function $do(
         appendForm(
           body$,
           "file",
-          new Blob([payload$?.body.file.content], { type: contentType }),
+          bytesToBlob(payload$?.body.file.content, contentType),
           payload$?.body.file.fileName,
         );
       }

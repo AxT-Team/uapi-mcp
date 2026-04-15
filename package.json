@@ -1,6 +1,6 @@
 {
   "name": "uapi-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "UAPI",
   "description": "Uapi Mcp 是 uapis.cn 的官方 MCP Server。",
   "type": "module",
@@ -31,8 +31,8 @@
   },
   "scripts": {
     "clean:build": "node ./scripts/clean-build.mjs",
-    "build": "npm run clean:build && bun src/mcp-server/build.mts && tsc",
-    "mcpb:build": "npm run clean:build && bun src/mcp-server/build.mts --pack && tsc",
+    "build": "npm run clean:build && bun i && bun src/mcp-server/build.mts && tsc",
+    "mcpb:build": "npm run clean:build && bun i && bun src/mcp-server/build.mts --pack && tsc",
     "check": "npm run lint",
     "lint": "eslint --cache --max-warnings=0 src",
     "test:regression": "node ./scripts/regression.mjs",

@@ -7,7 +7,9 @@ import { PostClipzyStoreRequest$zodSchema } from "../../models/postclipzystoreop
 import { formatResult, ToolDefinition } from "../tools.js";
 
 const args = {
-  request: PostClipzyStoreRequest$zodSchema,
+  request: PostClipzyStoreRequest$zodSchema.describe(
+    `包含加密数据和可选的TTL。`,
+  ),
 };
 
 export const tool$clipzyPostClipzyStore: ToolDefinition<typeof args> = {

@@ -40,6 +40,7 @@ export type GetMiscHolidayCalendarRequest = {
   holiday_type?: HolidayType | undefined;
   include_nearby?: boolean | undefined;
   nearby_limit?: number | undefined;
+  exclude_past?: boolean | undefined;
 };
 
 export const GetMiscHolidayCalendarRequest$zodSchema: z.ZodType<
@@ -48,7 +49,12 @@ export const GetMiscHolidayCalendarRequest$zodSchema: z.ZodType<
   date: z.string().describe(
     "按天查询时填写这个参数，例如查某一天。格式：`YYYY-MM-DD`。和 `month`、`year` 三选一。",
   ).optional(),
-  holiday_type: HolidayType$zodSchema.default("all"),
+  exclude_past: z.boolean().default(false).describe(
+    "传 true 时，会过滤今天之前已经过去的节日。默认 false。",
+  ),
+  holiday_type: HolidayType$zodSchema.default("all").describe(
+    "节日筛选类型，默认 all。",
+  ),
   include_nearby: z.boolean().default(false).describe(
     "是否返回前后最近节日，仅 date 模式生效，默认 false。month/year 模式会忽略此参数。",
   ),
@@ -83,8 +89,8 @@ export type GetMiscHolidayCalendarBadRequestResponseBody = {
 export const GetMiscHolidayCalendarBadRequestResponseBody$zodSchema: z.ZodType<
   GetMiscHolidayCalendarBadRequestResponseBody
 > = z.object({
-  code: z.int().optional(),
-  message: z.string().optional(),
+  code: z.int().optional().describe("业务状态码，400 表示请求参数错误。"),
+  message: z.string().optional().describe("具体错误原因提示。"),
 }).describe(
   "请求参数错误。常见原因：\n- `date`、`month`、`year` 未传或同时传入多个\n- 日期格式错误：`date` 必须为 `YYYY-MM-DD`、`month` 必须为 `YYYY-MM`、`year` 必须为 `YYYY`\n- `holiday_type` 非法\n- `timezone` 非法",
 );
@@ -94,28 +100,38 @@ export const GetMiscHolidayCalendarBadRequestResponseBody$zodSchema: z.ZodType<
  */
 export type Query = {
   date?: string | undefined;
-  month?: string | undefined;
-  year?: string | undefined;
-  timezone?: string | undefined;
   holiday_type?: string | undefined;
   include_nearby?: boolean | undefined;
+  exclude_past?: boolean | undefined;
+  month?: string | undefined;
   nearby_limit?: number | undefined;
+  timezone?: string | undefined;
+  year?: string | undefined;
 };
 
 export const Query$zodSchema: z.ZodType<Query> = z.object({
-  date: z.string().optional(),
-  holiday_type: z.string().optional(),
-  include_nearby: z.boolean().optional(),
-  month: z.string().optional(),
-  nearby_limit: z.int().optional(),
-  timezone: z.string().optional(),
-  year: z.string().optional(),
+  date: z.string().optional().describe(
+    "日视图查询参数。date 模式下为 YYYY-MM-DD，其余模式下为空字符串。",
+  ),
+  exclude_past: z.boolean().optional().describe(
+    "是否过滤今天之前已经过去的节日。",
+  ),
+  holiday_type: z.string().optional().describe("节日筛选类型。"),
+  include_nearby: z.boolean().optional().describe("是否开启前后最近节日查询。"),
+  month: z.string().optional().describe(
+    "月视图查询参数。month 模式下为 YYYY-MM，其余模式下为空字符串。",
+  ),
+  nearby_limit: z.int().optional().describe("前后最近节日返回数量上限。"),
+  timezone: z.string().optional().describe("实际生效的时区。"),
+  year: z.string().optional().describe(
+    "年视图查询参数。year 模式下为 YYYY，其余模式下为空字符串。",
+  ),
 }).describe("请求参数回显。");
 
 /**
  * 统计摘要。
  */
-export type Summary = {
+export type GetMiscHolidayCalendarSummary = {
   total_days?: number | undefined;
   weekend_days?: number | undefined;
   workdays?: number | undefined;
@@ -125,14 +141,22 @@ export type Summary = {
   legal_workdays?: number | undefined;
 };
 
-export const Summary$zodSchema: z.ZodType<Summary> = z.object({
-  holiday_events: z.int().optional(),
-  legal_rest_days: z.int().optional(),
-  legal_workdays: z.int().optional(),
-  rest_days: z.int().optional(),
-  total_days: z.int().optional(),
-  weekend_days: z.int().optional(),
-  workdays: z.int().optional(),
+export const GetMiscHolidayCalendarSummary$zodSchema: z.ZodType<
+  GetMiscHolidayCalendarSummary
+> = z.object({
+  holiday_events: z.int().optional().describe(
+    "按 holiday_type 过滤后的节日事件总数。",
+  ),
+  legal_rest_days: z.int().optional().describe("法定休假日天数。"),
+  legal_workdays: z.int().optional().describe("法定调休上班天数。"),
+  rest_days: z.int().optional().describe(
+    "查询范围内休息日天数（含周末和法定休假）。",
+  ),
+  total_days: z.int().optional().describe("查询范围内总天数。"),
+  weekend_days: z.int().optional().describe("查询范围内周末天数。"),
+  workdays: z.int().optional().describe(
+    "查询范围内工作日天数（含法定调休上班）。",
+  ),
 }).describe("统计摘要。");
 
 export type Day = {
@@ -161,28 +185,36 @@ export type Day = {
 };
 
 export const Day$zodSchema: z.ZodType<Day> = z.object({
-  date: z.string().optional(),
-  day: z.int().optional(),
-  ganzhi_day: z.string().optional(),
-  ganzhi_month: z.string().optional(),
-  ganzhi_year: z.string().optional(),
-  is_holiday: z.boolean().optional(),
-  is_rest_day: z.boolean().optional(),
-  is_weekend: z.boolean().optional(),
-  is_workday: z.boolean().optional(),
-  legal_holiday_name: z.string().optional(),
-  legal_holiday_type: z.string().optional(),
-  lunar_day: z.int().optional(),
-  lunar_day_name: z.string().optional(),
-  lunar_festival: z.string().optional(),
-  lunar_month: z.int().optional(),
-  lunar_month_name: z.string().optional(),
-  lunar_year: z.int().optional(),
-  month: z.int().optional(),
-  solar_festival: z.string().optional(),
-  solar_term: z.string().optional(),
-  weekday_cn: z.string().optional(),
-  year: z.int().optional(),
+  date: z.string().optional().describe("公历日期（YYYY-MM-DD）。"),
+  day: z.int().optional().describe("公历日期（天）。"),
+  ganzhi_day: z.string().optional().describe("干支日。"),
+  ganzhi_month: z.string().optional().describe("干支月。"),
+  ganzhi_year: z.string().optional().describe("干支年。"),
+  is_holiday: z.boolean().optional().describe(
+    "当天是否存在节日、节气或法定事件。",
+  ),
+  is_rest_day: z.boolean().optional().describe("是否为休息日。"),
+  is_weekend: z.boolean().optional().describe("是否为周末。"),
+  is_workday: z.boolean().optional().describe(
+    "是否为工作日（含法定调休上班日）。",
+  ),
+  legal_holiday_name: z.string().optional().describe(
+    "法定节假日名称，无则为空或不返回。",
+  ),
+  legal_holiday_type: z.string().optional().describe(
+    "法定假日类型：rest 或 workday_adjust。",
+  ),
+  lunar_day: z.int().optional().describe("农历日期（数字）。"),
+  lunar_day_name: z.string().optional().describe("农历日期中文名称。"),
+  lunar_festival: z.string().optional().describe("农历节日名称。有值时返回。"),
+  lunar_month: z.int().optional().describe("农历月份（数字）。"),
+  lunar_month_name: z.string().optional().describe("农历月份中文名称。"),
+  lunar_year: z.int().optional().describe("农历年份（数字）。"),
+  month: z.int().optional().describe("公历月份。"),
+  solar_festival: z.string().optional().describe("公历节日名称。有值时返回。"),
+  solar_term: z.string().optional().describe("节气名称。有值时返回。"),
+  weekday_cn: z.string().optional().describe("中文星期，如星期三。"),
+  year: z.int().optional().describe("公历年份。"),
 });
 
 /**
@@ -218,34 +250,64 @@ export type Holiday = {
 };
 
 export const Holiday$zodSchema: z.ZodType<Holiday> = z.object({
-  date: z.string().optional(),
-  is_workday: z.boolean().optional(),
-  name: z.string().optional(),
-  type: GetMiscHolidayCalendarType$zodSchema.optional(),
+  date: z.string().optional().describe("事件日期（YYYY-MM-DD）。"),
+  is_workday: z.boolean().optional().describe(
+    "仅 legal_workday_adjust 场景才会返回。",
+  ),
+  name: z.string().optional().describe("事件名称。"),
+  type: GetMiscHolidayCalendarType$zodSchema.optional().describe("事件类型。"),
+});
+
+export type PreviousEvent = {
+  date?: string | undefined;
+  name?: string | undefined;
+  type?: string | undefined;
+  is_workday?: boolean | undefined;
+};
+
+export const PreviousEvent$zodSchema: z.ZodType<PreviousEvent> = z.object({
+  date: z.string().optional().describe("事件日期。"),
+  is_workday: z.boolean().optional().describe("仅调休上班事件返回。"),
+  name: z.string().optional().describe("事件名称。"),
+  type: z.string().optional().describe("事件类型。"),
 });
 
 export type Previous = {
   date?: string | undefined;
-  name?: string | undefined;
-  type?: string | undefined;
+  events?: Array<PreviousEvent> | undefined;
 };
 
 export const Previous$zodSchema: z.ZodType<Previous> = z.object({
-  date: z.string().optional(),
-  name: z.string().optional(),
-  type: z.string().optional(),
+  date: z.string().optional().describe("聚合日期。"),
+  events: z.array(z.lazy(() => PreviousEvent$zodSchema)).optional().describe(
+    "该日期上的节日事件列表。",
+  ),
+});
+
+export type NextEvent = {
+  date?: string | undefined;
+  name?: string | undefined;
+  type?: string | undefined;
+  is_workday?: boolean | undefined;
+};
+
+export const NextEvent$zodSchema: z.ZodType<NextEvent> = z.object({
+  date: z.string().optional().describe("事件日期。"),
+  is_workday: z.boolean().optional().describe("仅调休上班事件返回。"),
+  name: z.string().optional().describe("事件名称。"),
+  type: z.string().optional().describe("事件类型。"),
 });
 
 export type Next = {
   date?: string | undefined;
-  name?: string | undefined;
-  type?: string | undefined;
+  events?: Array<NextEvent> | undefined;
 };
 
 export const Next$zodSchema: z.ZodType<Next> = z.object({
-  date: z.string().optional(),
-  name: z.string().optional(),
-  type: z.string().optional(),
+  date: z.string().optional().describe("聚合日期。"),
+  events: z.array(z.lazy(() => NextEvent$zodSchema)).optional().describe(
+    "该日期上的节日事件列表。",
+  ),
 });
 
 /**
@@ -257,45 +319,42 @@ export type Nearby = {
 };
 
 export const Nearby$zodSchema: z.ZodType<Nearby> = z.object({
-  next: z.array(z.lazy(() => Next$zodSchema)).optional(),
-  previous: z.array(z.lazy(() => Previous$zodSchema)).optional(),
+  next: z.array(z.lazy(() => Next$zodSchema)).optional().describe(
+    "当前查询日期之后最近的节日列表（按时间正序）。",
+  ),
+  previous: z.array(z.lazy(() => Previous$zodSchema)).optional().describe(
+    "当前查询日期之前最近的节日列表（按时间倒序）。",
+  ),
 }).describe("前后最近节日，仅 include_nearby=true 且 date 模式返回。");
-
-export type GetMiscHolidayCalendarData = {
-  mode?: string | undefined;
-  query?: Query | undefined;
-  summary?: Summary | undefined;
-  days?: Array<Day> | undefined;
-  holidays?: Array<Holiday> | undefined;
-  nearby?: Nearby | undefined;
-};
-
-export const GetMiscHolidayCalendarData$zodSchema: z.ZodType<
-  GetMiscHolidayCalendarData
-> = z.object({
-  days: z.array(z.lazy(() => Day$zodSchema)).optional(),
-  holidays: z.array(z.lazy(() => Holiday$zodSchema)).optional(),
-  mode: z.string().optional(),
-  nearby: z.lazy(() => Nearby$zodSchema).optional(),
-  query: z.lazy(() => Query$zodSchema).optional(),
-  summary: z.lazy(() => Summary$zodSchema).optional(),
-});
 
 /**
  * 查询成功，返回指定范围的万年历与节假日信息。
  */
 export type GetMiscHolidayCalendarResponseBody = {
-  code?: number | undefined;
-  message?: string | undefined;
-  data?: GetMiscHolidayCalendarData | undefined;
+  mode?: string | undefined;
+  query?: Query | undefined;
+  summary?: GetMiscHolidayCalendarSummary | undefined;
+  days?: Array<Day> | undefined;
+  holidays?: Array<Holiday> | undefined;
+  nearby?: Nearby | undefined;
 };
 
 export const GetMiscHolidayCalendarResponseBody$zodSchema: z.ZodType<
   GetMiscHolidayCalendarResponseBody
 > = z.object({
-  code: z.int().optional(),
-  data: z.lazy(() => GetMiscHolidayCalendarData$zodSchema).optional(),
-  message: z.string().optional(),
+  days: z.array(z.lazy(() => Day$zodSchema)).optional().describe(
+    "日期明细列表。",
+  ),
+  holidays: z.array(z.lazy(() => Holiday$zodSchema)).optional().describe(
+    "节日事件列表。",
+  ),
+  mode: z.string().optional().describe("查询模式：day、month、year。"),
+  nearby: z.lazy(() => Nearby$zodSchema).optional().describe(
+    "前后最近节日，仅 include_nearby=true 且 date 模式返回。",
+  ),
+  query: z.lazy(() => Query$zodSchema).optional().describe("请求参数回显。"),
+  summary: z.lazy(() => GetMiscHolidayCalendarSummary$zodSchema).optional()
+    .describe("统计摘要。"),
 }).describe("查询成功，返回指定范围的万年历与节假日信息。");
 
 export type GetMiscHolidayCalendarResponse =

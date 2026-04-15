@@ -6,9 +6,9 @@ import * as z from "zod";
 import { ClosedEnum } from "../types/enums.js";
 
 /**
- * 目标语言代码。请从支持的语言列表中选择一个语言代码。
+ * 目标语言代码。请从[支持的语言列表](#enum-list)中选择一个语言代码。
  */
-export const PostTranslateTextToLang = {
+export const ToLang = {
   Sq: "sq",
   Ga: "ga",
   Et: "et",
@@ -116,17 +116,15 @@ export const PostTranslateTextToLang = {
   Yua: "yua",
   Yo: "yo",
   Vi: "vi",
-  ZhCHS: "zh-CHS",
-  ZhCHT: "zh-CHT",
+  Zh: "zh",
+  ZhTW: "zh-TW",
 } as const;
 /**
- * 目标语言代码。请从支持的语言列表中选择一个语言代码。
+ * 目标语言代码。请从[支持的语言列表](#enum-list)中选择一个语言代码。
  */
-export type PostTranslateTextToLang = ClosedEnum<
-  typeof PostTranslateTextToLang
->;
+export type ToLang = ClosedEnum<typeof ToLang>;
 
-export const PostTranslateTextToLang$zodSchema = z.enum([
+export const ToLang$zodSchema = z.enum([
   "sq",
   "ga",
   "et",
@@ -234,23 +232,22 @@ export const PostTranslateTextToLang$zodSchema = z.enum([
   "yua",
   "yo",
   "vi",
-  "zh-CHS",
-  "zh-CHT",
-]).describe("目标语言代码。请从支持的语言列表中选择一个语言代码。");
+  "zh",
+  "zh-TW",
+]).describe(
+  "目标语言代码。请从[支持的语言列表](#enum-list)中选择一个语言代码。",
+);
 
-/**
- * 包含待翻译文本的JSON对象
- */
 export type PostTranslateTextRequestBody = { text: string };
 
 export const PostTranslateTextRequestBody$zodSchema: z.ZodType<
   PostTranslateTextRequestBody
 > = z.object({
-  text: z.string(),
-}).describe("包含待翻译文本的JSON对象");
+  text: z.string().describe("待翻译的文本内容，最大长度3000字符。"),
+});
 
 export type PostTranslateTextRequest = {
-  to_lang: PostTranslateTextToLang;
+  to_lang: ToLang;
   body: PostTranslateTextRequestBody;
 };
 
@@ -258,7 +255,9 @@ export const PostTranslateTextRequest$zodSchema: z.ZodType<
   PostTranslateTextRequest
 > = z.object({
   body: z.lazy(() => PostTranslateTextRequestBody$zodSchema),
-  to_lang: PostTranslateTextToLang$zodSchema,
+  to_lang: ToLang$zodSchema.describe(
+    "目标语言代码。请从[支持的语言列表](#enum-list)中选择一个语言代码。",
+  ),
 });
 
 export type PostTranslateTextInternalServerErrorDetails = {};
@@ -319,8 +318,8 @@ export type PostTranslateTextResponseBody = {
 export const PostTranslateTextResponseBody$zodSchema: z.ZodType<
   PostTranslateTextResponseBody
 > = z.object({
-  source_lang: z.string().optional(),
-  translated_text: z.string().optional(),
+  source_lang: z.string().optional().describe("The source language detected."),
+  translated_text: z.string().optional().describe("The translated text."),
 }).describe("成功响应");
 
 export type PostTranslateTextResponse =

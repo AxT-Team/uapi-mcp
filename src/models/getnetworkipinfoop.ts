@@ -6,20 +6,20 @@ import * as z from "zod";
 import { ClosedEnum } from "../types/enums.js";
 
 /**
- * 查询的数据源。如果留空，将使用默认的数据库。如果设置为 `commercial`，将调用商业级API，返回更详细的地理位置信息，但响应时间可能会稍长。
+ * 查询结果类型。不传时返回标准结果；如果设置为 `commercial`，将返回更完整的地理位置信息，但响应时间可能会稍长。
  */
 export const GetNetworkIpinfoSource = {
   Commercial: "commercial",
 } as const;
 /**
- * 查询的数据源。如果留空，将使用默认的数据库。如果设置为 `commercial`，将调用商业级API，返回更详细的地理位置信息，但响应时间可能会稍长。
+ * 查询结果类型。不传时返回标准结果；如果设置为 `commercial`，将返回更完整的地理位置信息，但响应时间可能会稍长。
  */
 export type GetNetworkIpinfoSource = ClosedEnum<typeof GetNetworkIpinfoSource>;
 
 export const GetNetworkIpinfoSource$zodSchema = z.enum([
   "commercial",
 ]).describe(
-  "查询的数据源。如果留空，将使用默认的数据库。如果设置为 `commercial`，将调用商业级API，返回更详细的地理位置信息，但响应时间可能会稍长。",
+  "查询结果类型。不传时返回标准结果；如果设置为 `commercial`，将返回更完整的地理位置信息，但响应时间可能会稍长。",
 );
 
 export type GetNetworkIpinfoRequest = {
@@ -31,7 +31,9 @@ export const GetNetworkIpinfoRequest$zodSchema: z.ZodType<
   GetNetworkIpinfoRequest
 > = z.object({
   ip: z.string().describe("你需要查询的公网IP地址或域名（支持IPv4和IPv6）。"),
-  source: GetNetworkIpinfoSource$zodSchema.optional(),
+  source: GetNetworkIpinfoSource$zodSchema.optional().describe(
+    "查询结果类型。不传时返回标准结果；如果设置为 `commercial`，将返回更完整的地理位置信息，但响应时间可能会稍长。",
+  ),
 });
 
 export type GetNetworkIpinfoInternalServerErrorDetails = {};
@@ -120,22 +122,20 @@ export type GetNetworkIpinfoResponseBody = {
   longitude?: number | undefined;
   beginip?: string | undefined;
   endip?: string | undefined;
-  district?: string | undefined;
 };
 
 export const GetNetworkIpinfoResponseBody$zodSchema: z.ZodType<
   GetNetworkIpinfoResponseBody
 > = z.object({
-  asn: z.string().optional(),
-  beginip: z.string().optional(),
-  district: z.string().optional(),
-  endip: z.string().optional(),
-  ip: z.string().optional(),
-  isp: z.string().optional(),
-  latitude: z.number().optional(),
-  llc: z.string().optional(),
-  longitude: z.number().optional(),
-  region: z.string().optional(),
+  asn: z.string().optional().describe("自治系统编号"),
+  beginip: z.string().optional().describe("IP段起始地址（标准查询）"),
+  endip: z.string().optional().describe("IP段结束地址（标准查询）"),
+  ip: z.string().optional().describe("查询的IP地址"),
+  isp: z.string().optional().describe("运营商名称"),
+  latitude: z.number().optional().describe("纬度"),
+  llc: z.string().optional().describe("归属机构"),
+  longitude: z.number().optional().describe("经度"),
+  region: z.string().optional().describe("地理位置，格式：国家 省份 城市"),
 }).describe("查询成功！返回该IP地址的详细地理和网络信息。");
 
 export type GetNetworkIpinfoResponse =

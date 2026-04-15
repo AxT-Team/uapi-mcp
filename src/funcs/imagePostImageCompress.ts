@@ -3,8 +3,13 @@
  */
 
 import { UapiMcpCore } from "../core.js";
-import { appendForm, encodeFormQuery } from "../lib/encodings.js";
 import {
+  appendForm,
+  encodeFormQuery,
+  normalizeBlob,
+} from "../lib/encodings.js";
+import {
+  bytesToBlob,
   getContentTypeFromFileName,
   readableStreamToArrayBuffer,
 } from "../lib/files.js";
@@ -47,11 +52,11 @@ export enum PostImageCompressAcceptEnum {
  *
  * ## 使用须知
  * > [!TIP]
- * > 为了给您最好的压缩效果，我们的算法需要进行复杂计算，处理时间可能会稍长一些，请耐心等待。
+ * > 图片越大或压缩等级越高，处理时间可能越长，请您耐心等待。
  *
  * > [!WARNING]
- * > **服务排队提醒**
- * > 这是一个计算密集型服务。在高并发时，您的请求可能会被排队等待处理。如果您需要将其集成到对延迟敏感的生产服务中，请注意这一点。
+ * > **处理时间提醒**
+ * > 在访问量较高时，处理时间可能进一步延长。如果您的业务对返回时间比较敏感，建议预留充足的处理时间。
  *
  * ### 请求与响应格式
  * - 请求必须使用 `multipart/form-data` 格式上传文件。
@@ -125,22 +130,29 @@ async function $do(
   const payload$ = parsed$.value;
   const body$ = new FormData();
   if (isBlobLike(payload$.body.file)) {
-    appendForm(body$, "file", payload$.body.file);
+    const file = payload$.body.file;
+    const blob = await normalizeBlob(file);
+    const name = "name" in file ? (file.name as string) : undefined;
+    appendForm(body$, "file", blob, name);
   } else if (isReadableStream(payload$.body.file.content)) {
     const buffer = await readableStreamToArrayBuffer(
       payload$.body.file.content,
     );
     const contentType = getContentTypeFromFileName(payload$.body.file.fileName)
       || "application/octet-stream";
-    const blob = new Blob([buffer], { type: contentType });
-    appendForm(body$, "file", blob, payload$.body.file.fileName);
+    appendForm(
+      body$,
+      "file",
+      bytesToBlob(buffer, contentType),
+      payload$.body.file.fileName,
+    );
   } else {
     const contentType = getContentTypeFromFileName(payload$.body.file.fileName)
       || "application/octet-stream";
     appendForm(
       body$,
       "file",
-      new Blob([payload$.body.file.content], { type: contentType }),
+      bytesToBlob(payload$.body.file.content, contentType),
       payload$.body.file.fileName,
     );
   }

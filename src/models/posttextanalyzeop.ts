@@ -4,16 +4,13 @@
 
 import * as z from "zod";
 
-/**
- * 包含待分析文本 'text' 的JSON对象
- */
 export type PostTextAnalyzeRequest = { text: string };
 
 export const PostTextAnalyzeRequest$zodSchema: z.ZodType<
   PostTextAnalyzeRequest
 > = z.object({
   text: z.string(),
-}).describe("包含待分析文本 'text' 的JSON对象");
+});
 
 export type PostTextAnalyzeDetails = {};
 

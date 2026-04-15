@@ -4,22 +4,21 @@
 
 import * as z from "zod";
 
-/**
- * 包含待解密文本 'text'、密钥 'key' 和随机数 'nonce' 的JSON对象
- */
 export type PostTextAesDecryptRequest = {
   key: string;
   text: string;
-  nonce: string;
+  nonce?: string | undefined;
 };
 
 export const PostTextAesDecryptRequest$zodSchema: z.ZodType<
   PostTextAesDecryptRequest
 > = z.object({
-  key: z.string(),
-  nonce: z.string(),
-  text: z.string(),
-}).describe("包含待解密文本 'text'、密钥 'key' 和随机数 'nonce' 的JSON对象");
+  key: z.string().describe(
+    "密钥，长度必须为16、24或32字节，对应AES-128/192/256。",
+  ),
+  nonce: z.string().optional().describe("16字节的IV/Nonce，必须为16个字符"),
+  text: z.string().describe("Base64编码的密文。"),
+});
 
 export type PostTextAesDecryptInternalServerErrorDetails = {};
 

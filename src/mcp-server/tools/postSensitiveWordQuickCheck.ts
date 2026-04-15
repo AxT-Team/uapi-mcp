@@ -7,25 +7,27 @@ import { PostSensitiveWordQuickCheckRequest$zodSchema } from "../../models/posts
 import { formatResult, ToolDefinition } from "../tools.js";
 
 const args = {
-  request: PostSensitiveWordQuickCheckRequest$zodSchema,
+  request: PostSensitiveWordQuickCheckRequest$zodSchema.describe(
+    `包含待检测文本 'text' 的JSON对象`,
+  ),
 };
 
 export const tool$postSensitiveWordQuickCheck: ToolDefinition<typeof args> = {
-  name: "text-post-sensitive-word-quick-check",
+  name: "-post-sensitive-word-quick-check",
   description: `敏感词检测（快速）
 
-在你的社区或应用中，需要来过滤掉不和谐的声音吗？这个接口可以助你一臂之力。
+在你的社区或应用中，需要过滤不适合展示的内容时，这个接口可以帮你快速完成检测。
 
 ## 功能概述
 
-我们对敏感词检测接口进行了大幅升级，现在采用高效的 **Aho-Corasick 算法**，实现了多模式字符串匹配。这意味着你不再需要手动编写复杂的正则表达式，系统会自动高效地检测出文本中的所有敏感词。
+这个接口可以识别文本中的敏感词，并返回是否命中、命中词列表等结果，适合用于评论区、社区、论坛和内容发布场景。
 
 ### 主要特性
 
-- **高性能算法**：基于 Aho-Corasick 算法，单次扫描即可检测多个敏感词模式
-- **简繁体支持**：自动识别和处理简体中文、繁体中文内容
-- **多模匹配**：无需编写正则表达式，系统内置智能匹配逻辑
-- **快速响应**：相比传统方法，检测速度显著提升
+- **快速检测**：能够一次处理整段文本中的多个命中内容
+- **简繁体支持**：支持简体中文、繁体中文和混合文本检测
+- **结果直观**：返回清晰的检测结果，方便直接接入审核流程
+- **响应稳定**：适合日常内容审核和批量检查场景
 
 无论是论坛、社交平台还是评论系统，这个接口都能帮你快速构建内容审核功能。`,
   scopes: ["read"],

@@ -29,19 +29,16 @@ import { Result } from "../types/fp.js";
  * 查询 GitHub 仓库
  *
  * @remarks
- * 需要快速获取一个GitHub仓库的核心信息？这个接口为你聚合了最有价值的数据，避免了多次调用GitHub官方API的麻烦，并且内置了缓存优化，速度更快、更稳定。
+ * 需要快速获取一个GitHub仓库的核心信息？这个接口一次请求就能返回仓库的关键数据，适合项目展示、统计和分析场景。
  *
- * ### 聚合高价值数据
+ * ### 可获取的数据
  * 一次请求，即可获得以下信息：
  * - **核心指标**: `star`, `fork`, `open_issues` 等关键统计数据。
  * - **项目详情**: 描述、主页、分支、语言、话题标签、开源协议。
- * - **参与者信息**: 获取协作者(`collaborators`)和推断的维护者(`maintainers`)列表，包括他们的公开邮箱（如果可用）。
+ * - **参与者信息**: 获取协作者(`collaborators`)和维护者参考信息(`maintainers`)列表，包括他们的公开邮箱（如果可用）。
  *
  * > [!NOTE]
- * > `collaborators` 字段在私有仓库或权限受限时可能为空。`maintainers` 是根据最新提交记录推断的，仅供参考。
- *
- * ### 性能与稳定性
- * 我们内置了多级缓存，有效避免触发GitHub的API速率限制。对于需要更高请求额度的用户，可以联系我们定制接口。
+ * > `collaborators` 字段在私有仓库或权限受限时可能为空。`maintainers` 为整理后的参考信息，仅供参考。
  */
 export function socialGetGithubRepo(
   client$: UapiMcpCore,

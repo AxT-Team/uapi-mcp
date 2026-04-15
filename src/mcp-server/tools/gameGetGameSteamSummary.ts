@@ -30,8 +30,8 @@ export const tool$gameGetGameSteamSummary: ToolDefinition<typeof args> = {
 ## 使用须知
 
 > [!IMPORTANT]
-> **API Key 安全**
-> 此接口需要一个 Steam Web API Key。我们强烈建议由后端统一配置和调用，以避免在客户端泄露。当然，你也可以通过 \`key\` 查询参数临时提供一个Key来覆盖后端配置。
+> **访问凭证说明**
+> 这个接口可以传 \`key\` 使用您自己的访问凭证。如果您选择传入，请注意妥善保管，不要把它写进公开的前端代码中。
 
 在处理响应时，请注意以下数字代码的含义：
 - **\`personastate\` (用户状态)**: 0-离线, 1-在线, 2-忙碌, 3-离开, 4-打盹, 5-想交易, 6-想玩。

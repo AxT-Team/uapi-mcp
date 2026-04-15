@@ -11,7 +11,7 @@ const args = {
 };
 
 export const tool$getSensitiveWordAnalyzeQuery: ToolDefinition<typeof args> = {
-  name: "text-get-sensitive-word-analyze-query",
+  name: "-get-sensitive-word-analyze-query",
   description: `敏感词分析 (GET)
 
 通过URL查询参数分析单个关键词，便于GET请求调用。`,

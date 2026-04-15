@@ -16,8 +16,12 @@ export type PostImageSpeechlessRequest = {
 export const PostImageSpeechlessRequest$zodSchema: z.ZodType<
   PostImageSpeechlessRequest
 > = z.object({
-  bottom_text: z.string().optional(),
-  top_text: z.string().optional(),
+  bottom_text: z.string().optional().describe(
+    "表情包下方的文字内容。求求你_______",
+  ),
+  top_text: z.string().optional().describe(
+    "表情包上方的文字内容。你们怎么不说话了，是不是都在偷偷 _______",
+  ),
 }).describe("包含表情包文字内容的JSON对象。至少需要提供上方或下方文字之一。");
 
 /**

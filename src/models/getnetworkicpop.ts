@@ -18,7 +18,7 @@ export const GetNetworkIcpNotFoundDetails$zodSchema: z.ZodType<
 > = z.object({});
 
 /**
- * 未查询到备案信息。该域名可能没有在工信部备案，或者是我们查询的上游接口暂时没有收录。
+ * 未查询到备案信息。该域名可能没有在工信部备案，或者当前暂无可用结果。
  */
 export type GetNetworkIcpNotFoundResponseBody = {
   code?: string | undefined;
@@ -33,7 +33,7 @@ export const GetNetworkIcpNotFoundResponseBody$zodSchema: z.ZodType<
   details: z.lazy(() => GetNetworkIcpNotFoundDetails$zodSchema).optional(),
   message: z.string().optional(),
 }).describe(
-  "未查询到备案信息。该域名可能没有在工信部备案，或者是我们查询的上游接口暂时没有收录。",
+  "未查询到备案信息。该域名可能没有在工信部备案，或者当前暂无可用结果。",
 );
 
 export type GetNetworkIcpBadRequestDetails = {};
@@ -77,9 +77,9 @@ export const GetNetworkIcpResponseBody$zodSchema: z.ZodType<
   code: z.string().optional(),
   domain: z.string().optional(),
   msg: z.string().optional(),
-  natureName: z.string().optional(),
-  serviceLicence: z.string().optional(),
-  unitName: z.string().optional(),
+  natureName: z.string().optional().describe("主办单位的性质 (企业/个人)"),
+  serviceLicence: z.string().optional().describe("ICP备案号"),
+  unitName: z.string().optional().describe("主办单位名称"),
 }).describe("查询成功！返回该域名的ICP备案详情。");
 
 export type GetNetworkIcpResponse =

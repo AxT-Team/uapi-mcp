@@ -16,8 +16,8 @@ generation:
     sharedNestedComponentsJan2026: true
     nameOverrideFeb2026: true
   auth:
-    oAuth2ClientCredentialsEnabled: true
-    oAuth2PasswordEnabled: true
+    oAuth2ClientCredentialsEnabled: false
+    oAuth2PasswordEnabled: false
     hoistGlobalSecurity: true
   inferSSEOverload: true
   sdkHooksConfigAccess: true
@@ -31,7 +31,7 @@ generation:
     generateNewTests: true
     skipResponseBodyAssertions: false
 mcp-typescript:
-  version: 0.1.0
+  version: 0.1.1
   additionalDependencies:
     dependencies: {}
     devDependencies: {}
@@ -42,6 +42,7 @@ mcp-typescript:
   cloudflareEnabled: false
   defaultErrorName: UapiMcpDefaultError
   envVarPrefix: UAPI_MCP
+  fixEnumNameSanitization: false
   formStringArrayEncodeMode: array
   gramEnabled: false
   inferUnionDiscriminators: true
@@ -53,22 +54,22 @@ mcp-typescript:
     long_description: Uapi Mcp 是 uapis.cn 的官方MCP。它把 UAPI 的搜索、翻译、图像、文本处理和网页解析能力整理成统一的 MCP Server，让你的ai拥有无限的能力~
     server:
       mcp_config:
-        command: node
         args:
           - ${__dirname}/bin/mcp-server.js
           - start
           - --mode
           - dynamic
+        command: node
         env:
           UAPI_MCP_UAPIKEY: ${user_config.uapikey}
     user_config:
       uapikey:
-        type: string
-        title: UAPI Key
-        description: 填写后会自动用于所有上游请求。
         default: ""
+        description: 填写后会自动用于所有上游请求。
         sensitive: true
-    version: 0.1.0
+        title: UAPI Key
+        type: string
+    version: 0.1.1
   multipartArrayFormat: standard
   outputModelSuffix: output
   packageName: uapi-mcp

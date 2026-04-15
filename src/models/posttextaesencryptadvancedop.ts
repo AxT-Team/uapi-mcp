@@ -70,9 +70,6 @@ export const OutputFormat$zodSchema = z.enum([
   "hex",
 ]).describe("输出格式：base64（默认）或hex");
 
-/**
- * 包含加密配置的JSON对象
- */
 export type PostTextAesEncryptAdvancedRequest = {
   text: string;
   key: string;
@@ -85,13 +82,21 @@ export type PostTextAesEncryptAdvancedRequest = {
 export const PostTextAesEncryptAdvancedRequest$zodSchema: z.ZodType<
   PostTextAesEncryptAdvancedRequest
 > = z.object({
-  iv: z.string().optional(),
-  key: z.string(),
-  mode: PostTextAesEncryptAdvancedMode$zodSchema.optional(),
-  output_format: OutputFormat$zodSchema.optional(),
-  padding: PostTextAesEncryptAdvancedPadding$zodSchema.optional(),
-  text: z.string(),
-}).describe("包含加密配置的JSON对象");
+  iv: z.string().optional().describe(
+    "自定义IV（可选，Base64编码，16字节）。GCM模式无需此参数",
+  ),
+  key: z.string().describe("加密密钥（支持任意长度）"),
+  mode: PostTextAesEncryptAdvancedMode$zodSchema.optional().describe(
+    "加密模式：GCM/CBC/ECB/CTR/OFB/CFB（可选，默认GCM）",
+  ),
+  output_format: OutputFormat$zodSchema.optional().describe(
+    "输出格式：base64（默认）或hex",
+  ),
+  padding: PostTextAesEncryptAdvancedPadding$zodSchema.optional().describe(
+    "填充方式：PKCS7/ZERO/NONE（可选，默认PKCS7）",
+  ),
+  text: z.string().describe("待加密的明文文本"),
+});
 
 /**
  * 无效的请求参数
@@ -118,10 +123,12 @@ export type PostTextAesEncryptAdvancedResponseBody = {
 export const PostTextAesEncryptAdvancedResponseBody$zodSchema: z.ZodType<
   PostTextAesEncryptAdvancedResponseBody
 > = z.object({
-  ciphertext: z.string().optional(),
-  iv: z.string().optional(),
-  mode: z.string().optional(),
-  padding: z.string().optional(),
+  ciphertext: z.string().optional().describe("加密后的密文（Base64编码）"),
+  iv: z.string().optional().describe(
+    "使用的IV（Base64编码）。GCM模式不返回此字段",
+  ),
+  mode: z.string().optional().describe("使用的加密模式"),
+  padding: z.string().optional().describe("使用的填充方式"),
 }).describe("加密成功，返回密文和加密配置");
 
 export type PostTextAesEncryptAdvancedResponse =

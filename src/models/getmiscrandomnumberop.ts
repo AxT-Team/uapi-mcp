@@ -65,7 +65,7 @@ export type GetMiscRandomnumberResponseBody = {
 export const GetMiscRandomnumberResponseBody$zodSchema: z.ZodType<
   GetMiscRandomnumberResponseBody
 > = z.object({
-  numbers: z.array(z.number()).optional(),
+  numbers: z.array(z.number()).optional().describe("生成的随机数列表。"),
 }).describe("生成成功！返回一个包含随机数的数组。");
 
 export type GetMiscRandomnumberResponse =

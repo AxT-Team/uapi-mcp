@@ -133,8 +133,12 @@ export type GetRandomImageRequest = {
 
 export const GetRandomImageRequest$zodSchema: z.ZodType<GetRandomImageRequest> =
   z.object({
-    category: GetRandomImageCategory$zodSchema.optional(),
-    type: GetRandomImageType$zodSchema.optional(),
+    category: GetRandomImageCategory$zodSchema.optional().describe(
+      "（可选）指定图片主类别。\n\n**支持的主类别：**\n- `acg`（二次元动漫，UapiPro服务器）\n- `landscape`（风景图，外部图床）\n- `anime`（混合动漫）\n- `pc_wallpaper`（电脑壁纸，外部图床）\n- `mobile_wallpaper`（手机壁纸，外部图床）\n- `general_anime`（动漫图，外部图床）\n- `ai_drawing`（AI绘画，外部图床）\n- `bq`（表情包/趣图，UapiPro服务器）\n- `furry`（福瑞，UapiPro服务器）\n\n> [!TIP]\n> 如果不指定，将从所有图片中随机抽取（不包含 `ikun` 和 `ai_drawing`）。\n",
+    ),
+    type: GetRandomImageType$zodSchema.optional().describe(
+      "（可选，仅UapiPro服务器图片支持）指定图片子类别。\n\n- **bq**: `xiongmao`, `waiguoren`, `maomao`, `ikun`, `eciyuan`\n- **acg**: `pc`, `mb`\n- **furry**: `z4k`, `szs8k`, `s4k`, `4k`\n\n> [!TIP]\n> 外部图床类别和 `anime` 混合类别不支持 `type` 参数。\n",
+    ),
   });
 
 /**

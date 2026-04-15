@@ -3,48 +3,10 @@
  */
 
 import * as z from "zod";
-import { ClosedEnum } from "../types/enums.js";
-
-/**
- * 排序方式。支持 `0/time`（按时间）、`1/like`（按点赞）、`2/reply`（按回复数）、`3/hot/hottest/最热`（按最热）。默认为 `0/time`。
- */
-export const GetSocialBilibiliRepliesSort = {
-  TimeCode: "0",
-  Time: "time",
-  LikeCode: "1",
-  Like: "like",
-  ReplyCode: "2",
-  Reply: "reply",
-  HotCode: "3",
-  Hot: "hot",
-  Hottest: "hottest",
-  HotZh: "最热",
-} as const;
-/**
- * 排序方式。支持 `0/time`（按时间）、`1/like`（按点赞）、`2/reply`（按回复数）、`3/hot/hottest/最热`（按最热）。默认为 `0/time`。
- */
-export type GetSocialBilibiliRepliesSort = ClosedEnum<
-  typeof GetSocialBilibiliRepliesSort
->;
-
-export const GetSocialBilibiliRepliesSort$zodSchema = z.enum([
-  "0",
-  "time",
-  "1",
-  "like",
-  "2",
-  "reply",
-  "3",
-  "hot",
-  "hottest",
-  "最热",
-]).describe(
-  "排序方式。支持 `0/time`（按时间）、`1/like`（按点赞）、`2/reply`（按回复数）、`3/hot/hottest/最热`（按最热）。默认为 `0/time`。",
-);
 
 export type GetSocialBilibiliRepliesRequest = {
   oid: string;
-  sort?: GetSocialBilibiliRepliesSort | undefined;
+  sort?: string | undefined;
   ps?: string | undefined;
   pn?: string | undefined;
 };
@@ -56,7 +18,9 @@ export const GetSocialBilibiliRepliesRequest$zodSchema: z.ZodType<
   pn: z.string().describe("要获取的页码，从1开始。默认为 `1`。").optional(),
   ps: z.string().describe("每页获取的评论数量，范围是1到20。默认为 `20`。")
     .optional(),
-  sort: GetSocialBilibiliRepliesSort$zodSchema.optional(),
+  sort: z.string().describe(
+    "排序方式。支持 `0/time`（按时间）、`1/like`（按点赞）、`2/reply`（按回复数）、`3/hot/hottest/最热`（按最热）。默认为 `0/time`。",
+  ).optional(),
 });
 
 /**
@@ -72,11 +36,24 @@ export type GetSocialBilibiliRepliesPage = {
 export const GetSocialBilibiliRepliesPage$zodSchema: z.ZodType<
   GetSocialBilibiliRepliesPage
 > = z.object({
-  acount: z.number().optional(),
-  count: z.number().optional(),
-  num: z.number().optional(),
-  size: z.number().optional(),
+  acount: z.number().optional().describe(
+    "评论区总评论数，包含了所有的楼中楼回复。",
+  ),
+  count: z.number().optional().describe(
+    "根评论（即直接评论视频的评论）的总数。",
+  ),
+  num: z.number().optional().describe("当前所在的页码。"),
+  size: z.number().optional().describe("每页的项数。"),
 }).describe("分页信息概览。");
+
+/**
+ * 评论区配置。不同视频或不同权限下可能为 null。
+ */
+export type Config = {};
+
+export const Config$zodSchema: z.ZodType<Config> = z.object({}).describe(
+  "评论区配置。不同视频或不同权限下可能为 null。",
+);
 
 export type Hot = {};
 
@@ -85,7 +62,7 @@ export const Hot$zodSchema: z.ZodType<Hot> = z.object({});
 export type LevelInfo = { current_level?: number | undefined };
 
 export const LevelInfo$zodSchema: z.ZodType<LevelInfo> = z.object({
-  current_level: z.number().optional(),
+  current_level: z.number().optional().describe("用户的B站等级。"),
 });
 
 /**
@@ -99,10 +76,10 @@ export type Member = {
 };
 
 export const Member$zodSchema: z.ZodType<Member> = z.object({
-  avatar: z.string().optional(),
+  avatar: z.string().optional().describe("用户头像的URL。"),
   level_info: z.lazy(() => LevelInfo$zodSchema).optional(),
-  sex: z.string().optional(),
-  uname: z.string().optional(),
+  sex: z.string().optional().describe("用户性别。"),
+  uname: z.string().optional().describe("用户昵称。"),
 }).describe("发表评论的用户信息。");
 
 /**
@@ -111,7 +88,7 @@ export const Member$zodSchema: z.ZodType<Member> = z.object({
 export type Content = { message?: string | undefined };
 
 export const Content$zodSchema: z.ZodType<Content> = z.object({
-  message: z.string().optional(),
+  message: z.string().optional().describe("评论的文本内容。"),
 }).describe("评论内容。");
 
 export type Reply1 = {};
@@ -133,32 +110,131 @@ export type Reply2 = {
 };
 
 export const Reply2$zodSchema: z.ZodType<Reply2> = z.object({
-  content: z.lazy(() => Content$zodSchema).optional(),
-  count: z.number().optional(),
-  ctime: z.number().optional(),
-  like: z.number().optional(),
-  member: z.lazy(() => Member$zodSchema).optional(),
-  mid: z.number().optional(),
-  oid: z.number().optional(),
-  parent: z.number().optional(),
-  replies: z.array(z.lazy(() => Reply1$zodSchema)).optional(),
-  root: z.number().optional(),
-  rpid: z.number().optional(),
+  content: z.lazy(() => Content$zodSchema).optional().describe("评论内容。"),
+  count: z.number().optional().describe("这条评论下的回复（楼中楼）数量。"),
+  ctime: z.number().optional().describe("评论发送时间的Unix时间戳（秒）。"),
+  like: z.number().optional().describe("该评论获得的点赞数。"),
+  member: z.lazy(() => Member$zodSchema).optional().describe(
+    "发表评论的用户信息。",
+  ),
+  mid: z.number().optional().describe("发表评论的用户的mid。"),
+  oid: z.number().optional().describe("评论区对象ID，即视频的aid。"),
+  parent: z.number().optional().describe(
+    "回复的父级评论的rpid。如果为0，表示是根评论。",
+  ),
+  replies: z.array(z.lazy(() => Reply1$zodSchema)).optional().describe(
+    "楼中楼回复列表。结构与顶层评论对象一致，但通常此数组为空，需要单独请求。",
+  ),
+  root: z.number().optional().describe(
+    "根评论的rpid。如果为0，表示这条评论是根评论。",
+  ),
+  rpid: z.number().optional().describe("评论的唯一ID (Reply ID)。"),
 });
+
+/**
+ * UP 主相关信息。无数据时为 null。
+ */
+export type Upper = {};
+
+export const Upper$zodSchema: z.ZodType<Upper> = z.object({}).describe(
+  "UP 主相关信息。无数据时为 null。",
+);
+
+/**
+ * 置顶评论信息。没有置顶评论时为 null。
+ */
+export type Top = {};
+
+export const Top$zodSchema: z.ZodType<Top> = z.object({}).describe(
+  "置顶评论信息。没有置顶评论时为 null。",
+);
+
+/**
+ * 评论区公告信息。没有公告时为 null。
+ */
+export type Notice = {};
+
+export const Notice$zodSchema: z.ZodType<Notice> = z.object({}).describe(
+  "评论区公告信息。没有公告时为 null。",
+);
+
+/**
+ * 评论折叠相关信息。没有数据时为 null。
+ */
+export type Folder = {};
+
+export const Folder$zodSchema: z.ZodType<Folder> = z.object({}).describe(
+  "评论折叠相关信息。没有数据时为 null。",
+);
+
+/**
+ * 评论区控制信息。没有数据时为 null。
+ */
+export type Control = {};
+
+export const Control$zodSchema: z.ZodType<Control> = z.object({}).describe(
+  "评论区控制信息。没有数据时为 null。",
+);
+
+/**
+ * 游标翻页信息。部分场景下为 null。
+ */
+export type Cursor = {};
+
+export const Cursor$zodSchema: z.ZodType<Cursor> = z.object({}).describe(
+  "游标翻页信息。部分场景下为 null。",
+);
 
 /**
  * 成功！返回指定分页和排序的评论列表。
  */
 export type GetSocialBilibiliRepliesResponse = {
   page?: GetSocialBilibiliRepliesPage | undefined;
+  config?: Config | null | undefined;
   hots?: Array<Hot> | null | undefined;
   replies?: Array<Reply2> | undefined;
+  upper?: Upper | null | undefined;
+  top?: Top | null | undefined;
+  notice?: Notice | null | undefined;
+  vote?: number | undefined;
+  folder?: Folder | null | undefined;
+  control?: Control | null | undefined;
+  cursor?: Cursor | null | undefined;
 };
 
 export const GetSocialBilibiliRepliesResponse$zodSchema: z.ZodType<
   GetSocialBilibiliRepliesResponse
 > = z.object({
-  hots: z.array(z.lazy(() => Hot$zodSchema)).nullable().optional(),
-  page: z.lazy(() => GetSocialBilibiliRepliesPage$zodSchema).optional(),
-  replies: z.array(z.lazy(() => Reply2$zodSchema)).optional(),
+  config: z.lazy(() => Config$zodSchema).nullable().optional().describe(
+    "评论区配置。不同视频或不同权限下可能为 null。",
+  ),
+  control: z.lazy(() => Control$zodSchema).nullable().optional().describe(
+    "评论区控制信息。没有数据时为 null。",
+  ),
+  cursor: z.lazy(() => Cursor$zodSchema).nullable().optional().describe(
+    "游标翻页信息。部分场景下为 null。",
+  ),
+  folder: z.lazy(() => Folder$zodSchema).nullable().optional().describe(
+    "评论折叠相关信息。没有数据时为 null。",
+  ),
+  hots: z.array(z.lazy(() => Hot$zodSchema)).nullable().optional().describe(
+    "热门评论列表。结构与 `replies` 中的对象一致。如果当前页是第一页，且有热门评论，则此数组非空。",
+  ),
+  notice: z.lazy(() => Notice$zodSchema).nullable().optional().describe(
+    "评论区公告信息。没有公告时为 null。",
+  ),
+  page: z.lazy(() => GetSocialBilibiliRepliesPage$zodSchema).optional()
+    .describe("分页信息概览。"),
+  replies: z.array(z.lazy(() => Reply2$zodSchema)).optional().describe(
+    "当前页的评论列表。",
+  ),
+  top: z.lazy(() => Top$zodSchema).nullable().optional().describe(
+    "置顶评论信息。没有置顶评论时为 null。",
+  ),
+  upper: z.lazy(() => Upper$zodSchema).nullable().optional().describe(
+    "UP 主相关信息。无数据时为 null。",
+  ),
+  vote: z.number().optional().describe(
+    "评论区投票相关状态值。没有投票时通常为 0。",
+  ),
 }).describe("成功！返回指定分页和排序的评论列表。");

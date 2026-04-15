@@ -74,7 +74,7 @@ export const GetMiscPhoneinfoResponseBody$zodSchema: z.ZodType<
 > = z.object({
   city: z.string().optional(),
   province: z.string().optional(),
-  sp: z.string().optional(),
+  sp: z.string().optional().describe("运营商名称。"),
 }).describe("查询成功！返回号码的归属地和运营商信息。");
 
 export type GetMiscPhoneinfoResponse =

@@ -60,38 +60,22 @@ export const GetAiTranslateLanguagesData$zodSchema: z.ZodType<
     .optional(),
 });
 
-export type TypicalResponseTimeMs = {
-  fast_mode?: number | undefined;
-  normal_mode?: number | undefined;
-};
-
-export const TypicalResponseTimeMs$zodSchema: z.ZodType<TypicalResponseTimeMs> =
-  z.object({
-    fast_mode: z.int().optional(),
-    normal_mode: z.int().optional(),
-  });
-
 export type GetAiTranslateLanguagesPerformance = {
-  fast_mode_available?: boolean | undefined;
   batch_translation_available?: boolean | undefined;
-  max_text_length?: number | undefined;
   max_batch_size?: number | undefined;
-  typical_response_time_ms?: TypicalResponseTimeMs | undefined;
+  max_text_length?: number | undefined;
 };
 
 export const GetAiTranslateLanguagesPerformance$zodSchema: z.ZodType<
   GetAiTranslateLanguagesPerformance
 > = z.object({
   batch_translation_available: z.boolean().optional(),
-  fast_mode_available: z.boolean().optional(),
   max_batch_size: z.int().optional(),
   max_text_length: z.int().optional(),
-  typical_response_time_ms: z.lazy(() => TypicalResponseTimeMs$zodSchema)
-    .optional(),
 });
 
 /**
- * 成功获取AI翻译配置信息！
+ * 成功获取AI翻译配置信息
  */
 export type GetAiTranslateLanguagesResponse = {
   message?: string | undefined;
@@ -106,4 +90,4 @@ export const GetAiTranslateLanguagesResponse$zodSchema: z.ZodType<
   message: z.string().optional(),
   performance: z.lazy(() => GetAiTranslateLanguagesPerformance$zodSchema)
     .optional(),
-}).describe("成功获取AI翻译配置信息！");
+}).describe("成功获取AI翻译配置信息");

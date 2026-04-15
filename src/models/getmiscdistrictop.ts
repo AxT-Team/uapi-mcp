@@ -49,7 +49,7 @@ export const GetMiscDistrictRequest$zodSchema: z.ZodType<
     .optional(),
   lat: z.number().describe("纬度，与 `lng` 配合使用，坐标反查附近地点。")
     .optional(),
-  level: GetMiscDistrictLevel$zodSchema.optional(),
+  level: GetMiscDistrictLevel$zodSchema.optional().describe("过滤行政级别。"),
   limit: z.int().default(20).describe("返回数量上限，默认 `20`，最大 `100`。"),
   lng: z.number().describe("经度，与 `lat` 配合使用。").optional(),
 });
@@ -97,19 +97,27 @@ export type GetMiscDistrictResult = {
 
 export const GetMiscDistrictResult$zodSchema: z.ZodType<GetMiscDistrictResult> =
   z.object({
-    adcode: z.string().optional(),
-    center: z.lazy(() => Center$zodSchema).optional(),
-    city: z.string().optional(),
-    citycode: z.string().optional(),
-    country: z.string().optional(),
-    country_code: z.string().optional(),
-    district: z.string().optional(),
-    level: z.string().optional(),
-    name: z.string().optional(),
-    population: z.int().optional(),
-    province: z.string().optional(),
-    street: z.string().optional(),
-    timezone: z.string().optional(),
+    adcode: z.string().optional().describe("行政区划代码（仅中国数据）。"),
+    center: z.lazy(() => Center$zodSchema).optional().describe("中心点坐标。"),
+    city: z.string().optional().describe("市（仅中国数据）。"),
+    citycode: z.string().optional().describe("城市区号（仅中国数据）。"),
+    country: z.string().optional().describe("国家名称。"),
+    country_code: z.string().optional().describe(
+      "ISO 3166-1 alpha-2 国家代码。",
+    ),
+    district: z.string().optional().describe("区/县（仅中国数据）。"),
+    level: z.string().optional().describe(
+      "行政级别：province / city / district / street。",
+    ),
+    name: z.string().optional().describe("地区名称。"),
+    population: z.int().optional().describe("人口（仅国际城市数据）。"),
+    province: z.string().optional().describe(
+      "省/州（中国数据）或一级行政区（国际数据）。",
+    ),
+    street: z.string().optional().describe("街道/乡镇（仅中国数据）。"),
+    timezone: z.string().optional().describe(
+      "时区（仅国际城市数据），如 Asia/Tokyo。",
+    ),
   });
 
 /**
@@ -123,8 +131,9 @@ export type GetMiscDistrictResponseBody = {
 export const GetMiscDistrictResponseBody$zodSchema: z.ZodType<
   GetMiscDistrictResponseBody
 > = z.object({
-  results: z.array(z.lazy(() => GetMiscDistrictResult$zodSchema)).optional(),
-  total: z.int().optional(),
+  results: z.array(z.lazy(() => GetMiscDistrictResult$zodSchema)).optional()
+    .describe("结果列表。"),
+  total: z.int().optional().describe("结果总数。"),
 }).describe("查询成功！返回匹配的行政区域列表。");
 
 export type GetMiscDistrictResponse =

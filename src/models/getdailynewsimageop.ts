@@ -6,7 +6,7 @@ import * as z from "zod";
 import * as b64$ from "../lib/base64.js";
 
 /**
- * 上游服务错误。我们在尝试从新闻源（如微博、知乎等）获取数据时失败了。这可能是因为上游服务暂时不可用或更改了接口。这个问题通常很快会解决，请稍后重试。
+ * 暂时无法获取相关内容，请稍后重试。
  */
 export type GetDailyNewsImageBadGatewayResponseBody = {
   code?: string | undefined;
@@ -16,14 +16,12 @@ export type GetDailyNewsImageBadGatewayResponseBody = {
 export const GetDailyNewsImageBadGatewayResponseBody$zodSchema: z.ZodType<
   GetDailyNewsImageBadGatewayResponseBody
 > = z.object({
-  code: z.string().optional(),
-  message: z.string().optional(),
-}).describe(
-  "上游服务错误。我们在尝试从新闻源（如微博、知乎等）获取数据时失败了。这可能是因为上游服务暂时不可用或更改了接口。这个问题通常很快会解决，请稍后重试。",
-);
+  code: z.string().optional().describe("机器可读的错误代码。"),
+  message: z.string().optional().describe("人类可读的错误描述信息。"),
+}).describe("暂时无法获取相关内容，请稍后重试。");
 
 /**
- * 服务器内部错误。这可能是我们的图片渲染服务遇到了临时故障。我们已经被自动通知，请稍后重试。
+ * 服务器内部错误。暂时无法生成图片，请稍后重试。
  */
 export type GetDailyNewsImageInternalServerErrorResponseBody = {
   code?: string | undefined;
@@ -32,11 +30,9 @@ export type GetDailyNewsImageInternalServerErrorResponseBody = {
 
 export const GetDailyNewsImageInternalServerErrorResponseBody$zodSchema:
   z.ZodType<GetDailyNewsImageInternalServerErrorResponseBody> = z.object({
-    code: z.string().optional(),
-    message: z.string().optional(),
-  }).describe(
-    "服务器内部错误。这可能是我们的图片渲染服务遇到了临时故障。我们已经被自动通知，请稍后重试。",
-  );
+    code: z.string().optional().describe("机器可读的错误代码。"),
+    message: z.string().optional().describe("人类可读的错误描述信息。"),
+  }).describe("服务器内部错误。暂时无法生成图片，请稍后重试。");
 
 export type GetDailyNewsImageResponse =
   | Uint8Array

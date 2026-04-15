@@ -41,7 +41,9 @@ export const GetRandomStringRequest$zodSchema: z.ZodType<
   length: z.int().default(16).describe(
     "你希望生成的字符串的长度。有效范围是 1 到 1024。",
   ),
-  type: GetRandomStringType$zodSchema.default("alphanumeric"),
+  type: GetRandomStringType$zodSchema.default("alphanumeric").describe(
+    "指定构成字符串的字符类型。",
+  ),
 });
 
 export type GetRandomStringInternalServerErrorDetails = {};

@@ -37,6 +37,8 @@ import { Result } from "../types/fp.js";
  * 如果你只关心某一类事件，可以通过 `holiday_type` 进行筛选，例如只看法定休假/调休、公历节日、农历节日或节气。
  *
  * 在 `date` 模式下，传 `include_nearby=true` 可以额外返回该日期前后最近的节日；返回数量由 `nearby_limit` 控制，默认 7，最大 30。
+ *
+ * 如果你只想保留今天和之后的节日，可以再传 `exclude_past=true` 过滤已经过去的节日。
  */
 export function miscGetMiscHolidayCalendar(
   client$: UapiMcpCore,
@@ -94,6 +96,7 @@ async function $do(
   const path$ = pathToFunc("/misc/holiday-calendar")();
   const query$ = encodeFormQuery({
     "date": payload$?.date,
+    "exclude_past": payload$?.exclude_past,
     "holiday_type": payload$?.holiday_type,
     "include_nearby": payload$?.include_nearby,
     "month": payload$?.month,

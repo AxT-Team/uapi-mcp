@@ -43,11 +43,11 @@ export type PostWebTomarkdownAsyncResponseBody = {
 export const PostWebTomarkdownAsyncResponseBody$zodSchema: z.ZodType<
   PostWebTomarkdownAsyncResponseBody
 > = z.object({
-  created_at: z.string().optional(),
-  message: z.string().optional(),
-  status: z.string().optional(),
-  task_id: z.string().optional(),
-  url: z.string().optional(),
+  created_at: z.string().optional().describe("任务创建时间（ISO 8601格式）"),
+  message: z.string().optional().describe("提示信息"),
+  status: z.string().optional().describe("任务状态"),
+  task_id: z.string().optional().describe("任务唯一标识符"),
+  url: z.string().optional().describe("要转换的URL"),
 }).describe("任务已提交成功，返回任务ID");
 
 export type PostWebTomarkdownAsyncResponse =

@@ -38,9 +38,9 @@ export const GetMiscLunartimeBadRequestResponseBody$zodSchema: z.ZodType<
 );
 
 /**
- * 万年历查询结果。
+ * 查询成功，返回指定时间和时区下的农历信息。
  */
-export type GetMiscLunartimeData = {
+export type GetMiscLunartimeResponseBody = {
   query_timestamp?: string | undefined;
   query_timezone?: string | undefined;
   timezone?: string | undefined;
@@ -65,47 +65,35 @@ export type GetMiscLunartimeData = {
   solar_festivals?: Array<string> | undefined;
 };
 
-export const GetMiscLunartimeData$zodSchema: z.ZodType<GetMiscLunartimeData> = z
-  .object({
-    datetime: z.string().optional(),
-    datetime_rfc3339: z.string().optional(),
-    ganzhi_day: z.string().optional(),
-    ganzhi_month: z.string().optional(),
-    ganzhi_year: z.string().optional(),
-    is_leap_month: z.boolean().optional(),
-    lunar_day: z.int().optional(),
-    lunar_day_cn: z.string().optional(),
-    lunar_festivals: z.array(z.string()).optional(),
-    lunar_month: z.int().optional(),
-    lunar_month_cn: z.string().optional(),
-    lunar_year: z.int().optional(),
-    lunar_year_cn: z.string().optional(),
-    query_timestamp: z.string().optional(),
-    query_timezone: z.string().optional(),
-    solar_festivals: z.array(z.string()).optional(),
-    solar_term: z.string().optional(),
-    timestamp_unix: z.int().optional(),
-    timezone: z.string().optional(),
-    weekday: z.string().optional(),
-    weekday_cn: z.string().optional(),
-    zodiac: z.string().optional(),
-  }).describe("万年历查询结果。");
-
-/**
- * 查询成功，返回指定时间和时区下的农历信息。
- */
-export type GetMiscLunartimeResponseBody = {
-  code?: number | undefined;
-  message?: string | undefined;
-  data?: GetMiscLunartimeData | undefined;
-};
-
 export const GetMiscLunartimeResponseBody$zodSchema: z.ZodType<
   GetMiscLunartimeResponseBody
 > = z.object({
-  code: z.int().optional(),
-  data: z.lazy(() => GetMiscLunartimeData$zodSchema).optional(),
-  message: z.string().optional(),
+  datetime: z.string().optional().describe(
+    "本地化时间，格式 YYYY-MM-DD HH:mm:ss。",
+  ),
+  datetime_rfc3339: z.string().optional().describe("RFC3339 时间格式。"),
+  ganzhi_day: z.string().optional().describe("干支日。"),
+  ganzhi_month: z.string().optional().describe("干支月。"),
+  ganzhi_year: z.string().optional().describe("干支年。"),
+  is_leap_month: z.boolean().optional().describe("是否闰月。"),
+  lunar_day: z.int().optional().describe("农历日期（数字）。"),
+  lunar_day_cn: z.string().optional().describe("农历日期中文表示。"),
+  lunar_festivals: z.array(z.string()).optional().describe("农历节日数组。"),
+  lunar_month: z.int().optional().describe("农历月份（数字）。"),
+  lunar_month_cn: z.string().optional().describe("农历月份中文表示。"),
+  lunar_year: z.int().optional().describe("农历年份（数字）。"),
+  lunar_year_cn: z.string().optional().describe("农历年份中文表示。"),
+  query_timestamp: z.string().optional().describe("原始 ts 入参。"),
+  query_timezone: z.string().optional().describe("原始 timezone 入参。"),
+  solar_festivals: z.array(z.string()).optional().describe("公历节日数组。"),
+  solar_term: z.string().optional().describe(
+    "节气名称。有值时返回，无值时可能为空字符串或不返回。",
+  ),
+  timestamp_unix: z.int().optional().describe("秒级 Unix 时间戳。"),
+  timezone: z.string().optional().describe("解析后的时区。"),
+  weekday: z.string().optional().describe("星期英文。"),
+  weekday_cn: z.string().optional().describe("星期中文。"),
+  zodiac: z.string().optional().describe("生肖。"),
 }).describe("查询成功，返回指定时间和时区下的农历信息。");
 
 export type GetMiscLunartimeResponse =

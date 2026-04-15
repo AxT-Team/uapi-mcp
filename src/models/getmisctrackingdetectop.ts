@@ -33,42 +33,29 @@ export type Alternative = {
 };
 
 export const Alternative$zodSchema: z.ZodType<Alternative> = z.object({
-  code: z.string().optional(),
-  name: z.string().optional(),
+  code: z.string().optional().describe("快递公司编码"),
+  name: z.string().optional().describe("快递公司名称"),
 });
 
-export type GetMiscTrackingDetectData = {
+/**
+ * 识别成功！直接返回识别结果和可能的备选项。
+ */
+export type GetMiscTrackingDetectResponseBody = {
   tracking_number?: string | undefined;
   carrier_code?: string | undefined;
   carrier_name?: string | undefined;
   alternatives?: Array<Alternative> | undefined;
 };
 
-export const GetMiscTrackingDetectData$zodSchema: z.ZodType<
-  GetMiscTrackingDetectData
-> = z.object({
-  alternatives: z.array(z.lazy(() => Alternative$zodSchema)).optional(),
-  carrier_code: z.string().optional(),
-  carrier_name: z.string().optional(),
-  tracking_number: z.string().optional(),
-});
-
-/**
- * 识别成功！返回识别结果和可能的备选项。
- */
-export type GetMiscTrackingDetectResponseBody = {
-  code?: string | undefined;
-  message?: string | undefined;
-  data?: GetMiscTrackingDetectData | undefined;
-};
-
 export const GetMiscTrackingDetectResponseBody$zodSchema: z.ZodType<
   GetMiscTrackingDetectResponseBody
 > = z.object({
-  code: z.string().optional(),
-  data: z.lazy(() => GetMiscTrackingDetectData$zodSchema).optional(),
-  message: z.string().optional(),
-}).describe("识别成功！返回识别结果和可能的备选项。");
+  alternatives: z.array(z.lazy(() => Alternative$zodSchema)).optional()
+    .describe("其他可能的快递公司列表。如果没有备选项，会返回空数组。"),
+  carrier_code: z.string().optional().describe("识别出的快递公司编码"),
+  carrier_name: z.string().optional().describe("识别出的快递公司名称"),
+  tracking_number: z.string().optional().describe("查询的快递单号"),
+}).describe("识别成功！直接返回识别结果和可能的备选项。");
 
 export type GetMiscTrackingDetectResponse =
   | GetMiscTrackingDetectResponseBody

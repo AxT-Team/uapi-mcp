@@ -20,12 +20,46 @@ export const GetSocialBilibiliLiveroomRequest$zodSchema: z.ZodType<
 });
 
 /**
- * 主播佩戴的头像框、大航海等级等信息，结构可能比较复杂。
+ * 头像框信息。
  */
-export type NewPendants = {};
+export type Frame = {
+  name?: string | undefined;
+  value?: string | undefined;
+  desc?: string | undefined;
+};
 
-export const NewPendants$zodSchema: z.ZodType<NewPendants> = z.object({})
-  .describe("主播佩戴的头像框、大航海等级等信息，结构可能比较复杂。");
+export const Frame$zodSchema: z.ZodType<Frame> = z.object({
+  desc: z.string().optional().describe("头像框描述。"),
+  name: z.string().optional().describe("头像框名称。"),
+  value: z.string().optional().describe("头像框值。"),
+}).describe("头像框信息。");
+
+/**
+ * 徽章信息。
+ */
+export type Badge = { name?: string | undefined; desc?: string | undefined };
+
+export const Badge$zodSchema: z.ZodType<Badge> = z.object({
+  desc: z.string().optional().describe("徽章描述。"),
+  name: z.string().optional().describe("徽章名称。"),
+}).describe("徽章信息。");
+
+/**
+ * 主播佩戴信息。
+ */
+export type NewPendants = {
+  frame?: Frame | null | undefined;
+  badge?: Badge | null | undefined;
+};
+
+export const NewPendants$zodSchema: z.ZodType<NewPendants> = z.object({
+  badge: z.lazy(() => Badge$zodSchema).nullable().optional().describe(
+    "徽章信息。",
+  ),
+  frame: z.lazy(() => Frame$zodSchema).nullable().optional().describe(
+    "头像框信息。",
+  ),
+}).describe("主播佩戴信息。");
 
 /**
  * 成功！返回直播间的详细信息。
@@ -36,38 +70,55 @@ export type GetSocialBilibiliLiveroomResponse = {
   short_id?: number | undefined;
   attention?: number | undefined;
   online?: number | undefined;
+  is_portrait?: boolean | undefined;
   live_status?: number | undefined;
   area_id?: number | undefined;
   parent_area_name?: string | undefined;
+  parent_area_id?: number | undefined;
   area_name?: string | undefined;
   background?: string | undefined;
   title?: string | undefined;
   user_cover?: string | undefined;
   description?: string | undefined;
   live_time?: string | undefined;
+  keyframe?: string | undefined;
   tags?: string | undefined;
   hot_words?: Array<string> | undefined;
-  new_pendants?: NewPendants | undefined;
+  new_pendants?: NewPendants | null | undefined;
 };
 
 export const GetSocialBilibiliLiveroomResponse$zodSchema: z.ZodType<
   GetSocialBilibiliLiveroomResponse
 > = z.object({
-  area_id: z.number().optional(),
-  area_name: z.string().optional(),
-  attention: z.number().optional(),
-  background: z.string().optional(),
-  description: z.string().optional(),
-  hot_words: z.array(z.string()).optional(),
-  live_status: z.number().optional(),
-  live_time: z.string().optional(),
-  new_pendants: z.lazy(() => NewPendants$zodSchema).optional(),
-  online: z.number().optional(),
-  parent_area_name: z.string().optional(),
-  room_id: z.number().optional(),
-  short_id: z.number().optional(),
-  tags: z.string().optional(),
-  title: z.string().optional(),
-  uid: z.number().optional(),
-  user_cover: z.string().optional(),
+  area_id: z.number().optional().describe("分区ID。"),
+  area_name: z.string().optional().describe("子分区名称。"),
+  attention: z.number().optional().describe("主播的粉丝数（关注数量）。"),
+  background: z.string().optional().describe("直播间背景图的URL。"),
+  description: z.string().optional().describe("直播间公告或描述，支持换行符。"),
+  hot_words: z.array(z.string()).optional().describe(
+    "直播间热词列表，通常用于弹幕互动。",
+  ),
+  is_portrait: z.boolean().optional().describe("是否为竖屏直播。"),
+  keyframe: z.string().optional().describe("关键帧封面图链接。"),
+  live_status: z.number().optional().describe(
+    "直播状态。0:未开播, 1:直播中, 2:轮播中。",
+  ),
+  live_time: z.string().optional().describe(
+    "本次直播开始的时间，格式为 `YYYY-MM-DD HH:mm:ss`。如果未开播，则为空字符串。",
+  ),
+  new_pendants: z.lazy(() => NewPendants$zodSchema).nullable().optional()
+    .describe("主播佩戴信息。"),
+  online: z.number().optional().describe(
+    "直播间当前的人气值（对应你文档里的 PopularValue，不代表真实在线人数）。",
+  ),
+  parent_area_id: z.number().optional().describe("父分区 ID。"),
+  parent_area_name: z.string().optional().describe("父分区名称。"),
+  room_id: z.number().optional().describe("直播间的真实房间号（长号）。"),
+  short_id: z.number().optional().describe(
+    "直播间的短号（靓号）。如果没有设置，则为0。",
+  ),
+  tags: z.string().optional().describe("直播间设置的标签，以逗号分隔。"),
+  title: z.string().optional().describe("当前直播间的标题。"),
+  uid: z.number().optional().describe("主播的用户ID (mid)。"),
+  user_cover: z.string().optional().describe("用户设置的直播间封面URL。"),
 }).describe("成功！返回直播间的详细信息。");

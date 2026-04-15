@@ -7,7 +7,9 @@ import { PostImageSpeechlessRequest$zodSchema } from "../../models/postimagespee
 import { formatResult, ToolDefinition } from "../tools.js";
 
 const args = {
-  request: PostImageSpeechlessRequest$zodSchema,
+  request: PostImageSpeechlessRequest$zodSchema.describe(
+    `包含表情包文字内容的JSON对象。至少需要提供上方或下方文字之一。`,
+  ),
 };
 
 export const tool$imagePostImageSpeechless: ToolDefinition<typeof args> = {

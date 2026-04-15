@@ -4,9 +4,6 @@
 
 import * as z from "zod";
 
-/**
- * 包含日期信息的JSON对象
- */
 export type PostMiscDateDiffRequest = {
   start_date: string;
   end_date: string;
@@ -16,10 +13,12 @@ export type PostMiscDateDiffRequest = {
 export const PostMiscDateDiffRequest$zodSchema: z.ZodType<
   PostMiscDateDiffRequest
 > = z.object({
-  end_date: z.string(),
-  format: z.string().optional(),
-  start_date: z.string(),
-}).describe("包含日期信息的JSON对象");
+  end_date: z.string().describe("结束日期，支持多种格式自动识别"),
+  format: z.string().optional().describe(
+    "日期格式（可选），如DD-MM-YYYY。不指定则自动识别",
+  ),
+  start_date: z.string().describe("开始日期，支持多种格式自动识别"),
+});
 
 /**
  * 日期解析失败或参数错误
@@ -53,12 +52,12 @@ export type PostMiscDateDiffResponseBody = {
 export const PostMiscDateDiffResponseBody$zodSchema: z.ZodType<
   PostMiscDateDiffResponseBody
 > = z.object({
-  days: z.int().optional(),
-  hours: z.int().optional(),
-  human_readable: z.string().optional(),
-  minutes: z.int().optional(),
-  seconds: z.int().optional(),
-  weeks: z.int().optional(),
+  days: z.int().optional().describe("总天数"),
+  hours: z.int().optional().describe("总小时数"),
+  human_readable: z.string().optional().describe("人性化显示格式"),
+  minutes: z.int().optional().describe("总分钟数"),
+  seconds: z.int().optional().describe("总秒数"),
+  weeks: z.int().optional().describe("总周数"),
 }).describe("计算成功，返回多种单位的时间差值");
 
 export type PostMiscDateDiffResponse =

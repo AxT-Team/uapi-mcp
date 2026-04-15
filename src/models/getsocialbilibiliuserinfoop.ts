@@ -19,7 +19,7 @@ export const GetSocialBilibiliUserinfoBadGatewayDetails$zodSchema: z.ZodType<
 > = z.object({});
 
 /**
- * 上游Bilibili API错误或风控
+ * 暂时无法获取相关数据，请稍后重试。
  */
 export type GetSocialBilibiliUserinfoBadGatewayResponseBody = {
   code?: string | undefined;
@@ -33,7 +33,7 @@ export const GetSocialBilibiliUserinfoBadGatewayResponseBody$zodSchema:
     details: z.lazy(() => GetSocialBilibiliUserinfoBadGatewayDetails$zodSchema)
       .optional(),
     message: z.string().optional(),
-  }).describe("上游Bilibili API错误或风控");
+  }).describe("暂时无法获取相关数据，请稍后重试。");
 
 export type GetSocialBilibiliUserinfoNotFoundDetails = {};
 
@@ -82,44 +82,42 @@ export const GetSocialBilibiliUserinfoBadRequestResponseBody$zodSchema:
     message: z.string().optional(),
   }).describe("缺少uid参数");
 
-export type GetSocialBilibiliUserinfoData = {
-  face?: string | undefined;
-  level?: number | undefined;
+/**
+ * 查询成功！返回 B 站用户公开数据。
+ */
+export type GetSocialBilibiliUserinfoResponseBody = {
   mid?: number | undefined;
   name?: string | undefined;
   sex?: string | undefined;
+  face?: string | undefined;
   sign?: string | undefined;
-};
-
-export const GetSocialBilibiliUserinfoData$zodSchema: z.ZodType<
-  GetSocialBilibiliUserinfoData
-> = z.object({
-  face: z.string().optional(),
-  level: z.int().optional(),
-  mid: z.int().optional(),
-  name: z.string().optional(),
-  sex: z.string().optional(),
-  sign: z.string().optional(),
-});
-
-/**
- * 查询成功！返回用户的详细信息。请注意，我们直接透传了B站官方API的返回结构。
- */
-export type GetSocialBilibiliUserinfoResponseBody = {
-  code?: number | undefined;
-  data?: GetSocialBilibiliUserinfoData | undefined;
-  message?: string | undefined;
+  level?: number | undefined;
+  birthday?: string | undefined;
+  vip_type?: number | undefined;
+  vip_status?: number | undefined;
+  following?: number | undefined;
+  follower?: number | undefined;
+  archive_count?: number | undefined;
+  article_count?: number | undefined;
 };
 
 export const GetSocialBilibiliUserinfoResponseBody$zodSchema: z.ZodType<
   GetSocialBilibiliUserinfoResponseBody
 > = z.object({
-  code: z.int().optional(),
-  data: z.lazy(() => GetSocialBilibiliUserinfoData$zodSchema).optional(),
-  message: z.string().optional(),
-}).describe(
-  "查询成功！返回用户的详细信息。请注意，我们直接透传了B站官方API的返回结构。",
-);
+  archive_count: z.int().optional(),
+  article_count: z.int().optional(),
+  birthday: z.string().optional(),
+  face: z.string().optional(),
+  follower: z.int().optional(),
+  following: z.int().optional(),
+  level: z.int().optional(),
+  mid: z.int().optional(),
+  name: z.string().optional(),
+  sex: z.string().optional(),
+  sign: z.string().optional(),
+  vip_status: z.int().optional(),
+  vip_type: z.int().optional(),
+}).describe("查询成功！返回 B 站用户公开数据。");
 
 export type GetSocialBilibiliUserinfoResponse =
   | GetSocialBilibiliUserinfoResponseBody

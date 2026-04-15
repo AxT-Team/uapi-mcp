@@ -12,7 +12,7 @@ export type PostConvertJsonRequest = { content: string };
 export const PostConvertJsonRequest$zodSchema: z.ZodType<
   PostConvertJsonRequest
 > = z.object({
-  content: z.string(),
+  content: z.string().describe("需要被格式化的原始JSON字符串。"),
 }).describe(
   "这是一个JSON对象，里面必须包含一个名为 `content` 的字段。这个字段的值，就是你希望格式化的、原始的JSON字符串。",
 );
@@ -38,9 +38,11 @@ export type PostConvertJsonBadRequestResponseBody = {
 export const PostConvertJsonBadRequestResponseBody$zodSchema: z.ZodType<
   PostConvertJsonBadRequestResponseBody
 > = z.object({
-  code: z.string().optional(),
-  details: z.lazy(() => PostConvertJsonDetails$zodSchema).optional(),
-  message: z.string().optional(),
+  code: z.string().optional().describe("机器可读的错误代码。"),
+  details: z.lazy(() => PostConvertJsonDetails$zodSchema).optional().describe(
+    "包含错误详情的对象。",
+  ),
+  message: z.string().optional().describe("人类可读的错误描述信息。"),
 }).describe(
   "请求失败。这通常意味着你提供的 `content` 字符串不是一个合法的JSON格式。请检查括号、引号是否匹配，以及末尾是否有多余的逗号等常见错误。",
 );
@@ -53,7 +55,9 @@ export type PostConvertJsonResponseBody = { content?: string | undefined };
 export const PostConvertJsonResponseBody$zodSchema: z.ZodType<
   PostConvertJsonResponseBody
 > = z.object({
-  content: z.string().optional(),
+  content: z.string().optional().describe(
+    "格式化后的JSON字符串，带有标准缩进和换行。",
+  ),
 }).describe("格式化成功！返回一个包含美化后JSON字符串的对象。");
 
 export type PostConvertJsonResponse =

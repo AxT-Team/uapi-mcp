@@ -19,8 +19,12 @@ export type PostClipzyStoreRequest = {
 export const PostClipzyStoreRequest$zodSchema: z.ZodType<
   PostClipzyStoreRequest
 > = z.object({
-  compressedData: z.string(),
-  ttl: z.number().optional(),
+  compressedData: z.string().describe(
+    "必需：经过加密和 LZString 压缩后的 Base64 字符串。请参考文档首页的JS代码示例。",
+  ),
+  ttl: z.number().optional().describe(
+    "可选：片段的留存时间（秒）。正数表示秒数（最大约30天），-1 表示永久存储。默认为 3600。",
+  ),
 }).describe("包含加密数据和可选的TTL。");
 
 /**
@@ -60,7 +64,7 @@ export type PostClipzyStoreResponseBody = { id?: string | undefined };
 export const PostClipzyStoreResponseBody$zodSchema: z.ZodType<
   PostClipzyStoreResponseBody
 > = z.object({
-  id: z.string().optional(),
+  id: z.string().optional().describe("用于构建分享链接的唯一 ID。"),
 }).describe("片段创建成功！返回该片段的唯一ID。");
 
 export type PostClipzyStoreResponse =

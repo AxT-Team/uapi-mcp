@@ -68,7 +68,9 @@ export type PostImageCompressRequestBody = {
 export const PostImageCompressRequestBody$zodSchema: z.ZodType<
   PostImageCompressRequestBody
 > = z.object({
-  file: z.lazy(() => PostImageCompressFile$zodSchema),
+  file: z.lazy(() => PostImageCompressFile$zodSchema).describe(
+    "支持PNG, JPG, JPEG等常见图片格式。文件大小不超过15MB。",
+  ),
 });
 
 export type PostImageCompressRequest = {
@@ -81,8 +83,12 @@ export const PostImageCompressRequest$zodSchema: z.ZodType<
   PostImageCompressRequest
 > = z.object({
   body: z.lazy(() => PostImageCompressRequestBody$zodSchema),
-  format: PostImageCompressFormat$zodSchema.default("png"),
-  level: PostImageCompressLevel$zodSchema.default(3),
+  format: PostImageCompressFormat$zodSchema.default("png").describe(
+    "输出图片格式，可以是 'png' 或 'jpeg'。",
+  ),
+  level: PostImageCompressLevel$zodSchema.default(3).describe(
+    "压缩强度 (1-5)，默认为 3。数字越小，压缩率越高。",
+  ),
 });
 
 /**
@@ -95,8 +101,8 @@ export type PostImageCompressInternalServerErrorResponseBody = {
 
 export const PostImageCompressInternalServerErrorResponseBody$zodSchema:
   z.ZodType<PostImageCompressInternalServerErrorResponseBody> = z.object({
-    code: z.string().optional(),
-    message: z.string().optional(),
+    code: z.string().optional().describe("机器可读的错误代码。"),
+    message: z.string().optional().describe("人类可读的错误描述信息。"),
   }).describe("服务器内部错误。压缩过程中发生错误。");
 
 /**
@@ -110,8 +116,8 @@ export type PostImageCompressBadRequestResponseBody = {
 export const PostImageCompressBadRequestResponseBody$zodSchema: z.ZodType<
   PostImageCompressBadRequestResponseBody
 > = z.object({
-  code: z.string().optional(),
-  message: z.string().optional(),
+  code: z.string().optional().describe("机器可读的错误代码。"),
+  message: z.string().optional().describe("人类可读的错误描述信息。"),
 }).describe("请求无效。可能是未上传文件、文件格式不受支持或参数错误。");
 
 export type PostImageCompressResponseResult =

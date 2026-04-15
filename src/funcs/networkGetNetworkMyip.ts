@@ -29,12 +29,12 @@ import { Result } from "../types/fp.js";
  * 查询我的 IP
  *
  * @remarks
- * 想知道你自己的出口公网IP是多少吗？这个接口就是你的“网络身份证”。你可以使用默认数据源，也可以指定 `source=commercial` 参数来查询更详细的商业级IP归属信息。
+ * 想知道你自己的出口公网IP是多少吗？这个接口就是你的“网络身份证”。默认返回标准结果；如果传 `source=commercial`，可以返回更完整的位置信息。
  *
  * ## 功能概述
  * 调用此接口，它会返回你（即发起请求的客户端）的公网IP地址，并附带与 `/network/ipinfo` 接口相同的地理位置和网络归属信息。非常适合用于在网页上向用户展示他们自己的IP和地理位置。
  *
- * 当使用 `source=commercial` 参数时，接口将调用高性能商业API，提供更精确的市、区、运营商、时区、海拔等信息。请注意，商业查询的响应时间可能会稍长。
+ * 当传 `source=commercial` 时，响应中会补充更完整的市、区、运营商、时区、海拔等信息，响应时间可能会稍长。
  */
 export function networkGetNetworkMyip(
   client$: UapiMcpCore,

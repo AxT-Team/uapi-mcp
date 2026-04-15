@@ -8,6 +8,7 @@ export type GetMiscTrackingQueryRequest = {
   tracking_number: string;
   carrier_code?: string | undefined;
   phone?: string | undefined;
+  full?: boolean | undefined;
 };
 
 export const GetMiscTrackingQueryRequest$zodSchema: z.ZodType<
@@ -15,6 +16,9 @@ export const GetMiscTrackingQueryRequest$zodSchema: z.ZodType<
 > = z.object({
   carrier_code: z.string().describe(
     "快递公司编码（可选）。不填写时系统会自动识别，填写后可加快查询速度。",
+  ).optional(),
+  full: z.boolean().describe(
+    "使用这个参数可以获得完整的物流信息。但会消耗34积分/一次（不过缓存命中半价）。因为成本实在太贵了，否则非常非常亏说是",
   ).optional(),
   phone: z.string().describe(
     "收件人手机尾号，4位数字（可选）。部分快递公司需要验证手机尾号才能查询详细物流信息。",
@@ -59,11 +63,14 @@ export const GetMiscTrackingQueryBadRequestResponseBody$zodSchema: z.ZodType<
 export type Track = { time?: string | undefined; context?: string | undefined };
 
 export const Track$zodSchema: z.ZodType<Track> = z.object({
-  context: z.string().optional(),
-  time: z.string().optional(),
+  context: z.string().optional().describe("物流状态描述"),
+  time: z.string().optional().describe("物流更新时间"),
 });
 
-export type GetMiscTrackingQueryData = {
+/**
+ * 查询成功！直接返回快递的完整物流轨迹。
+ */
+export type GetMiscTrackingQueryResponseBody = {
   tracking_number?: string | undefined;
   carrier_code?: string | undefined;
   carrier_name?: string | undefined;
@@ -71,32 +78,17 @@ export type GetMiscTrackingQueryData = {
   tracks?: Array<Track> | undefined;
 };
 
-export const GetMiscTrackingQueryData$zodSchema: z.ZodType<
-  GetMiscTrackingQueryData
-> = z.object({
-  carrier_code: z.string().optional(),
-  carrier_name: z.string().optional(),
-  track_count: z.int().optional(),
-  tracking_number: z.string().optional(),
-  tracks: z.array(z.lazy(() => Track$zodSchema)).optional(),
-});
-
-/**
- * 查询成功！返回快递的完整物流轨迹。
- */
-export type GetMiscTrackingQueryResponseBody = {
-  code?: string | undefined;
-  message?: string | undefined;
-  data?: GetMiscTrackingQueryData | undefined;
-};
-
 export const GetMiscTrackingQueryResponseBody$zodSchema: z.ZodType<
   GetMiscTrackingQueryResponseBody
 > = z.object({
-  code: z.string().optional(),
-  data: z.lazy(() => GetMiscTrackingQueryData$zodSchema).optional(),
-  message: z.string().optional(),
-}).describe("查询成功！返回快递的完整物流轨迹。");
+  carrier_code: z.string().optional().describe("快递公司编码"),
+  carrier_name: z.string().optional().describe("快递公司名称"),
+  track_count: z.int().optional().describe("物流轨迹数量"),
+  tracking_number: z.string().optional().describe("快递单号"),
+  tracks: z.array(z.lazy(() => Track$zodSchema)).optional().describe(
+    "物流轨迹列表，按时间倒序排列",
+  ),
+}).describe("查询成功！直接返回快递的完整物流轨迹。");
 
 export type GetMiscTrackingQueryResponse =
   | GetMiscTrackingQueryResponseBody

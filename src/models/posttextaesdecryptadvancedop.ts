@@ -55,9 +55,6 @@ export const PostTextAesDecryptAdvancedPadding$zodSchema = z.enum([
   "填充方式（可选，必须与加密时相同）：PKCS7/ZERO/NONE。GCM模式默认为NONE",
 );
 
-/**
- * 包含解密配置的JSON对象
- */
 export type PostTextAesDecryptAdvancedRequest = {
   text: string;
   key: string;
@@ -69,12 +66,20 @@ export type PostTextAesDecryptAdvancedRequest = {
 export const PostTextAesDecryptAdvancedRequest$zodSchema: z.ZodType<
   PostTextAesDecryptAdvancedRequest
 > = z.object({
-  iv: z.string().optional(),
-  key: z.string(),
-  mode: PostTextAesDecryptAdvancedMode$zodSchema,
-  padding: PostTextAesDecryptAdvancedPadding$zodSchema.optional(),
-  text: z.string(),
-}).describe("包含解密配置的JSON对象");
+  iv: z.string().optional().describe(
+    "初始化向量（非GCM模式必须提供，Base64编码）。此值来自加密接口返回的iv字段",
+  ),
+  key: z.string().describe("解密密钥（必须与加密时相同）"),
+  mode: PostTextAesDecryptAdvancedMode$zodSchema.describe(
+    "加密模式（必须与加密时相同）：GCM/CBC/ECB/CTR/OFB/CFB",
+  ),
+  padding: PostTextAesDecryptAdvancedPadding$zodSchema.optional().describe(
+    "填充方式（可选，必须与加密时相同）：PKCS7/ZERO/NONE。GCM模式默认为NONE",
+  ),
+  text: z.string().describe(
+    "待解密的密文（Base64编码）。此值来自加密接口返回的ciphertext字段",
+  ),
+});
 
 /**
  * 无效的请求参数或解密失败
@@ -98,7 +103,7 @@ export type PostTextAesDecryptAdvancedResponseBody = {
 export const PostTextAesDecryptAdvancedResponseBody$zodSchema: z.ZodType<
   PostTextAesDecryptAdvancedResponseBody
 > = z.object({
-  plaintext: z.string().optional(),
+  plaintext: z.string().optional().describe("解密后的明文文本"),
 }).describe("解密成功，返回原始明文");
 
 export type PostTextAesDecryptAdvancedResponse =

@@ -5,62 +5,23 @@
 import * as z from "zod";
 import { ClosedEnum } from "../types/enums.js";
 
-/**
- * 目标语言，支持：中文、英文
- */
-export const PostTranslateStreamToLang = {
-  Chinese: "中文",
-  English: "英文",
-} as const;
-/**
- * 目标语言，支持：中文、英文
- */
-export type PostTranslateStreamToLang = ClosedEnum<
-  typeof PostTranslateStreamToLang
->;
-
-export const PostTranslateStreamToLang$zodSchema = z.enum([
-  "中文",
-  "英文",
-]).describe("目标语言，支持：中文、英文");
-
-/**
- * 源语言，支持：中文、英文、auto（自动检测）。默认为auto
- */
-export const FromLang = {
-  Chinese: "中文",
-  English: "英文",
-  Auto: "auto",
-} as const;
-/**
- * 源语言，支持：中文、英文、auto（自动检测）。默认为auto
- */
-export type FromLang = ClosedEnum<typeof FromLang>;
-
-export const FromLang$zodSchema = z.enum([
-  "中文",
-  "英文",
-  "auto",
-]).describe("源语言，支持：中文、英文、auto（自动检测）。默认为auto");
-
-/**
- * 包含翻译参数的JSON对象
- */
 export type PostTranslateStreamRequest = {
   query: string;
-  to_lang: PostTranslateStreamToLang;
-  from_lang?: FromLang | undefined;
+  to_lang: string;
+  from_lang?: string | undefined;
   tone?: string | undefined;
 };
 
 export const PostTranslateStreamRequest$zodSchema: z.ZodType<
   PostTranslateStreamRequest
 > = z.object({
-  from_lang: FromLang$zodSchema.default("auto"),
-  query: z.string(),
-  to_lang: PostTranslateStreamToLang$zodSchema,
-  tone: z.string().optional(),
-}).describe("包含翻译参数的JSON对象");
+  from_lang: z.string().default("auto").describe(
+    "源语言，支持：中文、英文、auto（自动检测）。默认为auto",
+  ),
+  query: z.string().describe("待翻译的文本内容"),
+  to_lang: z.string().describe("目标语言，支持：中文、英文"),
+  tone: z.string().optional().describe("语气参数，可选"),
+});
 
 /**
  * 翻译服务错误
@@ -73,7 +34,7 @@ export type PostTranslateStreamInternalServerErrorResponseBody = {
 export const PostTranslateStreamInternalServerErrorResponseBody$zodSchema:
   z.ZodType<PostTranslateStreamInternalServerErrorResponseBody> = z.object({
     code: z.string().optional(),
-    error: z.string().optional(),
+    error: z.string().optional().describe("错误描述"),
   }).describe("翻译服务错误");
 
 /**
@@ -106,8 +67,8 @@ export type PostTranslateStreamBadRequestResponseBody = {
 export const PostTranslateStreamBadRequestResponseBody$zodSchema: z.ZodType<
   PostTranslateStreamBadRequestResponseBody
 > = z.object({
-  code: Code$zodSchema.optional(),
-  error: z.string().optional(),
+  code: Code$zodSchema.optional().describe("错误码"),
+  error: z.string().optional().describe("错误描述"),
 }).describe("请求参数错误");
 
 export type PostTranslateStreamResponse =

@@ -7,7 +7,9 @@ import { PostImageMotouRequest$zodSchema } from "../../models/postimagemotouop.j
 import { formatResult, ToolDefinition } from "../tools.js";
 
 const args = {
-  request: PostImageMotouRequest$zodSchema,
+  request: PostImageMotouRequest$zodSchema.describe(
+    `包含图片来源和背景色的表单数据。必须提供 'image_url' 或 'file' 两者之一。`,
+  ),
 };
 
 export const tool$imagePostImageMotou: ToolDefinition<typeof args> = {

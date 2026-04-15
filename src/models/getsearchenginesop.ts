@@ -17,12 +17,12 @@ export type Engine = {
 };
 
 export const Engine$zodSchema: z.ZodType<Engine> = z.object({
-  available: z.boolean().optional(),
-  description: z.string().optional(),
-  display_name: z.string().optional(),
-  features: z.array(z.string()).optional(),
-  name: z.string().optional(),
-  version: z.string().optional(),
+  available: z.boolean().optional().describe("引擎是否可用"),
+  description: z.string().optional().describe("引擎描述"),
+  display_name: z.string().optional().describe("引擎显示名称"),
+  features: z.array(z.string()).optional().describe("支持的特性列表"),
+  name: z.string().optional().describe("引擎标识名称"),
+  version: z.string().optional().describe("配置版本标识"),
 }).describe("搜索引擎的基本信息");
 
 /**
@@ -31,8 +31,8 @@ export const Engine$zodSchema: z.ZodType<Engine> = z.object({
 export type Limits = { default?: number | undefined; max?: number | undefined };
 
 export const Limits$zodSchema: z.ZodType<Limits> = z.object({
-  default: z.int().optional(),
-  max: z.int().optional(),
+  default: z.int().optional().describe("默认返回结果数"),
+  max: z.int().optional().describe("最大返回结果数"),
 }).describe("搜索结果数量限制");
 
 /**
@@ -47,7 +47,13 @@ export type GetSearchEnginesResponse = {
 export const GetSearchEnginesResponse$zodSchema: z.ZodType<
   GetSearchEnginesResponse
 > = z.object({
-  engine: z.lazy(() => Engine$zodSchema).optional(),
-  limits: z.lazy(() => Limits$zodSchema).optional(),
-  supported_parameters: z.array(z.string()).optional(),
+  engine: z.lazy(() => Engine$zodSchema).optional().describe(
+    "搜索引擎的基本信息",
+  ),
+  limits: z.lazy(() => Limits$zodSchema).optional().describe(
+    "搜索结果数量限制",
+  ),
+  supported_parameters: z.array(z.string()).optional().describe(
+    "支持的所有参数说明列表",
+  ),
 }).describe("成功返回搜索引擎的详细信息");

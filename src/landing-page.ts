@@ -18,50 +18,26 @@ export function landingPage(req: Request): Response {
 
 // express wrapper
 export function landingPageExpress(req: ExpressRequest, res: ExpressResponse) {
-  const forwardedProto = req.get("x-forwarded-proto")?.split(",")[0]?.trim();
-  const protocol = forwardedProto || req.protocol || "http";
-  const host = req.get("host");
-
-  if (!host) {
-    res.status(400).type("text/plain").send("Missing Host header");
-    return;
-  }
-
-  const origin = `${protocol}://${host}`;
+  const origin = new URL(req.host).href;
   res.type("html").send(landingPageHTML(origin));
 }
 
 export function landingPageHTML(origin: string): string {
   const o = origin;
-  const docsUrl = "https://uapis.cn/docs";
-  const displayName = "Uapi Mcp";
-  const remoteBridgeVersion = "0.1.38";
-  const optionalApiKeyHeaderName = "UapiKey";
-  const optionalAuthHeaderName = "UapiAdminBearerAuth";
-  const remoteConfig = {
+  const mcpConfig = {
     "command": "npx",
     "args": [
       "-y",
-      `mcp-remote@${remoteBridgeVersion}`,
+      "mcp-remote@0.1.25",
       `${o}/sse`,
+      "--header",
+      "uapi-admin-bearer-auth:${UAPI_ADMIN_BEARER_AUTH}",
     ],
+    "env": { "UAPI_ADMIN_BEARER_AUTH": "YOUR_VALUE_HERE" },
   };
-  const remoteConfigParam = encodeURIComponent(JSON.stringify(remoteConfig));
-  const encodedDisplayName = encodeURIComponent(displayName);
-  const cursorInstallUrl =
-    `cursor://anysphere.cursor-deeplink/mcp/install?name=${encodedDisplayName}&config=${remoteConfigParam}`;
-  const vscodeInstallUrl =
-    `vscode://ms-vscode.vscode-mcp/install?name=${encodedDisplayName}&config=${remoteConfigParam}`;
-  const claudeCodeCommand =
-    `claude mcp add "${displayName}" -- npx -y mcp-remote@${remoteBridgeVersion} ${o}/sse`;
-  const geminiCommand =
-    `gemini mcp add "${displayName}" -- npx -y mcp-remote@${remoteBridgeVersion} ${o}/sse`;
-  const mcpConfig = {
-    ...remoteConfig,
-  };
-  const codexConfig = `[mcp_servers."${displayName}"]
-url = "${o}/mcp"
-http_headers = { "${optionalApiKeyHeaderName}" = "YOUR_UAPI_KEY" }`;
+  const codexConfig = `[mcp_servers.UapiMcp]
+url = "${o}/sse"
+http_headers = { "uapi-admin-bearer-auth" = "YOUR_UAPI_ADMIN_BEARER_AUTH" }`;
 
   return `
 <!DOCTYPE html>
@@ -69,14 +45,14 @@ http_headers = { "${optionalApiKeyHeaderName}" = "YOUR_UAPI_KEY" }`;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${displayName}</title>
-    <meta name="description" content="Install ${displayName}, the AI-friendly UAPI server for MCP clients.">
+    <title>uapi-mcp MCP</title>
+    <meta name="description" content="Install uapi-mcp MCP server.">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="${displayName}">
-    <meta property="og:description" content="Install ${displayName}, the AI-friendly UAPI server for MCP clients.">
+    <meta property="og:title" content="uapi-mcp - MCP Server">
+    <meta property="og:description" content="Install uapi-mcp MCP server.">
     <meta property="twitter:card" content="summary">
-    <meta property="twitter:title" content="${displayName}">
-    <meta property="twitter:description" content="Install ${displayName}, the AI-friendly UAPI server for MCP clients.">
+    <meta property="twitter:title" content="uapi-mcp - MCP Server">
+    <meta property="twitter:description" content="Install uapi-mcp MCP server.">
     <meta name="robots" content="index, follow">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -683,12 +659,12 @@ http_headers = { "${optionalApiKeyHeaderName}" = "YOUR_UAPI_KEY" }`;
                 </svg>
               </div>
               <div class="header-content">
-                <div class="mcp-name">${displayName}</div>
-                <div class="mcp-description">把搜索、翻译、图像、文本和网页能力整理成更适合 AI 调用的 MCP Server。</div>
+                <div class="mcp-name">uapi-mcp</div>
+                <div class="mcp-description">MCP Server</div>
               </div>
             </div>
             <div class="header-actions">
-              <a class="external-docs header-action" href="${docsUrl}" target="_blank" rel="noopener noreferrer">
+              <a class="external-docs header-action" href="<no value>" target="_blank" rel="noopener noreferrer">
                 View Docs
               </a>
               <div class="popover">
@@ -699,7 +675,7 @@ http_headers = { "${optionalApiKeyHeaderName}" = "YOUR_UAPI_KEY" }`;
                   </svg>
                 </button>
                 <div class="popover-menu hidden" id="popover-menu">
-                  <a class="popover-button install-link" href="${cursorInstallUrl}">
+                  <a class="popover-button install-link" href="cursor://anysphere.cursor-deeplink/mcp/install?name=UapiMcp&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyJ1YXBpLW1jcCIsInN0YXJ0IiwiLS11YXBpLWFkbWluLWJlYXJlci1hdXRoIiwiIl19">
                     Cursor
                   </a>
                   <button class="popover-button" onclick="showModal('claude-code')">
@@ -708,7 +684,7 @@ http_headers = { "${optionalApiKeyHeaderName}" = "YOUR_UAPI_KEY" }`;
                   <button class="popover-button" onclick="showModal('claude-desktop')">
                     Claude Desktop
                   </button>
-                  <a class="popover-button install-link" href="${vscodeInstallUrl}">
+                  <a class="popover-button install-link" href="vscode://ms-vscode.vscode-mcp/install?name=UapiMcp&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyJ1YXBpLW1jcCIsInN0YXJ0IiwiLS11YXBpLWFkbWluLWJlYXJlci1hdXRoIiwiIl19">
                     VS Code
                   </a>
                   <button class="popover-button" onclick="showModal('gemini')">
@@ -727,11 +703,11 @@ http_headers = { "${optionalApiKeyHeaderName}" = "YOUR_UAPI_KEY" }`;
           <header>
             <h1 class="section-title">Install</h1>
             <div class="section-description">
-              Start the server first, then choose a client below to connect to it.
+              Select a method below to install the server.
             </div>
           </header>
           <div class="install-targets">
-            <a tabindex="0" class="card install-target install-link" href="${cursorInstallUrl}">
+            <a tabindex="0" class="card install-target install-link" href="cursor://anysphere.cursor-deeplink/mcp/install?name=UapiMcp&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyJ1YXBpLW1jcCIsInN0YXJ0IiwiLS11YXBpLWFkbWluLWJlYXJlci1hdXRoIiwiIl19">
               <div class="target">
                 <img src="https://cursor.com/assets/images/logo.svg" alt="Cursor">
                 <span>Cursor</span>
@@ -753,7 +729,7 @@ http_headers = { "${optionalApiKeyHeaderName}" = "YOUR_UAPI_KEY" }`;
                 <span>Claude Desktop</span>
               </div>
             </div>
-            <a tabindex="0" class="card install-target install-link" href="${vscodeInstallUrl}">
+            <a tabindex="0" class="card install-target install-link" href="vscode://ms-vscode.vscode-mcp/install?name=UapiMcp&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyJ1YXBpLW1jcCIsInN0YXJ0IiwiLS11YXBpLWFkbWluLWJlYXJlci1hdXRoIiwiIl19">
               <div class="target">
                 <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
@@ -882,7 +858,7 @@ http_headers = { "${optionalApiKeyHeaderName}" = "YOUR_UAPI_KEY" }`;
         <section class="raw-configuration container">
           <header class="section-title">Raw Configuration</header>
           <div class="section-description">
-            如果您有自己的 UAPI Key，可以先加上 <code>${optionalApiKeyHeaderName}</code>。如果您还需要管理员能力，再额外加上 <code>${optionalAuthHeaderName}</code> 就可以了。
+            If you have a client that's not listed above, access the raw MCP configuration below.
           </div>
           <div class="code-container card">
             <button class="copy-button waiting" onclick="copyToClipboard('raw-config', this)">
@@ -932,7 +908,7 @@ http_headers = { "${optionalApiKeyHeaderName}" = "YOUR_UAPI_KEY" }`;
               <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
             </svg>
           </button>
-          <code class="code-snippet language-json" id="claude-cli-cmd">${claudeCodeCommand}</code>
+          <code class="code-snippet language-json" id="claude-cli-cmd">claude mcp add UapiMcp -- npx -y uapi-mcp start --uapi-admin-bearer-auth </code>
         </div>
       </div>
     </div>
@@ -983,7 +959,7 @@ http_headers = { "${optionalApiKeyHeaderName}" = "YOUR_UAPI_KEY" }`;
               <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
             </svg>
           </button>
-          <code class="code-snippet language-json" id="gemini-config">${geminiCommand}</code>
+          <code class="code-snippet language-json" id="gemini-config">gemini mcp add UapiMcp -- npx -y uapi-mcp start --uapi-admin-bearer-auth </code>
         </div>
       </div>
     </div>

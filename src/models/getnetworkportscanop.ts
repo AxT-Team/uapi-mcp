@@ -33,7 +33,9 @@ export const GetNetworkPortscanRequest$zodSchema: z.ZodType<
 > = z.object({
   host: z.string().describe("需要扫描的目标主机，可以是域名或IP地址。"),
   port: z.int().describe("需要扫描的端口号，范围是 1 到 65535。"),
-  protocol: Protocol$zodSchema.default("tcp"),
+  protocol: Protocol$zodSchema.default("tcp").describe(
+    "扫描使用的协议，可以是 'tcp' 或 'udp'。",
+  ),
 });
 
 export type GetNetworkPortscanInternalServerErrorDetails = {};
@@ -99,7 +101,9 @@ export const GetNetworkPortscanResponseBody$zodSchema: z.ZodType<
 > = z.object({
   ip: z.string().optional(),
   port: z.int().optional(),
-  port_status: z.string().optional(),
+  port_status: z.string().optional().describe(
+    "\"open\", \"closed\", 或 \"timeout\"",
+  ),
   protocol: z.string().optional(),
 }).describe("扫描完成！返回端口的状态。");
 

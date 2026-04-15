@@ -33,7 +33,9 @@ export const GetNetworkWhoisRequest$zodSchema: z.ZodType<
   GetNetworkWhoisRequest
 > = z.object({
   domain: z.string().describe("你需要查询WHOIS信息的域名。"),
-  format: GetNetworkWhoisFormat$zodSchema.default("text"),
+  format: GetNetworkWhoisFormat$zodSchema.default("text").describe(
+    "返回格式。留空或为 'text' 时返回原始WHOIS文本，设为 'json' 时返回结构化JSON。",
+  ),
 });
 
 export type GetNetworkWhoisNotFoundDetails = {};
@@ -83,21 +85,15 @@ export const GetNetworkWhoisBadRequestResponseBody$zodSchema: z.ZodType<
 }).describe("请求参数无效。请检查 `domain` 参数是否提供且格式正确。");
 
 /**
- * ### 结构化WHOIS信息
+ * 结构化 WHOIS 信息，返回经过解析的 JSON 对象，通常包含域名信息、注册商信息、注册人信息以及注册日期、更新时间、到期时间等字段。
  *
  * @remarks
- *
- * 返回经过解析的JSON对象，包含以下主要部分：
- *
- * - **域名信息**: 包含域名ID、注册状态、DNS服务器等
- * - **注册商信息**: 注册服务商的详细信息
- * - **注册人信息**: 域名所有者的相关信息（可能因隐私保护而部分隐藏）
- * - **重要日期**: 包括注册日期、更新日期和到期日期
+ * 有些字段会因域名注册局和隐私保护设置而有所不同噢。
  */
 export type Whois = {};
 
 export const Whois$zodSchema: z.ZodType<Whois> = z.object({}).describe(
-  "### 结构化WHOIS信息\n\n返回经过解析的JSON对象，包含以下主要部分：\n\n- **域名信息**: 包含域名ID、注册状态、DNS服务器等\n- **注册商信息**: 注册服务商的详细信息\n- **注册人信息**: 域名所有者的相关信息（可能因隐私保护而部分隐藏）\n- **重要日期**: 包括注册日期、更新日期和到期日期",
+  "结构化 WHOIS 信息，返回经过解析的 JSON 对象，通常包含域名信息、注册商信息、注册人信息以及注册日期、更新时间、到期时间等字段。\n有些字段会因域名注册局和隐私保护设置而有所不同噢。",
 );
 
 /**
@@ -112,7 +108,9 @@ export const Whois$zodSchema: z.ZodType<Whois> = z.object({}).describe(
 export type ResponseBody2 = { whois?: Whois | undefined };
 
 export const ResponseBody2$zodSchema: z.ZodType<ResponseBody2> = z.object({
-  whois: z.lazy(() => Whois$zodSchema).optional(),
+  whois: z.lazy(() => Whois$zodSchema).optional().describe(
+    "结构化 WHOIS 信息，返回经过解析的 JSON 对象，通常包含域名信息、注册商信息、注册人信息以及注册日期、更新时间、到期时间等字段。\n有些字段会因域名注册局和隐私保护设置而有所不同噢。",
+  ),
 }).describe(
   "### JSON格式响应\n当 `format=json` 时，`whois` 字段返回结构化的JSON对象。\n\n> [!NOTE]\n> **注意**：返回的具体字段可能因域名注册局和隐私保护设置而异。某些敏感信息可能会被部分隐藏或标记为 `REDACTED FOR PRIVACY`。",
 );
@@ -126,7 +124,9 @@ export const ResponseBody2$zodSchema: z.ZodType<ResponseBody2> = z.object({
 export type ResponseBody1 = { whois?: string | undefined };
 
 export const ResponseBody1$zodSchema: z.ZodType<ResponseBody1> = z.object({
-  whois: z.string().optional(),
+  whois: z.string().optional().describe(
+    "WHOIS 原始文本，返回未经处理的原始 WHOIS 查询结果文本。",
+  ),
 }).describe(
   "### 文本格式响应\n当 `format=text` 或未指定时，`whois` 字段包含原始的WHOIS查询文本。这保留了最完整的信息，适合需要自行解析或展示原始数据的场景。",
 );

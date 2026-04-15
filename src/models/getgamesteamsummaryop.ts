@@ -21,7 +21,7 @@ export const GetGameSteamSummaryRequest$zodSchema: z.ZodType<
     "用户的 Steam ID3 格式标识符。传统的 Steam ID 格式，形如 STEAM_X:Y:Z。",
   ).optional(),
   key: z.string().describe(
-    "你的 Steam Web API Key。这是一个可选参数，如果提供，它将覆盖我们在后端配置的全局Key。这为你提供了更大的灵活性，但请务必注意Key的保密，不要在前端暴露。",
+    "这个接口可以传的访问凭证。此参数选填，如果传入，将优先使用您提供的值。请注意妥善保管，不要把它写进公开的前端代码中。",
   ).optional(),
   steamid: z.string().describe(
     "用户的 Steam 标识。可以是以下任意一种格式：\n- 纯数字的 **SteamID64**\n- 用户的 **自定义 URL 名称** (Vanity URL)\n- 完整的 **个人资料链接** (包含 SteamID64 或自定义名称)\n- 好友代码 (如 `22202`)",
@@ -35,7 +35,7 @@ export const GetGameSteamSummaryBadGatewayDetails$zodSchema: z.ZodType<
 > = z.object({});
 
 /**
- * 上游服务错误。在向 Steam 的官方 API 请求数据时遇到了问题。这可能是他们的服务暂时中断，请稍后重试。
+ * 暂时无法获取相关游戏数据，请稍后重试。
  */
 export type GetGameSteamSummaryBadGatewayResponseBody = {
   code?: string | undefined;
@@ -50,9 +50,7 @@ export const GetGameSteamSummaryBadGatewayResponseBody$zodSchema: z.ZodType<
   details: z.lazy(() => GetGameSteamSummaryBadGatewayDetails$zodSchema)
     .optional(),
   message: z.string().optional(),
-}).describe(
-  "上游服务错误。在向 Steam 的官方 API 请求数据时遇到了问题。这可能是他们的服务暂时中断，请稍后重试。",
-);
+}).describe("暂时无法获取相关游戏数据，请稍后重试。");
 
 export type GetGameSteamSummaryNotFoundDetails = {};
 
@@ -155,20 +153,32 @@ export type GetGameSteamSummaryResponseBody = {
 export const GetGameSteamSummaryResponseBody$zodSchema: z.ZodType<
   GetGameSteamSummaryResponseBody
 > = z.object({
-  avatar: z.string().optional(),
-  avatarfull: z.string().optional(),
-  avatarmedium: z.string().optional(),
-  communityvisibilitystate: z.int().optional(),
-  loccountrycode: z.string().optional(),
-  personaname: z.string().optional(),
-  personastate: z.int().optional(),
-  primaryclanid: z.string().optional(),
-  profilestate: z.int().optional(),
-  profileurl: z.string().optional(),
-  realname: z.string().optional(),
-  steamid: z.string().optional(),
-  timecreated: z.int().optional(),
-  timecreated_str: z.string().optional(),
+  avatar: z.string().optional().describe("32x32 像素的小尺寸头像URL。"),
+  avatarfull: z.string().optional().describe("184x184 像素的大尺寸头像URL。"),
+  avatarmedium: z.string().optional().describe("64x64 像素的中等尺寸头像URL。"),
+  communityvisibilitystate: z.int().optional().describe(
+    "社区资料的可见性状态: 1=私密, 3=公开。",
+  ),
+  loccountrycode: z.string().optional().describe(
+    "用户个人资料中设置的国家代码 (ISO 3166-1)，前提是用户已设置并公开。",
+  ),
+  personaname: z.string().optional().describe("玩家的当前昵称。"),
+  personastate: z.int().optional().describe(
+    "用户当前的在线状态: 0-离线, 1-在线, 2-忙碌, 3-离开, 4-打盹, 5-想交易, 6-想玩。",
+  ),
+  primaryclanid: z.string().optional().describe("玩家设置的主要部落的64位ID。"),
+  profilestate: z.int().optional().describe("如果用户设置了个人资料，则为1。"),
+  profileurl: z.string().optional().describe(
+    "用户的Steam社区个人资料页完整URL。",
+  ),
+  realname: z.string().optional().describe(
+    "用户的真实姓名，前提是用户已设置并公开。",
+  ),
+  steamid: z.string().optional().describe("被查询用户的64位SteamID。"),
+  timecreated: z.int().optional().describe("账户创建时的Unix时间戳（秒）。"),
+  timecreated_str: z.string().optional().describe(
+    "我们为你格式化好的账户创建时间，更直观。",
+  ),
 }).describe("查询成功！返回用户的 Steam 公开资料摘要。");
 
 export type GetGameSteamSummaryResponse =

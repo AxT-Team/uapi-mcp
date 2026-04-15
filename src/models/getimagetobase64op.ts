@@ -73,8 +73,10 @@ export type GetImageTobase64ResponseBody = {
 export const GetImageTobase64ResponseBody$zodSchema: z.ZodType<
   GetImageTobase64ResponseBody
 > = z.object({
-  base64: z.string().optional(),
-  msg: z.string().optional(),
+  base64: z.string().optional().describe(
+    "转换后的完整Base64 Data URI，可以直接在CSS或HTML中使用。",
+  ),
+  msg: z.string().optional().describe("操作结果描述。"),
 }).describe("转换成功！返回包含Base64编码的JSON对象。");
 
 export type GetImageTobase64Response =

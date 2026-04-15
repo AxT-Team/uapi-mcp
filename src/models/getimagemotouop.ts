@@ -32,7 +32,9 @@ export type GetImageMotouRequest = {
 
 export const GetImageMotouRequest$zodSchema: z.ZodType<GetImageMotouRequest> = z
   .object({
-    bg_color: GetImageMotouBgColor$zodSchema.optional(),
+    bg_color: GetImageMotouBgColor$zodSchema.optional().describe(
+      "GIF的背景颜色。留空则由后端服务决定默认值。",
+    ),
     qq: z.string().describe("你想要摸头的对象的QQ号码。"),
   });
 

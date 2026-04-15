@@ -37,7 +37,6 @@ import { Result } from "../types/fp.js";
  * ## 流程图
  * ```mermaid
  * graph TD
- *
  *     A[开始] --> B{参数校验};
  *     B --> |通过| C{是否允许小数?};
  *     C --> |是| D[生成随机小数];

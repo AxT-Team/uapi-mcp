@@ -6,17 +6,17 @@ import { getSearchEngines } from "../../funcs/getSearchEngines.js";
 import { formatResult, ToolDefinition } from "../tools.js";
 
 export const tool$getSearchEngines: ToolDefinition = {
-  name: "search-get-search-engines",
+  name: "-get-search-engines",
   description: `搜索引擎配置
 
-获取 UAPI Pro Search 引擎的详细信息，包括支持的功能特性、参数限制和使用说明。
+获取搜索功能的详细信息，包括支持的能力、参数限制和使用说明。
 
 ## 功能概述
 
-此接口返回搜索引擎的完整配置信息，你可以用它来：
-- 了解搜索引擎支持哪些功能（如站内搜索、文件类型过滤等）
+此接口返回搜索功能的完整配置信息，你可以用它来：
+- 了解当前可用的搜索能力（如站内搜索、文件类型过滤等）
 - 获取参数的默认值和限制范围
-- 查看当前引擎版本和可用状态
+- 查看当前配置版本和可用状态
 
 适合在应用初始化时调用，或用于动态配置搜索界面。
       `,

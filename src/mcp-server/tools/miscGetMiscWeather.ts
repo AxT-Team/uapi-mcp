@@ -26,9 +26,9 @@ export const tool$miscGetMiscWeather: ToolDefinition<typeof args> = {
 
 ## 可选功能模块
 - \`extended=true\`：扩展气象字段（体感温度、能见度、气压、紫外线、空气质量及污染物分项数据）
-- \`forecast=true\`：多天预报（最多7天，含日出日落、风速等详细数据）
+- \`forecast=true\`：多天预报（最多7天，会额外返回每天的最高温度、最低温度，以及日出日落、风速等详细数据）
 - \`hourly=true\`：逐小时预报（24小时）
-- \`minutely=true\`：分钟级降水预报（仅国内城市）
+- \`minutely=true\`：分钟级降水预报（仅国内城市，精确到2分钟）
 - \`indices=true\`：18项生活指数（穿衣、紫外线、洗车、运动、花粉等）
 
 ## 天气字段说明
@@ -36,7 +36,7 @@ export const tool$miscGetMiscWeather: ToolDefinition<typeof args> = {
 
 常见值包括：晴、多云、阴、小雨、中雨、大雨、雷阵雨、小雪、中雪、大雪、雨夹雪、雾、霾、沙尘。
 
-如果你的业务需要稳定分类，建议结合 \`weather_code\` 做自己的映射归类。`,
+如果你的业务需要稳定的天气分类，建议使用 \`weather_code\` 进行映射。完整的天气图标代码请参考[天气图标代码表](#enum-list)。`,
   scopes: ["read"],
   annotations: {
     "title": "",

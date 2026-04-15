@@ -28,8 +28,12 @@ export type PostImageNsfwRequest = {
 
 export const PostImageNsfwRequest$zodSchema: z.ZodType<PostImageNsfwRequest> = z
   .object({
-    file: z.lazy(() => PostImageNsfwFile$zodSchema).optional(),
-    url: z.string().optional(),
+    file: z.lazy(() => PostImageNsfwFile$zodSchema).optional().describe(
+      "要检测的图片文件。支持 JPG、JPEG、PNG、GIF、WebP 格式，最大 20MB。",
+    ),
+    url: z.string().optional().describe(
+      "图片的 URL 地址。如果同时提供 file 和 url，将优先使用 file。",
+    ),
   }).describe("包含图片来源的表单数据。必须提供 'file' 或 'url' 两者之一。");
 
 /**
@@ -93,14 +97,22 @@ export type PostImageNsfwResponseBody = {
 export const PostImageNsfwResponseBody$zodSchema: z.ZodType<
   PostImageNsfwResponseBody
 > = z.object({
-  confidence: z.number().optional(),
-  inference_time_ms: z.number().optional(),
-  is_nsfw: z.boolean().optional(),
-  label: z.string().optional(),
-  normal_score: z.number().optional(),
-  nsfw_score: z.number().optional(),
-  risk_level: z.string().optional(),
-  suggestion: z.string().optional(),
+  confidence: z.number().optional().describe("模型对当前判断的置信度。"),
+  inference_time_ms: z.number().optional().describe("模型推理耗时，单位毫秒。"),
+  is_nsfw: z.boolean().optional().describe("是否判定为 NSFW 内容。"),
+  label: z.string().optional().describe("内容标签，'nsfw' 或 'normal'。"),
+  normal_score: z.number().optional().describe(
+    "正常内容的置信度分数，范围 0-1。",
+  ),
+  nsfw_score: z.number().optional().describe(
+    "NSFW 内容的置信度分数，范围 0-1，越高表示越可能是敏感内容。",
+  ),
+  risk_level: z.string().optional().describe(
+    "风险等级：'low'、'medium'、'high'。",
+  ),
+  suggestion: z.string().optional().describe(
+    "处理建议：'pass'（通过）、'review'（人工复核）、'block'（拦截）。",
+  ),
 }).describe("检测成功！返回图片的 NSFW 分析结果。");
 
 export type PostImageNsfwResponse =
