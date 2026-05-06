@@ -2,7 +2,7 @@
   "name": "uapi-mcp",
   "version": "0.1.2",
   "author": "UAPI",
-  "description": "Uapi Mcp 是 uapis.cn 的官方 MCP Server。",
+  "description": "Official MCP (Model Context Protocol) server for UAPI / uapis.cn — exposes 100+ public-API endpoints (network, text, image, social, translation, search) as agent tools over Streamable HTTP and stdio. uapis.cn 官方 MCP 服务器。",
   "type": "module",
   "sideEffects": false,
   "engines": {
@@ -12,7 +12,7 @@
     "type": "git",
     "url": "git+https://github.com/AxT-Team/uapi-mcp.git"
   },
-  "homepage": "https://github.com/AxT-Team/uapi-mcp#readme",
+  "homepage": "https://uapis.cn/mcp",
   "bugs": {
     "url": "https://github.com/AxT-Team/uapi-mcp/issues"
   },
@@ -58,5 +58,27 @@
     "globals": "^16.0.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.31.1"
-  }
+  },
+  "keywords": [
+    "uapi",
+    "uapis",
+    "uapis.cn",
+    "mcp",
+    "model-context-protocol",
+    "modelcontextprotocol",
+    "mcp-server",
+    "agent",
+    "agents",
+    "llm",
+    "ai",
+    "claude",
+    "tools",
+    "public-api",
+    "free-api",
+    "rest-api",
+    "openapi",
+    "streamable-http",
+    "stdio"
+  ],
+  "license": "MIT"
 }
