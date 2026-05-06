@@ -2,11 +2,60 @@
 
 ![Banner](https://raw.githubusercontent.com/AxT-Team/uapi-mcp/main/banner.png?v=20260309-4)
 
+[![npm version](https://img.shields.io/npm/v/uapi-mcp?style=flat-square)](https://www.npmjs.com/package/uapi-mcp)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Docs](https://img.shields.io/badge/Docs-uapis.cn-2EAE5D?style=flat-square)](https://uapis.cn/docs)
-[![MCP](https://img.shields.io/badge/MCP-Uapi%20Mcp-7C3AED?style=flat-square)](https://modelcontextprotocol.io/)
+[![MCP](https://img.shields.io/badge/MCP-2025--06--18-7C3AED?style=flat-square)](https://modelcontextprotocol.io/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 
-Uapi Mcp 是 `uapis.cn` 的官方 MCP Server，用来把 UAPI 的搜索、翻译、图像、文本处理和网页解析能力整理成统一入口，方便接入支持 MCP 的客户端。
+> Official MCP (Model Context Protocol) server for the
+> [uapis.cn](https://uapis.cn) public API platform. Exposes **100+ UAPI
+> endpoints** — network lookups, text utilities, image processing,
+> social-platform queries, translation, search — as agent tools over
+> Streamable HTTP and stdio.
+
+## English summary
+
+**Hosted server** (managed, recommended for most agents):
+
+```text
+https://uapis.cn/mcp
+```
+
+| Wiring                                       | Snippet                                                                                                                                                          |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Claude Desktop / Claude Code                 | `{"mcpServers":{"uapi":{"transport":"streamable-http","url":"https://uapis.cn/mcp"}}}`                                                                          |
+| Cursor (`.cursor/mcp.json`)                  | `{"mcpServers":{"uapi":{"url":"https://uapis.cn/mcp"}}}`                                                                                                         |
+| Stdio (npx)                                  | `npx -y uapi-mcp start --mode dynamic`                                                                                                                           |
+
+**Local install** (stdio, fully offline):
+
+```bash
+npx -y uapi-mcp start --mode dynamic
+# or
+npm install -g uapi-mcp && uapi-mcp start --mode dynamic
+```
+
+Authentication:
+
+- Free-tier endpoints work with no key.
+- Paid endpoints need `X-API-Key`. Get a key at
+  [uapis.cn/console](https://uapis.cn/console).
+
+Discovery surfaces:
+
+- Server card: <https://uapis.cn/.well-known/mcp/server-card.json>
+- WebMCP descriptor: <https://uapis.cn/.well-known/webmcp>
+- OpenAPI spec: <https://uapis.cn/openapi.json>
+- LLM context bundle: <https://uapis.cn/llms.txt>
+
+See [`AGENTS.md`](./AGENTS.md) for the full agent-facing playbook.
+
+---
+
+## 中文说明
+
+Uapi Mcp 是 `uapis.cn` 的官方 MCP Server，把 UAPI 的搜索、翻译、图像、文本处理、网页解析能力整合成一个标准化接口，支持任何 MCP 协议客户端。
 
 ## 快速开始
 

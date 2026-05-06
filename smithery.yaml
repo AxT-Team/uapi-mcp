@@ -1,0 +1,33 @@
+# Smithery (smithery.ai) deployment manifest for uapi-mcp.
+# Reference: https://smithery.ai/docs
+
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      uapikey:
+        type: string
+        title: UAPI API Key
+        description: |
+          Your UAPI key from https://uapis.cn/console. Free-tier endpoints
+          work without a key, paid endpoints require one. The server forwards
+          this value as an X-API-Key header on every UAPI request.
+    required: []
+  commandFunction: |-
+    (config) => ({
+      command: "npx",
+      args: ["-y", "uapi-mcp", "start", "--mode", "dynamic"],
+      env: {
+        UAPI_MCP_UAPIKEY: config.uapikey || ""
+      }
+    })
+
+build:
+  dockerfile: Dockerfile
+
+runtime:
+  protocolVersion: "2025-06-18"
+  capabilities:
+    tools:
+      listChanged: false
