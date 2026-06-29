@@ -2150,7 +2150,7 @@ examples:
         application/json: {"text": "hello world"}
       responses:
         "200":
-          application/json: {"source_lang": "en", "translated_text": "你好，世界"}
+          application/json: {"translate": "你好，世界", "text": "hello world"}
         "400":
           application/json: {"code": "INVALID_ARGUMENT", "message": "Invalid request body, 'text' and 'to_lang' are required."}
         "500":

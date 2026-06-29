@@ -311,15 +311,15 @@ export const PostTranslateTextBadRequestResponseBody$zodSchema: z.ZodType<
  * 成功响应
  */
 export type PostTranslateTextResponseBody = {
-  source_lang?: string | undefined;
-  translated_text?: string | undefined;
+  translate?: string | undefined;
+  text?: string | undefined;
 };
 
 export const PostTranslateTextResponseBody$zodSchema: z.ZodType<
   PostTranslateTextResponseBody
 > = z.object({
-  source_lang: z.string().optional().describe("The source language detected."),
-  translated_text: z.string().optional().describe("The translated text."),
+  translate: z.string().optional().describe("翻译后的文本。"),
+  text: z.string().optional().describe("原始文本。"),
 }).describe("成功响应");
 
 export type PostTranslateTextResponse =
